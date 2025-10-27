@@ -166,6 +166,19 @@ components:
                   type: number
                   minimum: 0
                   maximum: 1
+            colors:
+              type: object
+              properties:
+                primary:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#FF5722"
+                  description: "브랜드 주 색상 (HEX 형식)"
+                secondary:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#2196F3"
+                  description: "브랜드 보조 색상 (HEX 형식)"
         is_system_default:
           type: boolean
         created_at:
