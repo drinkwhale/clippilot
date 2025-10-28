@@ -76,26 +76,26 @@
 
 ### Backend Implementation (US0)
 
-- [ ] T028 [P] [US0] Create User model in backend/src/models/user.py (id, email, plan, oauth_provider)
-- [ ] T029 [P] [US0] Create Subscription model in backend/src/models/subscription.py (user_id, plan, status)
-- [ ] T030 [P] [US0] Create User Pydantic schemas in backend/src/schemas/user.py (UserCreate, UserResponse)
-- [ ] T031 [P] [US0] Create auth schemas in backend/src/schemas/auth.py (SignupRequest, LoginRequest, TokenResponse)
-- [ ] T032 [US0] Implement AuthService in backend/src/services/auth_service.py (signup, login, reset_password)
-- [ ] T033 [US0] Implement auth middleware in backend/src/middleware/auth.py (JWT 검증, user 주입)
-- [ ] T034 [US0] Implement /auth/signup endpoint in backend/src/api/v1/auth.py (FR-021, FR-022)
-- [ ] T035 [US0] Implement /auth/login endpoint in backend/src/api/v1/auth.py (FR-023, 3회 실패 잠금)
-- [ ] T036 [US0] Implement /auth/reset-password endpoint in backend/src/api/v1/auth.py (FR-024)
-- [ ] T037 [US0] Implement /account DELETE endpoint in backend/src/api/v1/auth.py (FR-025, 30일 삭제)
+- [x] T028 [P] [US0] Create User model in backend/src/models/user.py (id, email, plan, oauth_provider)
+- [x] T029 [P] [US0] Create Subscription model in backend/src/models/subscription.py (user_id, plan, status)
+- [x] T030 [P] [US0] Create User Pydantic schemas in backend/src/schemas/user.py (UserCreate, UserResponse)
+- [x] T031 [P] [US0] Create auth schemas in backend/src/schemas/auth.py (SignupRequest, LoginRequest, TokenResponse)
+- [x] T032 [US0] Implement AuthService in backend/src/services/auth_service.py (signup, login, reset_password)
+- [x] T033 [US0] Implement auth middleware in backend/src/middleware/auth.py (JWT 검증, user 주입)
+- [x] T034 [US0] Implement /auth/signup endpoint in backend/src/api/v1/auth.py (FR-021, FR-022)
+- [x] T035 [US0] Implement /auth/login endpoint in backend/src/api/v1/auth.py (FR-023, 3회 실패 잠금)
+- [x] T036 [US0] Implement /auth/reset-password endpoint in backend/src/api/v1/auth.py (FR-024)
+- [x] T037 [US0] Implement /account DELETE endpoint in backend/src/api/v1/auth.py (FR-025, 30일 삭제)
 
 ### Frontend Implementation (US0)
 
-- [ ] T038 [P] [US0] Create auth store with Zustand in frontend/src/lib/stores/auth-store.ts
-- [ ] T039 [P] [US0] Create useAuth hook in frontend/src/lib/hooks/useAuth.ts
-- [ ] T040 [P] [US0] Create Signup page in frontend/src/app/(auth)/signup/page.tsx
-- [ ] T041 [P] [US0] Create Login page in frontend/src/app/(auth)/login/page.tsx
-- [ ] T042 [P] [US0] Create Password Reset page in frontend/src/app/(auth)/reset-password/page.tsx
-- [ ] T043 [US0] Create auth middleware for Next.js in frontend/src/middleware.ts (protect /dashboard routes)
-- [ ] T044 [US0] Add login attempt tracking and 15-minute lockout UI in frontend/src/app/(auth)/login/page.tsx
+- [x] T038 [P] [US0] Create auth store with Zustand in frontend/src/lib/stores/auth-store.ts
+- [x] T039 [P] [US0] Create useAuth hook in frontend/src/lib/hooks/useAuth.ts
+- [x] T040 [P] [US0] Create Signup page in frontend/src/app/(auth)/signup/page.tsx
+- [x] T041 [P] [US0] Create Login page in frontend/src/app/(auth)/login/page.tsx
+- [x] T042 [P] [US0] Create Password Reset page in frontend/src/app/(auth)/reset-password/page.tsx
+- [x] T043 [US0] Create auth middleware for Next.js in frontend/src/middleware.ts (protect /dashboard routes)
+- [x] T044 [US0] Add login attempt tracking and 15-minute lockout UI in frontend/src/app/(auth)/login/page.tsx
 
 **Checkpoint**: 사용자가 회원가입, 로그인, 비밀번호 재설정을 완료할 수 있음 ✅
 
