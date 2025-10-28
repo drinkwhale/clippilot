@@ -46,23 +46,23 @@
 
 **⚠️ CRITICAL**: 이 Phase가 완료되기 전까지 User Story 작업 불가
 
-- [x] T011 Run Supabase SQL migration from data-model.md (create tables, indexes, RLS policies)
-- [x] T012 Setup Supabase Storage buckets (videos, thumbnails, templates) per quickstart.md
-- [x] T013 [P] Create base Pydantic schemas in backend/src/schemas/base.py (BaseModel, TimestampMixin)
-- [x] T014 [P] Create SQLAlchemy base model in backend/src/models/base.py with updated_at trigger
-- [x] T015 [P] Setup Supabase client wrapper in backend/src/core/supabase.py
-- [x] T016 [P] Implement OpenAI client wrapper in backend/src/core/ai/openai_client.py
-- [x] T017 [P] Setup Redis connection pool in backend/src/core/redis_client.py
-- [x] T018 [P] Setup Celery app configuration in backend/src/workers/celery_app.py
-- [x] T019 [P] Create FastAPI app with CORS middleware in backend/src/main.py
-- [x] T020 [P] Implement rate limiting middleware in backend/src/middleware/rate_limit.py (60 req/min per user, NFR-017)
-- [x] T021 [P] Implement logging middleware with request ID in backend/src/middleware/logging.py (NFR-012)
-- [x] T022 [P] Implement error handler middleware in backend/src/middleware/error_handler.py (한국어 메시지, FR-030)
-- [x] T023 [P] Create Next.js API client wrapper in frontend/src/lib/api/client.ts
-- [x] T024 [P] Setup TanStack Query provider in frontend/src/app/providers.tsx
-- [x] T025 [P] Create Supabase client for frontend in frontend/src/lib/supabase.ts
-- [x] T026 [P] Setup Go Redis queue listener in worker/internal/queue/listener.go
-- [x] T027 [P] Create FFmpeg wrapper in worker/internal/renderer/ffmpeg.go
+- [ ] T011 Run Supabase SQL migration from data-model.md (create tables, indexes, RLS policies)
+- [ ] T012 Setup Supabase Storage buckets (videos, thumbnails, templates) per quickstart.md
+- [ ] T013 [P] Create base Pydantic schemas in backend/src/schemas/base.py (BaseModel, TimestampMixin)
+- [ ] T014 [P] Create SQLAlchemy base model in backend/src/models/base.py with updated_at trigger
+- [ ] T015 [P] Setup Supabase client wrapper in backend/src/core/supabase.py
+- [ ] T016 [P] Implement OpenAI client wrapper in backend/src/core/ai/openai_client.py
+- [ ] T017 [P] Setup Redis connection pool in backend/src/core/redis_client.py
+- [ ] T018 [P] Setup Celery app configuration in backend/src/workers/celery_app.py
+- [ ] T019 [P] Create FastAPI app with CORS middleware in backend/src/main.py
+- [ ] T020 [P] Implement rate limiting middleware in backend/src/middleware/rate_limit.py (60 req/min per user, NFR-017)
+- [ ] T021 [P] Implement logging middleware with request ID in backend/src/middleware/logging.py (NFR-012)
+- [ ] T022 [P] Implement error handler middleware in backend/src/middleware/error_handler.py (한국어 메시지, FR-030)
+- [ ] T023 [P] Create Next.js API client wrapper in frontend/src/lib/api/client.ts
+- [ ] T024 [P] Setup TanStack Query provider in frontend/src/app/providers.tsx
+- [ ] T025 [P] Create Supabase client for frontend in frontend/src/lib/supabase.ts
+- [ ] T026 [P] Setup Go Redis queue listener in worker/internal/queue/listener.go
+- [ ] T027 [P] Create FFmpeg wrapper in worker/internal/renderer/ffmpeg.go
 
 **Checkpoint**: Foundation ready - User Story 구현을 병렬로 시작 가능
 
