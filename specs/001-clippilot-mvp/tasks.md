@@ -27,16 +27,16 @@
 
 **Purpose**: 프로젝트 구조 생성 및 기본 설정
 
-- [ ] T001 Create project directory structure per plan.md (frontend/, backend/, worker/, shared/, infra/)
-- [ ] T002 [P] Initialize frontend Next.js 14 project with TypeScript in frontend/
-- [ ] T003 [P] Initialize backend FastAPI project with Python 3.11 in backend/
-- [ ] T004 [P] Initialize worker Go 1.21 project in worker/
+- [x] T001 Create project directory structure per plan.md (frontend/, backend/, worker/, shared/, infra/)
+- [x] T002 [P] Initialize frontend Next.js 14 project with TypeScript in frontend/
+- [x] T003 [P] Initialize backend FastAPI project with Python 3.11 in backend/
+- [x] T004 [P] Initialize worker Go 1.21 project in worker/
 - [ ] T005 [P] Setup Supabase project and save credentials to .env files
-- [ ] T006 [P] Configure ESLint and Prettier for frontend in frontend/.eslintrc.json
-- [ ] T007 [P] Configure Black and isort for backend in backend/pyproject.toml
-- [ ] T008 [P] Setup Docker configuration in infra/docker/ (backend.Dockerfile, worker.Dockerfile)
-- [ ] T009 Create shared OpenAPI contract file in shared/contracts/api-v1.yaml (copy from specs/001-clippilot-mvp/contracts/)
-- [ ] T010 [P] Setup environment variable templates (.env.example) in each service directory
+- [x] T006 [P] Configure ESLint and Prettier for frontend in frontend/.eslintrc.json
+- [x] T007 [P] Configure Black and isort for backend in backend/pyproject.toml
+- [x] T008 [P] Setup Docker configuration in infra/docker/ (backend.Dockerfile, worker.Dockerfile)
+- [x] T009 Create shared OpenAPI contract file in shared/contracts/api-v1.yaml (copy from specs/001-clippilot-mvp/contracts/)
+- [x] T010 [P] Setup environment variable templates (.env.example) in each service directory
 
 ---
 

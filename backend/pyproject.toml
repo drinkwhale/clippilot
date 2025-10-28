@@ -1,0 +1,31 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "ClipPilot Backend API"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "alembic>=1.17.0",
+    "celery>=5.5.3",
+    "fastapi>=0.120.0",
+    "google-api-python-client>=2.185.0",
+    "httpx>=0.28.1",
+    "openai>=2.6.1",
+    "pydantic>=2.12.3",
+    "pydantic-settings>=2.11.0",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "redis>=7.0.0",
+    "sqlalchemy>=2.0.44",
+    "uvicorn>=0.38.0",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
