@@ -11,8 +11,9 @@ RUN uv sync --frozen
 
 # 소스 코드 복사
 COPY backend/src ./src
-COPY backend/alembic ./alembic
-COPY backend/alembic.ini ./
+# TODO: Phase 2에서 alembic 마이그레이션 생성 후 아래 주석 해제
+# COPY backend/alembic ./alembic
+# COPY backend/alembic.ini ./
 
 # 환경 변수
 ENV PYTHONPATH=/app
