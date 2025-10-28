@@ -103,7 +103,8 @@ func (r *FFmpegRenderer) RenderVideo(
 	if err := os.MkdirAll(jobWorkDir, 0755); err != nil {
 		return "", fmt.Errorf("failed to create job work directory: %w", err)
 	}
-	defer os.RemoveAll(jobWorkDir) // Cleanup after render
+	// Note: Cleanup is NOT deferred here - caller must call Cleanup() explicitly
+	// after uploading the output file to storage
 
 	// Write SRT file
 	srtPath := filepath.Join(jobWorkDir, "subtitles.srt")

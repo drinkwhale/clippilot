@@ -47,21 +47,16 @@ class RedisClient:
 
         return self._sync_client
 
-    @property
-    async def async_client(self) -> aioredis.Redis:
+    async def get_async(self) -> aioredis.Redis:
         """Get asynchronous Redis client"""
         if self._async_client is None:
-            self._async_client = await aioredis.from_url(
+            self._async_client = aioredis.from_url(
                 self.url,
                 decode_responses=True,
                 max_connections=self.max_connections,
             )
 
         return self._async_client
-
-    async def get_async(self) -> aioredis.Redis:
-        """Get async client (alias)"""
-        return await self.async_client
 
     async def close(self):
         """Close Redis connections"""
