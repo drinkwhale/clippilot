@@ -217,9 +217,21 @@ class AuthService:
             )
 
         except InvalidCredentialsError:
+            # Failed login - increment attempts even for invalid credentials
+            user.login_attempts += 1
+
+            # Lock account after 3 failed attempts
+            if user.login_attempts >= self.MAX_LOGIN_ATTEMPTS:
+                user.locked_until = datetime.utcnow() + timedelta(
+                    minutes=self.LOCKOUT_DURATION_MINUTES
+                )
+                self.db.commit()
+                raise AccountLockedError(user.locked_until)
+
+            self.db.commit()
             raise
         except Exception:
-            # Failed login - increment attempts
+            # Other exceptions - also increment attempts
             user.login_attempts += 1
 
             # Lock account after 3 failed attempts

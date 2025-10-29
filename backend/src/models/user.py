@@ -72,10 +72,13 @@ class User(BaseModel):
 
     # Relationships
     subscription = relationship("Subscription", back_populates="user", uselist=False)
-    channels = relationship("Channel", back_populates="user")
-    jobs = relationship("Job", back_populates="user")
-    templates = relationship("Template", back_populates="user")
-    usage_logs = relationship("UsageLog", back_populates="user")
+    # TODO: Phase 4 (US6) - YouTube OAuth 연동 시 추가
+    # channels = relationship("Channel", back_populates="user")
+    # TODO: Phase 5 (US1) - 콘텐츠 생성 시 추가
+    # jobs = relationship("Job", back_populates="user")
+    # templates = relationship("Template", back_populates="user")
+    # TODO: Phase 7 (US4) - 사용량 추적 시 추가
+    # usage_logs = relationship("UsageLog", back_populates="user")
 
     def __repr__(self) -> str:
         return f"User(id={self.id}, email={self.email!r}, plan={self.plan.value})"
