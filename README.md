@@ -216,6 +216,40 @@ SUPABASE_SERVICE_KEY=eyJxxx...
 
 #### 4. 서비스 실행
 
+> ⚡ **빠른 시작**: 통합 스크립트로 한 번에 실행하기 (Phase 3 완료 기준)
+
+```bash
+# 모든 서비스 한 번에 실행 (권장)
+./scripts/dev-start.sh
+
+# 서버 상태 확인
+./scripts/dev-status.sh
+
+# 로그 확인
+./scripts/dev-logs.sh [backend|frontend|redis|all]
+
+# 서버 종료
+./scripts/dev-stop.sh
+```
+
+**자동으로 실행되는 서비스:**
+- ✅ Redis (포트 6379)
+- ✅ Backend API (포트 8000)
+- ✅ Frontend (포트 3000)
+
+**테스트 가능한 기능 (Phase 3 완료):**
+- ✅ 회원가입: http://localhost:3000/signup
+- ✅ 로그인: http://localhost:3000/login
+- ✅ 대시보드: http://localhost:3000/dashboard
+- ✅ API 문서: http://localhost:8000/docs
+
+상세한 사용법은 [scripts/README.md](scripts/README.md)를 참고하세요.
+
+---
+
+<details>
+<summary><b>수동 실행 방법 (고급)</b></summary>
+
 **Terminal 1 - Redis**:
 ```bash
 redis-server
@@ -228,13 +262,13 @@ pip install -r requirements.txt
 uvicorn src.main:app --reload --port 8000
 ```
 
-**Terminal 3 - Celery Worker**:
+**Terminal 3 - Celery Worker** (Phase 5 이후 필요):
 ```bash
 cd backend
 celery -A src.workers.celery_app worker --loglevel=info
 ```
 
-**Terminal 4 - Rendering Worker**:
+**Terminal 4 - Rendering Worker** (Phase 6 이후 필요):
 ```bash
 cd worker
 go run cmd/worker/main.go
@@ -247,7 +281,7 @@ npm install
 npm run dev
 ```
 
-브라우저에서 http://localhost:3000 접속
+</details>
 
 ---
 
