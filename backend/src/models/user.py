@@ -72,8 +72,12 @@ class User(BaseModel):
 
     # Relationships
     subscription = relationship("Subscription", back_populates="user", uselist=False)
-    # TODO: Phase 4 (US6) - YouTube OAuth 연동 시 추가
-    # channels = relationship("Channel", back_populates="user")
+    channels = relationship(
+        "Channel",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
     # TODO: Phase 5 (US1) - 콘텐츠 생성 시 추가
     # jobs = relationship("Job", back_populates="user")
     # templates = relationship("Template", back_populates="user")
