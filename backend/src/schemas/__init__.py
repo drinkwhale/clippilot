@@ -32,6 +32,11 @@ from .auth import (
     DeleteAccountRequest,
     LoginAttemptResponse,
 )
+from .channel import (
+    ChannelBase,
+    ChannelCreate,
+    ChannelResponse,
+)
 
 __all__ = [
     # Base
@@ -61,4 +66,8 @@ __all__ = [
     "ChangePasswordRequest",
     "DeleteAccountRequest",
     "LoginAttemptResponse",
+    # Channel
+    "ChannelBase",
+    "ChannelCreate",
+    "ChannelResponse",
 ]

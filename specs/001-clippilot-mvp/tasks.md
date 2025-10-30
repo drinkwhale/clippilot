@@ -109,22 +109,22 @@
 
 ### Backend Implementation (US6)
 
-- [ ] T045 [P] [US6] Create Channel model in backend/src/models/channel.py (yt_channel_id, access_token_meta 암호화)
-- [ ] T046 [P] [US6] Create Channel schemas in backend/src/schemas/channel.py (ChannelCreate, ChannelResponse)
-- [ ] T047 [US6] Implement YouTubeService in backend/src/core/youtube/youtube_service.py (OAuth flow, token 관리)
-- [ ] T048 [US6] Implement /channels/oauth/youtube GET endpoint in backend/src/api/v1/channels.py (OAuth 시작, FR-012)
-- [ ] T049 [US6] Implement /channels/oauth/youtube/callback GET endpoint in backend/src/api/v1/channels.py (토큰 저장)
-- [ ] T050 [US6] Implement /channels GET endpoint in backend/src/api/v1/channels.py (연결된 채널 목록)
-- [ ] T051 [US6] Implement /channels/{id} DELETE endpoint in backend/src/api/v1/channels.py (채널 연결 해제)
-- [ ] T052 [US6] Add token expiry check and refresh logic in backend/src/core/youtube/youtube_service.py (FR-013)
+- [x] T045 [P] [US6] Create Channel model in backend/src/models/channel.py (yt_channel_id, access_token_meta 암호화)
+- [x] T046 [P] [US6] Create Channel schemas in backend/src/schemas/channel.py (ChannelCreate, ChannelResponse)
+- [x] T047 [US6] Implement YouTubeService in backend/src/core/youtube/youtube_service.py (OAuth flow, token 관리)
+- [x] T048 [US6] Implement /channels/oauth/youtube GET endpoint in backend/src/api/v1/channels.py (OAuth 시작, FR-012)
+- [x] T049 [US6] Implement /channels/oauth/youtube/callback GET endpoint in backend/src/api/v1/channels.py (토큰 저장)
+- [x] T050 [US6] Implement /channels GET endpoint in backend/src/api/v1/channels.py (연결된 채널 목록)
+- [x] T051 [US6] Implement /channels/{id} DELETE endpoint in backend/src/api/v1/channels.py (채널 연결 해제)
+- [x] T052 [US6] Add token expiry check and refresh logic in backend/src/core/youtube/youtube_service.py (FR-013)
 
 ### Frontend Implementation (US6)
 
-- [ ] T053 [P] [US6] Create useChannels hook in frontend/src/lib/hooks/useChannels.ts
-- [ ] T054 [P] [US6] Create ChannelList component in frontend/src/components/dashboard/ChannelList.tsx
-- [ ] T055 [US6] Create Connect YouTube Channel button in frontend/src/components/dashboard/ConnectChannelButton.tsx
-- [ ] T056 [US6] Add channel settings page in frontend/src/app/(dashboard)/settings/channels/page.tsx
-- [ ] T057 [US6] Add token expiry warning UI in frontend/src/components/dashboard/ChannelList.tsx (FR-013)
+- [x] T053 [P] [US6] Create useChannels hook in frontend/src/lib/hooks/useChannels.ts
+- [x] T054 [P] [US6] Create ChannelList component in frontend/src/components/dashboard/ChannelList.tsx
+- [x] T055 [US6] Create Connect YouTube Channel button in frontend/src/components/dashboard/ConnectChannelButton.tsx
+- [x] T056 [US6] Add channel settings page in frontend/src/app/(dashboard)/settings/channels/page.tsx
+- [x] T057 [US6] Add token expiry warning UI in frontend/src/components/dashboard/ChannelList.tsx (FR-013)
 
 **Checkpoint**: 사용자가 YouTube 채널을 연결하고 관리할 수 있음 ✅
 
