@@ -8,6 +8,7 @@ from .youtube_service import (
     TokenExchangeError,
     TokenRefreshError,
     InvalidOAuthStateError,
+    ChannelOwnershipError,
 )
 
 __all__ = [
@@ -16,4 +17,5 @@ __all__ = [
     "TokenExchangeError",
     "TokenRefreshError",
     "InvalidOAuthStateError",
+    "ChannelOwnershipError",
 ]
