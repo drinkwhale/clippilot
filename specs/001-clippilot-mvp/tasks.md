@@ -138,32 +138,32 @@
 
 ### Backend Implementation (US1)
 
-- [ ] T058 [P] [US1] Create Job model in backend/src/models/job.py (prompt, status, script, srt, metadata_json)
-- [ ] T059 [P] [US1] Create UsageLog model in backend/src/models/usage_log.py (user_id, job_id, tokens, api_cost)
-- [ ] T060 [P] [US1] Create Job schemas in backend/src/schemas/job.py (JobCreate, JobResponse, JobUpdate)
-- [ ] T061 [US1] Implement ScriptGenerationService in backend/src/core/ai/script_service.py (OpenAI GPT-4o 연동, FR-001)
-- [ ] T062 [US1] Implement SubtitleService in backend/src/core/ai/subtitle_service.py (SRT 생성, FR-002)
-- [ ] T063 [US1] Implement MetadataService in backend/src/core/ai/metadata_service.py (제목, 설명, 태그 생성)
-- [ ] T064 [US1] Implement usage quota check in backend/src/services/quota_service.py (FR-008: Free 20회, Pro 500회)
-- [ ] T065 [US1] Implement Celery task for content generation in backend/src/workers/generate.py (queued → generating)
-- [ ] T066 [US1] Implement /jobs POST endpoint in backend/src/api/v1/jobs.py (프롬프트 검증, 큐 등록, FR-001)
-- [ ] T067 [US1] Implement /jobs GET endpoint in backend/src/api/v1/jobs.py (pagination, status filter, FR-010)
-- [ ] T068 [US1] Implement /jobs/{id} GET endpoint in backend/src/api/v1/jobs.py (상세 조회, FR-020)
-- [ ] T069 [US1] Implement /jobs/{id} PATCH endpoint in backend/src/api/v1/jobs.py (스크립트/자막 수정, FR-019)
-- [ ] T070 [US1] Add content filtering for 부적절한 콘텐츠 in backend/src/core/ai/script_service.py (FR-014)
-- [ ] T071 [US1] Add usage logging after generation in backend/src/workers/generate.py (tokens, cost tracking)
+- [x] T058 [P] [US1] Create Job model in backend/src/models/job.py (prompt, status, script, srt, metadata_json)
+- [x] T059 [P] [US1] Create UsageLog model in backend/src/models/usage_log.py (user_id, job_id, tokens, api_cost)
+- [x] T060 [P] [US1] Create Job schemas in backend/src/schemas/job.py (JobCreate, JobResponse, JobUpdate)
+- [x] T061 [US1] Implement ScriptGenerationService in backend/src/core/ai/script_service.py (OpenAI GPT-4o 연동, FR-001)
+- [x] T062 [US1] Implement SubtitleService in backend/src/core/ai/subtitle_service.py (SRT 생성, FR-002)
+- [x] T063 [US1] Implement MetadataService in backend/src/core/ai/metadata_service.py (제목, 설명, 태그 생성)
+- [x] T064 [US1] Implement usage quota check in backend/src/services/quota_service.py (FR-008: Free 20회, Pro 500회)
+- [x] T065 [US1] Implement Celery task for content generation in backend/src/workers/generate.py (queued → generating)
+- [x] T066 [US1] Implement /jobs POST endpoint in backend/src/api/v1/jobs.py (프롬프트 검증, 큐 등록, FR-001)
+- [x] T067 [US1] Implement /jobs GET endpoint in backend/src/api/v1/jobs.py (pagination, status filter, FR-010)
+- [x] T068 [US1] Implement /jobs/{id} GET endpoint in backend/src/api/v1/jobs.py (상세 조회, FR-020)
+- [x] T069 [US1] Implement /jobs/{id} PATCH endpoint in backend/src/api/v1/jobs.py (스크립트/자막 수정, FR-019)
+- [x] T070 [US1] Add content filtering for 부적절한 콘텐츠 in backend/src/core/ai/script_service.py (FR-014)
+- [x] T071 [US1] Add usage logging after generation in backend/src/workers/generate.py (tokens, cost tracking)
 
 ### Frontend Implementation (US1)
 
-- [ ] T072 [P] [US1] Create useJobs hook in frontend/src/lib/hooks/useJobs.ts
-- [ ] T073 [P] [US1] Create Project Create form in frontend/src/app/(dashboard)/projects/new/page.tsx
-- [ ] T074 [P] [US1] Create Script Editor component in frontend/src/components/editor/ScriptEditor.tsx
-- [ ] T075 [P] [US1] Create Subtitle Editor component in frontend/src/components/editor/SubtitleEditor.tsx
-- [ ] T076 [P] [US1] Create Metadata Editor component in frontend/src/components/editor/MetadataEditor.tsx
-- [ ] T077 [US1] Create Project List page in frontend/src/app/(dashboard)/projects/page.tsx (상태별 필터)
-- [ ] T078 [US1] Create Project Detail page in frontend/src/app/(dashboard)/projects/[id]/page.tsx
-- [ ] T079 [US1] Add real-time job status polling in frontend/src/lib/hooks/useJobStatus.ts
-- [ ] T080 [US1] Add quota exceeded warning UI in frontend/src/components/dashboard/QuotaWarning.tsx (FR-008)
+- [x] T072 [P] [US1] Create useJobs hook in frontend/src/lib/hooks/useJobs.ts
+- [x] T073 [P] [US1] Create Project Create form in frontend/src/app/(dashboard)/projects/new/page.tsx
+- [x] T074 [P] [US1] Create Script Editor component in frontend/src/components/editor/ScriptEditor.tsx
+- [x] T075 [P] [US1] Create Subtitle Editor component in frontend/src/components/editor/SubtitleEditor.tsx
+- [x] T076 [P] [US1] Create Metadata Editor component in frontend/src/components/editor/MetadataEditor.tsx
+- [x] T077 [US1] Create Project List page in frontend/src/app/(dashboard)/projects/page.tsx (상태별 필터)
+- [x] T078 [US1] Create Project Detail page in frontend/src/app/(dashboard)/projects/[id]/page.tsx
+- [x] T079 [US1] Add real-time job status polling in frontend/src/lib/hooks/useJobStatus.ts (이미 useJob에 구현됨)
+- [x] T080 [US1] Add quota exceeded warning UI in frontend/src/components/dashboard/QuotaWarning.tsx (FR-008)
 
 **Checkpoint**: 사용자가 프롬프트로 콘텐츠를 생성하고 편집할 수 있음 ✅
 

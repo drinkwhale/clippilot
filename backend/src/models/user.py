@@ -78,11 +78,20 @@ class User(BaseModel):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-    # TODO: Phase 5 (US1) - 콘텐츠 생성 시 추가
-    # jobs = relationship("Job", back_populates="user")
+    jobs = relationship(
+        "Job",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    usage_logs = relationship(
+        "UsageLog",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    # TODO: Phase 7 (US3) - 템플릿 관리 시 추가
     # templates = relationship("Template", back_populates="user")
-    # TODO: Phase 7 (US4) - 사용량 추적 시 추가
-    # usage_logs = relationship("UsageLog", back_populates="user")
 
     def __repr__(self) -> str:
         return f"User(id={self.id}, email={self.email!r}, plan={self.plan.value})"
