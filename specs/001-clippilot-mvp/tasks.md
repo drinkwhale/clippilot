@@ -188,7 +188,7 @@
 
 ### Worker Implementation (US2)
 
-- [ ] T089 [P] [US2] Create rendering job model in worker/internal/models/render_job.go
+- [x] T089 [P] [US2] Create rendering job model in worker/internal/models/render_job.go
 - [ ] T090 [US2] Implement Redis queue consumer in worker/cmd/worker/main.go (listen to render_queue)
 - [ ] T091 [US2] Implement video composition logic in worker/internal/renderer/composer.go (FFmpeg 명령어 생성)
 - [ ] T092 [US2] Implement subtitle overlay in worker/internal/renderer/subtitle.go (SRT → FFmpeg filter)

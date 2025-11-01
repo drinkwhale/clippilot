@@ -203,6 +203,8 @@ pnpm-debug.log*
 models/
 !backend/src/models/
 !backend/src/models/**
+!worker/internal/models/
+!worker/internal/models/**
 checkpoints/
 
 # Data files
