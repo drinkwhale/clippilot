@@ -177,7 +177,7 @@
 
 ### Backend Implementation (US2)
 
-- [ ] T081 [US2] Implement MediaService for Pexels API in backend/src/core/media/pexels_service.py (스톡 영상/이미지 검색, FR-003)
+- [x] T081 [US2] Implement MediaService for Pexels API in backend/src/core/media/pexels_service.py (스톡 영상/이미지 검색, FR-003)
 - [ ] T082 [US2] Implement Celery task for render request in backend/src/workers/render.py (Redis 큐에 렌더링 작업 전송)
 - [ ] T083 [US2] Implement Celery task for YouTube upload in backend/src/workers/upload.py (YouTube Data API 업로드, FR-005)
 - [ ] T084 [US2] Implement /jobs/{id}/retry POST endpoint in backend/src/api/v1/jobs.py (FR-011, FR-029)
