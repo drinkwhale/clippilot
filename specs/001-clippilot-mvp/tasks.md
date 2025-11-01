@@ -189,15 +189,15 @@
 ### Worker Implementation (US2)
 
 - [x] T089 [P] [US2] Create rendering job model in worker/internal/models/render_job.go
-- [ ] T090 [US2] Implement Redis queue consumer in worker/cmd/worker/main.go (listen to render_queue)
-- [ ] T091 [US2] Implement video composition logic in worker/internal/renderer/composer.go (FFmpeg 명령어 생성)
-- [ ] T092 [US2] Implement subtitle overlay in worker/internal/renderer/subtitle.go (SRT → FFmpeg filter)
-- [ ] T093 [US2] Implement intro/outro merging in worker/internal/renderer/intro_outro.go
-- [ ] T094 [US2] Implement watermark overlay in worker/internal/renderer/watermark.go
-- [ ] T095 [US2] Implement progress tracking in worker/internal/renderer/progress.go (stderr 파싱, FR-020)
-- [ ] T096 [US2] Upload rendered video to Supabase Storage in worker/internal/storage/uploader.go
-- [ ] T097 [US2] Add timeout handling (3-minute limit) in worker/internal/renderer/composer.go (NFR-002)
-- [ ] T098 [US2] Add error logging and Sentry integration in worker/internal/renderer/error_handler.go
+- [x] T090 [US2] Implement Redis queue consumer in worker/cmd/worker/main.go (listen to render_queue)
+- [x] T091 [US2] Implement video composition logic in worker/internal/renderer/composer.go (FFmpeg 명령어 생성)
+- [x] T092 [US2] Implement subtitle overlay in worker/internal/renderer/subtitle.go (SRT → FFmpeg filter)
+- [x] T093 [US2] Implement intro/outro merging in worker/internal/renderer/intro_outro.go
+- [x] T094 [US2] Implement watermark overlay in worker/internal/renderer/watermark.go
+- [x] T095 [US2] Implement progress tracking in worker/internal/renderer/progress.go (stderr 파싱, FR-020)
+- [x] T096 [US2] Upload rendered video to Supabase Storage in worker/internal/storage/uploader.go
+- [x] T097 [US2] Add timeout handling (3-minute limit) in worker/internal/renderer/composer.go (NFR-002)
+- [x] T098 [US2] Add error logging and Sentry integration in worker/internal/renderer/error_handler.go
 
 ### Frontend Implementation (US2)
 
