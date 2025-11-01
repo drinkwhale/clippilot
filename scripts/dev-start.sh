@@ -23,12 +23,42 @@ echo -e "${BLUE}  ClipPilot 개발 서버 시작${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
-# .env 파일 확인
-check_env_file() {
-    if [ ! -f "$PROJECT_ROOT/.env" ]; then
-        echo -e "${YELLOW}⚠️  .env 파일이 없습니다. .env.example을 복사합니다.${NC}"
-        cp "$PROJECT_ROOT/.env.example" "$PROJECT_ROOT/.env"
-        echo -e "${RED}❌ .env 파일을 수정한 후 다시 실행해주세요.${NC}"
+# .env 파일 확인 (각 서비스별로)
+check_env_files() {
+    local missing_files=0
+
+    # Backend .env 확인
+    if [ ! -f "$PROJECT_ROOT/backend/.env" ]; then
+        echo -e "${YELLOW}⚠️  backend/.env 파일이 없습니다. .env.example을 복사합니다.${NC}"
+        if [ -f "$PROJECT_ROOT/backend/.env.example" ]; then
+            cp "$PROJECT_ROOT/backend/.env.example" "$PROJECT_ROOT/backend/.env"
+            missing_files=1
+        else
+            echo -e "${RED}❌ backend/.env.example 파일이 없습니다.${NC}"
+            exit 1
+        fi
+    fi
+
+    # Frontend .env.local 확인
+    if [ ! -f "$PROJECT_ROOT/frontend/.env.local" ]; then
+        echo -e "${YELLOW}⚠️  frontend/.env.local 파일이 없습니다. .env.local.example을 복사합니다.${NC}"
+        if [ -f "$PROJECT_ROOT/frontend/.env.local.example" ]; then
+            cp "$PROJECT_ROOT/frontend/.env.local.example" "$PROJECT_ROOT/frontend/.env.local"
+            missing_files=1
+        else
+            echo -e "${YELLOW}   Next.js 환경 변수가 필요한 경우 frontend/.env.local을 생성하세요.${NC}"
+        fi
+    fi
+
+    if [ $missing_files -eq 1 ]; then
+        echo -e "${RED}========================================${NC}"
+        echo -e "${RED}  환경 변수 파일을 설정해주세요${NC}"
+        echo -e "${RED}========================================${NC}"
+        echo ""
+        echo -e "${YELLOW}다음 파일들을 확인하고 수정한 후 다시 실행해주세요:${NC}"
+        echo "  • backend/.env (API 키, 데이터베이스 등)"
+        echo "  • frontend/.env.local (선택사항)"
+        echo ""
         exit 1
     fi
 }
@@ -143,7 +173,7 @@ cleanup_old_pids() {
 # 메인 실행
 main() {
     cleanup_old_pids
-    check_env_file
+    check_env_files
     start_redis
     start_backend
     start_frontend

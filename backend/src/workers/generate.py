@@ -8,11 +8,11 @@ import logging
 from decimal import Decimal
 from typing import Dict, Any
 from uuid import UUID
+from dotenv import load_dotenv
 
 from celery import Task
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import select, create_engine
+from sqlalchemy.orm import sessionmaker, Session
 
 from .celery_app import celery_app
 from ..core.ai.script_service import get_script_service
@@ -23,28 +23,32 @@ from ..models.usage_log import UsageLog
 from ..core.exceptions import ContentGenerationError
 import os
 
+# .env 파일 로드
+load_dotenv()
+
 logger = logging.getLogger(__name__)
 
-# Create async engine for worker tasks
+# Supabase PostgreSQL 연결 (psycopg2 사용 - Supabase 권장 방식)
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql+asyncpg://postgres:postgres@localhost:5432/clippilot"
+    "postgresql://postgres:postgres@localhost:5432/clippilot"
 )
 
-async_engine = create_async_engine(DATABASE_URL, echo=False, future=True)
-AsyncSessionLocal = sessionmaker(
-    bind=async_engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
+# 동기 엔진 사용
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+SessionLocal = sessionmaker(
+    bind=engine,
+    autocommit=False,
+    autoflush=False,
 )
 
 
 class ContentGenerationTask(Task):
     """Base task with database session management"""
 
-    async def get_db(self) -> AsyncSession:
+    def get_db(self) -> Session:
         """Get database session"""
-        return AsyncSessionLocal()
+        return SessionLocal()
 
 
 @celery_app.task(

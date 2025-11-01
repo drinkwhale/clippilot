@@ -4,10 +4,13 @@ Database connection and session management for ClipPilot
 
 import os
 from typing import Generator
+from dotenv import load_dotenv
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
+# .env 파일 로드
+load_dotenv()
 
 # Database URL from environment
 DATABASE_URL = os.getenv(

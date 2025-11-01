@@ -154,6 +154,11 @@ class AuthService:
         except AccountExistsError:
             raise
         except Exception as e:
+            import logging
+            import traceback
+            logger = logging.getLogger(__name__)
+            logger.error(f"Signup failed: {str(e)}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
             self.db.rollback()
             raise AuthenticationError(f"회원가입에 실패했습니다: {str(e)}")
 

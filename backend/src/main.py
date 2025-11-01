@@ -2,12 +2,16 @@
 
 import os
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.redis_client import get_redis
 from src.api import router as api_router
+
+# .env 파일 로드
+load_dotenv()
 
 
 @asynccontextmanager

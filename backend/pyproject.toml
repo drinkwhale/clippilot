@@ -23,6 +23,7 @@ dependencies = [
     "email-validator>=2.3.0",
     "supabase>=2.22.4",
     "asyncpg>=0.30.0",
+    "python-dotenv>=1.2.1",
 ]
 
 [tool.black]
