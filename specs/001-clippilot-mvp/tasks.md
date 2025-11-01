@@ -201,12 +201,12 @@
 
 ### Frontend Implementation (US2)
 
-- [ ] T099 [P] [US2] Create Render & Upload button in frontend/src/components/editor/RenderButton.tsx
-- [ ] T100 [P] [US2] Create rendering progress bar in frontend/src/components/dashboard/RenderProgress.tsx (FR-020)
-- [ ] T101 [P] [US2] Create upload settings modal in frontend/src/components/editor/UploadSettingsModal.tsx (channel, privacy, schedule)
-- [ ] T102 [US2] Add error display with retry option in frontend/src/components/dashboard/JobErrorCard.tsx (FR-028, FR-029)
-- [ ] T103 [US2] Add video download button in frontend/src/components/dashboard/JobDetailCard.tsx (FR-029)
-- [ ] T104 [US2] Add YouTube video link after upload in frontend/src/components/dashboard/JobDetailCard.tsx
+- [x] T099 [P] [US2] Create Render & Upload button in frontend/src/components/editor/RenderButton.tsx
+- [x] T100 [P] [US2] Create rendering progress bar in frontend/src/components/dashboard/RenderProgress.tsx (FR-020)
+- [x] T101 [P] [US2] Create upload settings modal in frontend/src/components/editor/UploadSettingsModal.tsx (channel, privacy, schedule)
+- [x] T102 [US2] Add error display with retry option in frontend/src/components/dashboard/JobErrorCard.tsx (FR-028, FR-029)
+- [x] T103 [US2] Add video download button in frontend/src/components/dashboard/JobDetailCard.tsx (FR-029)
+- [x] T104 [US2] Add YouTube video link after upload in frontend/src/components/dashboard/JobDetailCard.tsx
 
 **Checkpoint**: 사용자가 콘텐츠를 영상으로 렌더링하고 YouTube에 업로드할 수 있음 ✅
 
