@@ -50,6 +50,7 @@ def _serialize_channel(channel: Channel) -> ChannelResponse:
     status_code=status.HTTP_302_FOUND,
     summary="YouTube OAuth 시작 (FR-012)",
     description="Google OAuth 인증 페이지로 리디렉션합니다.",
+    response_model=None,
 )
 async def start_youtube_oauth(
     request: Request,

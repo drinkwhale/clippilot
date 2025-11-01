@@ -17,7 +17,7 @@ from ...models.user import User
 from ...models.job import Job, JobStatus
 from ...schemas.job import JobCreate, JobResponse, JobUpdate, JobListResponse
 from ...services.quota_service import get_quota_service
-from ...workers.generate import generate_content
+# from ...workers.generate import generate_content  # TODO: Worker 구현 완료 후 활성화
 from ...core.exceptions import (
     QuotaExceededError,
     ValidationError,
@@ -68,17 +68,18 @@ def create_job(
         logger.info(f"Job created: job_id={job.id}, status={job.status.value}")
 
         # Step 3: Queue Celery task
-        generate_content.apply_async(
-            args=[
-                str(job.id),
-                job.prompt,
-                30,  # Default: 30 seconds (MVP)
-                "informative",  # Default tone (MVP)
-            ],
-            queue="generation",
-        )
+        # TODO: Worker 구현 완료 후 활성화
+        # generate_content.apply_async(
+        #     args=[
+        #         str(job.id),
+        #         job.prompt,
+        #         30,  # Default: 30 seconds (MVP)
+        #         "informative",  # Default tone (MVP)
+        #     ],
+        #     queue="generation",
+        # )
 
-        logger.info(f"Job queued for generation: job_id={job.id}")
+        logger.info(f"Job created (worker queuing disabled for MVP testing): job_id={job.id}")
 
         return job
 

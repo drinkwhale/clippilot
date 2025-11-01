@@ -51,6 +51,9 @@ Thumbs.db
 # Serena MCP Server (local context/memory)
 .serena/
 
+# Playwright MCP Server (browser automation artifacts)
+.playwright-mcp/
+
 # ====================
 # Node.js / Frontend
 # ====================
