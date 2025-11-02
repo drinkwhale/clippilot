@@ -311,8 +311,13 @@ class StripeService:
         subscription.current_period_end = datetime.fromtimestamp(subscription_data["current_period_end"])
         subscription.cancel_at_period_end = subscription_data.get("cancel_at_period_end", False)
 
+        # 구독 취소 처리 (customer.subscription.deleted 또는 status가 canceled)
+        if event_type == "customer.subscription.deleted" or subscription_data["status"] == "canceled":
+            logger.info(f"Subscription canceled for user {user.id}, downgrading to Free plan")
+            subscription.plan = PlanType.FREE.value
+            user.plan = PlanType.FREE.value
         # 플랜 정보 추출 (Stripe Product/Price 메타데이터에서)
-        if subscription_data.get("items") and subscription_data["items"]["data"]:
+        elif subscription_data.get("items") and subscription_data["items"]["data"]:
             price_id = subscription_data["items"]["data"][0]["price"]["id"]
 
             # Price ID로 플랜 매핑
