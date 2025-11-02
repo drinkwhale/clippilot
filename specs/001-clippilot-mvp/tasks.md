@@ -282,9 +282,9 @@
 
 ### Backend Implementation (US7)
 
-- [ ] T135 [US7] Add onboarding_completed field to User model in backend/src/models/user.py
-- [ ] T136 [US7] Implement onboarding status check endpoint /users/me/onboarding GET in backend/src/api/v1/users.py
-- [ ] T137 [US7] Implement onboarding completion endpoint /users/me/onboarding PUT in backend/src/api/v1/users.py (FR-037, FR-038)
+- [x] T135 [US7] Add onboarding_completed field to User model in backend/src/models/user.py
+- [x] T136 [US7] Implement onboarding status check endpoint /users/me/onboarding GET in backend/src/api/v1/users.py
+- [x] T137 [US7] Implement onboarding completion endpoint /users/me/onboarding PUT in backend/src/api/v1/users.py (FR-037, FR-038)
 
 ### Frontend Implementation (US7)
 
