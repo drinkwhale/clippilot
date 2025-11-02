@@ -341,7 +341,21 @@ def retry_job(
             # Retry content generation
             job.status = JobStatus.QUEUED
             db.commit()
-            generate_content.delay(str(job.id))
+            video_length_sec = job.duration_seconds or 30
+            tone = "informative"
+            if job.metadata_json:
+                tone = (
+                    job.metadata_json.get("tone")
+                    or job.metadata_json.get("script_tone")
+                    or tone
+                )
+
+            generate_content.delay(
+                str(job.id),
+                job.prompt,
+                video_length_sec,
+                tone,
+            )
             logger.info(f"Content generation retry queued: job_id={job_id}")
 
         elif not job.video_url:

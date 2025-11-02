@@ -102,3 +102,12 @@ class Job(BaseModel):
 
     def __repr__(self) -> str:
         return f"Job(id={self.id}, user_id={self.user_id}, status={self.status.value}, prompt={self.prompt[:50]}...)"
+
+    @property
+    def srt(self) -> Optional[str]:
+        """Backward-compatible alias for subtitle content."""
+        return self.srt_content
+
+    @srt.setter
+    def srt(self, value: Optional[str]) -> None:
+        self.srt_content = value
