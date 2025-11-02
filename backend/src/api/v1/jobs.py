@@ -8,13 +8,14 @@ from uuid import UUID
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select, func, desc
+from sqlalchemy import select, func, desc, and_, or_
 from sqlalchemy.orm import Session
 
 from ...core.database import get_db
 from ...middleware.auth import get_current_user
 from ...models.user import User
 from ...models.job import Job, JobStatus
+from ...models.template import Template
 from ...schemas.job import JobCreate, JobResponse, JobUpdate, JobListResponse
 from ...services.quota_service import get_quota_service
 # from ...workers.generate import generate_content  # TODO: Worker 구현 완료 후 활성화
@@ -50,11 +51,36 @@ def create_job(
     try:
         logger.info(f"Creating job: user_id={current_user.id}, prompt_length={len(job_data.prompt)}")
 
-        # Step 1: Check quota (FR-008)
+        # Step 1: Validate template_id ownership if provided
+        if job_data.template_id:
+            # Check if template exists and user has access (own template or system default)
+            template_query = select(Template).where(
+                and_(
+                    Template.id == job_data.template_id,
+                    or_(
+                        Template.user_id == current_user.id,
+                        Template.is_system_default == True
+                    )
+                )
+            )
+            template_result = db.execute(template_query)
+            template = template_result.scalar_one_or_none()
+
+            if not template:
+                logger.warning(
+                    f"Invalid template access attempt: user_id={current_user.id}, "
+                    f"template_id={job_data.template_id}"
+                )
+                raise ValidationError(
+                    message="템플릿을 찾을 수 없거나 접근 권한이 없습니다",
+                    details={"template_id": str(job_data.template_id)}
+                )
+
+        # Step 2: Check quota (FR-008)
         quota_service = get_quota_service(db)
         quota_service.validate_quota(current_user.id)
 
-        # Step 2: Create job
+        # Step 3: Create job
         job = Job(
             user_id=current_user.id,
             template_id=job_data.template_id,
@@ -82,6 +108,19 @@ def create_job(
         logger.info(f"Job created (worker queuing disabled for MVP testing): job_id={job.id}")
 
         return job
+
+    except ValidationError as e:
+        logger.warning(f"Validation error: user_id={current_user.id}, {e.message}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error": {
+                    "code": "VALIDATION_ERROR",
+                    "message": e.message,
+                    "details": e.details,
+                }
+            },
+        )
 
     except QuotaExceededError as e:
         logger.warning(f"Quota exceeded: user_id={current_user.id}")
