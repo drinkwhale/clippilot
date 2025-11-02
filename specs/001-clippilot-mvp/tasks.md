@@ -220,23 +220,23 @@
 
 ### Backend Implementation (US3)
 
-- [ ] T105 [P] [US3] Create Template model in backend/src/models/template.py (brand_config_json, is_system_default)
-- [ ] T106 [P] [US3] Create Template schemas in backend/src/schemas/template.py (TemplateCreate, TemplateResponse)
-- [ ] T107 [US3] Implement TemplateService in backend/src/services/template_service.py (CRUD, validation)
-- [ ] T108 [US3] Implement /templates GET endpoint in backend/src/api/v1/templates.py (사용자 + 시스템 기본, FR-031)
-- [ ] T109 [US3] Implement /templates POST endpoint in backend/src/api/v1/templates.py (FR-007, FR-032)
-- [ ] T110 [US3] Implement /templates/{id} PUT endpoint in backend/src/api/v1/templates.py (FR-007)
-- [ ] T111 [US3] Implement /templates/{id} DELETE endpoint in backend/src/api/v1/templates.py (FR-007)
-- [ ] T112 [US3] Seed 3 system default templates in Supabase (리뷰, 뉴스, 교육, FR-031)
+- [x] T105 [P] [US3] Create Template model in backend/src/models/template.py (brand_config_json, is_system_default)
+- [x] T106 [P] [US3] Create Template schemas in backend/src/schemas/template.py (TemplateCreate, TemplateResponse)
+- [x] T107 [US3] Implement TemplateService in backend/src/services/template_service.py (CRUD, validation)
+- [x] T108 [US3] Implement /templates GET endpoint in backend/src/api/v1/templates.py (사용자 + 시스템 기본, FR-031)
+- [x] T109 [US3] Implement /templates POST endpoint in backend/src/api/v1/templates.py (FR-007, FR-032)
+- [x] T110 [US3] Implement /templates/{id} PUT endpoint in backend/src/api/v1/templates.py (FR-007)
+- [x] T111 [US3] Implement /templates/{id} DELETE endpoint in backend/src/api/v1/templates.py (FR-007)
+- [x] T112 [US3] Seed 3 system default templates in Supabase (리뷰, 뉴스, 교육, FR-031)
 
 ### Frontend Implementation (US3)
 
-- [ ] T113 [P] [US3] Create useTemplates hook in frontend/src/lib/hooks/useTemplates.ts
-- [ ] T114 [P] [US3] Create Template List component in frontend/src/components/templates/TemplateList.tsx
-- [ ] T115 [P] [US3] Create Template Editor modal in frontend/src/components/templates/TemplateEditor.tsx
-- [ ] T116 [US3] Create Templates page in frontend/src/app/(dashboard)/templates/page.tsx
-- [ ] T117 [US3] Add template selector to Project Create form in frontend/src/app/(dashboard)/projects/new/page.tsx
-- [ ] T118 [US3] Add template preview in frontend/src/components/templates/TemplatePreview.tsx
+- [x] T113 [P] [US3] Create useTemplates hook in frontend/src/lib/hooks/useTemplates.ts
+- [x] T114 [P] [US3] Create Template List component in frontend/src/components/templates/TemplateList.tsx
+- [x] T115 [P] [US3] Create Template Editor modal in frontend/src/components/templates/TemplateEditor.tsx
+- [x] T116 [US3] Create Templates page in frontend/src/app/(dashboard)/templates/page.tsx
+- [x] T117 [US3] Add template selector to Project Create form in frontend/src/app/(dashboard)/projects/new/page.tsx
+- [x] T118 [US3] Add template preview in frontend/src/components/templates/TemplatePreview.tsx
 
 **Checkpoint**: 사용자가 템플릿을 생성, 저장, 재사용할 수 있음 ✅
 

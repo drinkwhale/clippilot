@@ -92,7 +92,7 @@ class Job(BaseModel):
 
     # Relationships
     user = relationship("User", back_populates="jobs")
-    # template = relationship("Template", back_populates="jobs")  # TODO: Template 모델 구현 필요
+    template = relationship("Template", back_populates="jobs")
     usage_logs = relationship(
         "UsageLog",
         back_populates="job",
