@@ -11,14 +11,24 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { useJobs } from '@/lib/hooks/useJobs'
+import { useTemplates, type Template } from '@/lib/hooks/useTemplates'
 import { useToast } from '@/hooks/use-toast'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function NewProjectPage() {
   const router = useRouter()
   const { toast } = useToast()
   const { createJob, isCreating } = useJobs()
+  const { templates, isLoading: isLoadingTemplates } = useTemplates(true)
 
   const [prompt, setPrompt] = useState('')
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,7 +52,10 @@ export default function NewProjectPage() {
     }
 
     try {
-      const job = await createJob({ prompt: prompt.trim() })
+      const job = await createJob({
+        prompt: prompt.trim(),
+        template_id: selectedTemplateId || undefined,
+      })
 
       toast({
         title: '작업 생성 완료',
@@ -79,6 +92,31 @@ export default function NewProjectPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="template">템플릿 (선택)</Label>
+          <Select
+            value={selectedTemplateId || undefined}
+            onValueChange={(value) => setSelectedTemplateId(value)}
+            disabled={isCreating || isLoadingTemplates}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="템플릿을 선택하세요 (선택사항)" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">템플릿 사용 안 함</SelectItem>
+              {templates.map((template) => (
+                <SelectItem key={template.id} value={template.id}>
+                  {template.name}
+                  {template.is_system_default && ' (시스템 템플릿)'}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-sm text-muted-foreground">
+            템플릿을 선택하면 브랜드 색상 및 폰트가 자동으로 적용됩니다
+          </p>
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="prompt">
             프롬프트 <span className="text-destructive">*</span>

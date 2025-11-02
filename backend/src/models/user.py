@@ -90,8 +90,12 @@ class User(BaseModel):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-    # TODO: Phase 7 (US3) - 템플릿 관리 시 추가
-    # templates = relationship("Template", back_populates="user")
+    templates = relationship(
+        "Template",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     def __repr__(self) -> str:
         return f"User(id={self.id}, email={self.email!r}, plan={self.plan.value})"
