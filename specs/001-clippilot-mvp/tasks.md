@@ -288,10 +288,10 @@
 
 ### Frontend Implementation (US7)
 
-- [ ] T138 [P] [US7] Create OnboardingModal component in frontend/src/components/onboarding/OnboardingModal.tsx
-- [ ] T139 [P] [US7] Create Step 1: Connect YouTube in frontend/src/components/onboarding/Step1ConnectYouTube.tsx
-- [ ] T140 [P] [US7] Create Step 2: Select Template in frontend/src/components/onboarding/Step2SelectTemplate.tsx (기본 템플릿 3개 미리보기)
-- [ ] T141 [P] [US7] Create Step 3: First Project in frontend/src/components/onboarding/Step3FirstProject.tsx (샘플 프롬프트 미리 채움)
+- [x] T138 [P] [US7] Create OnboardingModal component in frontend/src/components/onboarding/OnboardingModal.tsx
+- [x] T139 [P] [US7] Create Step 1: Connect YouTube in frontend/src/components/onboarding/Step1ConnectYouTube.tsx
+- [x] T140 [P] [US7] Create Step 2: Select Template in frontend/src/components/onboarding/Step2SelectTemplate.tsx (기본 템플릿 3개 미리보기)
+- [x] T141 [P] [US7] Create Step 3: First Project in frontend/src/components/onboarding/Step3FirstProject.tsx (샘플 프롬프트 미리 채움)
 - [ ] T142 [US7] Add onboarding trigger on first login in frontend/src/app/(dashboard)/page.tsx
 - [ ] T143 [US7] Add "Skip" and "Restart Onboarding" options in frontend/src/components/onboarding/OnboardingModal.tsx (FR-038)
 
