@@ -208,7 +208,10 @@ class SubscriptionService:
             PlanType.AGENCY.value: 999999  # 무제한
         }
 
+        # user.plan이 enum이면 .value로 변환
         current_plan = user.plan or PlanType.FREE.value
+        if isinstance(current_plan, PlanType):
+            current_plan = current_plan.value
         usage_limit = plan_limits.get(current_plan, 20)
 
         # 이번 달 사용량 조회
