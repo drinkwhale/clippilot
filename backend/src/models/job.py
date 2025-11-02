@@ -8,7 +8,7 @@ from typing import Optional
 from uuid import UUID
 import enum
 
-from sqlalchemy import String, Text, Enum as SQLEnum, ForeignKey, Integer, JSON
+from sqlalchemy import String, Text, Enum as SQLEnum, ForeignKey, Integer, JSON, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
@@ -68,13 +68,19 @@ class Job(BaseModel):
         index=True
     )
     script: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    srt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    srt_content: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     metadata_json: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
 
     # Rendering & Upload
     video_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     thumbnail_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     youtube_video_id: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+
+    # Rendering Timestamps
+    render_started_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    render_completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    upload_started_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    upload_completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     # Error Handling
     error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
@@ -96,3 +102,12 @@ class Job(BaseModel):
 
     def __repr__(self) -> str:
         return f"Job(id={self.id}, user_id={self.user_id}, status={self.status.value}, prompt={self.prompt[:50]}...)"
+
+    @property
+    def srt(self) -> Optional[str]:
+        """Backward-compatible alias for subtitle content."""
+        return self.srt_content
+
+    @srt.setter
+    def srt(self, value: Optional[str]) -> None:
+        self.srt_content = value

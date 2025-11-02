@@ -177,36 +177,36 @@
 
 ### Backend Implementation (US2)
 
-- [ ] T081 [US2] Implement MediaService for Pexels API in backend/src/core/media/pexels_service.py (스톡 영상/이미지 검색, FR-003)
-- [ ] T082 [US2] Implement Celery task for render request in backend/src/workers/render.py (Redis 큐에 렌더링 작업 전송)
-- [ ] T083 [US2] Implement Celery task for YouTube upload in backend/src/workers/upload.py (YouTube Data API 업로드, FR-005)
-- [ ] T084 [US2] Implement /jobs/{id}/retry POST endpoint in backend/src/api/v1/jobs.py (FR-011, FR-029)
-- [ ] T085 [US2] Implement /jobs/{id}/download GET endpoint in backend/src/api/v1/jobs.py (Supabase Storage 리디렉트, FR-029)
-- [ ] T086 [US2] Add retry logic with exponential backoff in backend/src/workers/upload.py (NFR-007, FR-011)
-- [ ] T087 [US2] Add YouTube API quota management in backend/src/core/youtube/youtube_service.py (Edge Case: 할당량 초과)
-- [ ] T088 [US2] Implement upload status tracking (draft/public/scheduled) in backend/src/workers/upload.py (FR-006)
+- [x] T081 [US2] Implement MediaService for Pexels API in backend/src/core/media/pexels_service.py (스톡 영상/이미지 검색, FR-003)
+- [x] T082 [US2] Implement Celery task for render request in backend/src/workers/render.py (Redis 큐에 렌더링 작업 전송)
+- [x] T083 [US2] Implement Celery task for YouTube upload in backend/src/workers/upload.py (YouTube Data API 업로드, FR-005)
+- [x] T084 [US2] Implement /jobs/{id}/retry POST endpoint in backend/src/api/v1/jobs.py (FR-011, FR-029)
+- [x] T085 [US2] Implement /jobs/{id}/download GET endpoint in backend/src/api/v1/jobs.py (Supabase Storage 리디렉트, FR-029)
+- [x] T086 [US2] Add retry logic with exponential backoff in backend/src/workers/upload.py (NFR-007, FR-011)
+- [x] T087 [US2] Add YouTube API quota management in backend/src/core/youtube/youtube_service.py (Edge Case: 할당량 초과)
+- [x] T088 [US2] Implement upload status tracking (draft/public/scheduled) in backend/src/workers/upload.py (FR-006)
 
 ### Worker Implementation (US2)
 
-- [ ] T089 [P] [US2] Create rendering job model in worker/internal/models/render_job.go
-- [ ] T090 [US2] Implement Redis queue consumer in worker/cmd/worker/main.go (listen to render_queue)
-- [ ] T091 [US2] Implement video composition logic in worker/internal/renderer/composer.go (FFmpeg 명령어 생성)
-- [ ] T092 [US2] Implement subtitle overlay in worker/internal/renderer/subtitle.go (SRT → FFmpeg filter)
-- [ ] T093 [US2] Implement intro/outro merging in worker/internal/renderer/intro_outro.go
-- [ ] T094 [US2] Implement watermark overlay in worker/internal/renderer/watermark.go
-- [ ] T095 [US2] Implement progress tracking in worker/internal/renderer/progress.go (stderr 파싱, FR-020)
-- [ ] T096 [US2] Upload rendered video to Supabase Storage in worker/internal/storage/uploader.go
-- [ ] T097 [US2] Add timeout handling (3-minute limit) in worker/internal/renderer/composer.go (NFR-002)
-- [ ] T098 [US2] Add error logging and Sentry integration in worker/internal/renderer/error_handler.go
+- [x] T089 [P] [US2] Create rendering job model in worker/internal/models/render_job.go
+- [x] T090 [US2] Implement Redis queue consumer in worker/cmd/worker/main.go (listen to render_queue)
+- [x] T091 [US2] Implement video composition logic in worker/internal/renderer/composer.go (FFmpeg 명령어 생성)
+- [x] T092 [US2] Implement subtitle overlay in worker/internal/renderer/subtitle.go (SRT → FFmpeg filter)
+- [x] T093 [US2] Implement intro/outro merging in worker/internal/renderer/intro_outro.go
+- [x] T094 [US2] Implement watermark overlay in worker/internal/renderer/watermark.go
+- [x] T095 [US2] Implement progress tracking in worker/internal/renderer/progress.go (stderr 파싱, FR-020)
+- [x] T096 [US2] Upload rendered video to Supabase Storage in worker/internal/storage/uploader.go
+- [x] T097 [US2] Add timeout handling (3-minute limit) in worker/internal/renderer/composer.go (NFR-002)
+- [x] T098 [US2] Add error logging and Sentry integration in worker/internal/renderer/error_handler.go
 
 ### Frontend Implementation (US2)
 
-- [ ] T099 [P] [US2] Create Render & Upload button in frontend/src/components/editor/RenderButton.tsx
-- [ ] T100 [P] [US2] Create rendering progress bar in frontend/src/components/dashboard/RenderProgress.tsx (FR-020)
-- [ ] T101 [P] [US2] Create upload settings modal in frontend/src/components/editor/UploadSettingsModal.tsx (channel, privacy, schedule)
-- [ ] T102 [US2] Add error display with retry option in frontend/src/components/dashboard/JobErrorCard.tsx (FR-028, FR-029)
-- [ ] T103 [US2] Add video download button in frontend/src/components/dashboard/JobDetailCard.tsx (FR-029)
-- [ ] T104 [US2] Add YouTube video link after upload in frontend/src/components/dashboard/JobDetailCard.tsx
+- [x] T099 [P] [US2] Create Render & Upload button in frontend/src/components/editor/RenderButton.tsx
+- [x] T100 [P] [US2] Create rendering progress bar in frontend/src/components/dashboard/RenderProgress.tsx (FR-020)
+- [x] T101 [P] [US2] Create upload settings modal in frontend/src/components/editor/UploadSettingsModal.tsx (channel, privacy, schedule)
+- [x] T102 [US2] Add error display with retry option in frontend/src/components/dashboard/JobErrorCard.tsx (FR-028, FR-029)
+- [x] T103 [US2] Add video download button in frontend/src/components/dashboard/JobDetailCard.tsx (FR-029)
+- [x] T104 [US2] Add YouTube video link after upload in frontend/src/components/dashboard/JobDetailCard.tsx
 
 **Checkpoint**: 사용자가 콘텐츠를 영상으로 렌더링하고 YouTube에 업로드할 수 있음 ✅
 

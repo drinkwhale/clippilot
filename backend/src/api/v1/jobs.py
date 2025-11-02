@@ -282,3 +282,179 @@ def update_job(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={"code": "INTERNAL_ERROR", "message": "작업 수정 중 오류가 발생했습니다"},
         )
+
+
+@router.post("/{job_id}/retry", response_model=JobResponse)
+def retry_job(
+    job_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Retry failed job (FR-011, FR-029)
+
+    Failed 상태의 작업을 재시도합니다.
+    - generating 단계 실패: 콘텐츠 생성 재시도
+    - rendering 단계 실패: 렌더링 재시도
+    - uploading 단계 실패: YouTube 업로드 재시도
+
+    Args:
+        job_id: Job ID
+
+    Returns:
+        JobResponse: 재시도 요청된 Job 정보
+
+    Raises:
+        404: Job not found or not owned by user
+        400: Job is not in failed status or retry limit exceeded
+    """
+    try:
+        logger.info(f"Retrying job: user_id={current_user.id}, job_id={job_id}")
+
+        # Get job
+        stmt = select(Job).where(Job.id == job_id, Job.user_id == current_user.id)
+        result = db.execute(stmt)
+        job = result.scalar_one_or_none()
+
+        if not job:
+            raise ResourceNotFoundError("작업을 찾을 수 없습니다")
+
+        # Check job status
+        if job.status != JobStatus.FAILED:
+            raise ValidationError("실패한 작업만 재시도할 수 있습니다")
+
+        # Check retry limit (FR-011: 최대 3회 재시도)
+        MAX_RETRIES = 3
+        if job.retry_count >= MAX_RETRIES:
+            raise ValidationError(f"재시도 횟수가 초과되었습니다 (최대 {MAX_RETRIES}회)")
+
+        # Increment retry count
+        job.retry_count += 1
+        job.error_message = None
+
+        # Determine retry action based on last failed stage
+        from ...workers.generate import generate_content
+        from ...workers.render import request_render
+        from ...workers.upload import upload_to_youtube
+
+        if not job.script or not job.srt_content:
+            # Retry content generation
+            job.status = JobStatus.QUEUED
+            db.commit()
+            video_length_sec = job.duration_seconds or 30
+            tone = "informative"
+            if job.metadata_json:
+                tone = (
+                    job.metadata_json.get("tone")
+                    or job.metadata_json.get("script_tone")
+                    or tone
+                )
+
+            generate_content.delay(
+                str(job.id),
+                job.prompt,
+                video_length_sec,
+                tone,
+            )
+            logger.info(f"Content generation retry queued: job_id={job_id}")
+
+        elif not job.video_url:
+            # Retry rendering
+            job.status = JobStatus.GENERATING  # Will be updated to RENDERING by render task
+            db.commit()
+            request_render.delay(str(job.id))
+            logger.info(f"Rendering retry queued: job_id={job_id}")
+
+        elif not job.youtube_video_id:
+            # Retry YouTube upload
+            # Need to get channel_id from user's channels
+            from ...models.channel import Channel
+            stmt = select(Channel).where(Channel.user_id == current_user.id)
+            result = db.execute(stmt)
+            channel = result.scalar_one_or_none()
+
+            if not channel:
+                raise ValidationError("YouTube 채널이 연결되어 있지 않습니다")
+
+            job.status = JobStatus.COMPLETED  # Will be updated to UPLOADING by upload task
+            db.commit()
+            upload_to_youtube.delay(str(job.id), str(channel.id))
+            logger.info(f"Upload retry queued: job_id={job_id}")
+
+        else:
+            # Unknown failure state
+            raise ValidationError("재시도할 수 없는 작업 상태입니다")
+
+        db.refresh(job)
+        return job
+
+    except (ResourceNotFoundError, ValidationError) as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST if isinstance(e, ValidationError) else status.HTTP_404_NOT_FOUND,
+            detail={"code": e.code, "message": e.message},
+        )
+
+    except Exception as e:
+        logger.error(f"Job retry failed: job_id={job_id}", exc_info=True)
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"code": "INTERNAL_ERROR", "message": "작업 재시도 중 오류가 발생했습니다"},
+        )
+
+
+@router.get("/{job_id}/download")
+def download_job_video(
+    job_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Download job video (FR-029)
+
+    완료된 작업의 영상을 다운로드합니다.
+    Supabase Storage URL로 리디렉트합니다.
+
+    Args:
+        job_id: Job ID
+
+    Returns:
+        Redirect to Supabase Storage video URL
+
+    Raises:
+        404: Job not found or not owned by user
+        400: Job has no video URL
+    """
+    from fastapi.responses import RedirectResponse
+
+    try:
+        logger.info(f"Downloading job video: user_id={current_user.id}, job_id={job_id}")
+
+        # Get job
+        stmt = select(Job).where(Job.id == job_id, Job.user_id == current_user.id)
+        result = db.execute(stmt)
+        job = result.scalar_one_or_none()
+
+        if not job:
+            raise ResourceNotFoundError("작업을 찾을 수 없습니다")
+
+        # Check video URL
+        if not job.video_url:
+            raise ValidationError("작업에 영상이 없습니다")
+
+        # Redirect to Supabase Storage URL
+        logger.info(f"Redirecting to video URL: job_id={job_id}")
+        return RedirectResponse(url=job.video_url)
+
+    except (ResourceNotFoundError, ValidationError) as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST if isinstance(e, ValidationError) else status.HTTP_404_NOT_FOUND,
+            detail={"code": e.code, "message": e.message},
+        )
+
+    except Exception as e:
+        logger.error(f"Job download failed: job_id={job_id}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"code": "INTERNAL_ERROR", "message": "영상 다운로드 중 오류가 발생했습니다"},
+        )
