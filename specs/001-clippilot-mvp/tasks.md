@@ -250,25 +250,25 @@
 
 ### Backend Implementation (US4)
 
-- [ ] T119 [P] [US4] Create Webhook model in backend/src/models/webhook.py (type, provider, payload_json)
-- [ ] T120 [P] [US4] Create billing schemas in backend/src/schemas/billing.py (CheckoutRequest, SubscriptionResponse)
-- [ ] T121 [US4] Implement StripeService in backend/src/core/billing/stripe_service.py (checkout, webhook)
-- [ ] T122 [US4] Implement /billing/checkout POST endpoint in backend/src/api/v1/billing.py (FR-009, FR-017)
-- [ ] T123 [US4] Implement /billing/portal POST endpoint in backend/src/api/v1/billing.py (Customer Portal)
-- [ ] T124 [US4] Implement /billing/subscription GET endpoint in backend/src/api/v1/billing.py
-- [ ] T125 [US4] Implement /billing/webhook POST endpoint in backend/src/api/v1/billing.py (signature 검증, FR-017)
-- [ ] T126 [US4] Add subscription status sync logic in backend/src/services/subscription_service.py (webhook 처리)
-- [ ] T127 [US4] Add plan upgrade immediate activation in backend/src/services/subscription_service.py (FR-009)
-- [ ] T128 [US4] Add plan downgrade at period end in backend/src/services/subscription_service.py (FR-009)
+- [x] T119 [P] [US4] Create Webhook model in backend/src/models/webhook.py (type, provider, payload_json)
+- [x] T120 [P] [US4] Create billing schemas in backend/src/schemas/billing.py (CheckoutRequest, SubscriptionResponse)
+- [x] T121 [US4] Implement StripeService in backend/src/core/billing/stripe_service.py (checkout, webhook)
+- [x] T122 [US4] Implement /billing/checkout POST endpoint in backend/src/api/v1/billing.py (FR-009, FR-017)
+- [x] T123 [US4] Implement /billing/portal POST endpoint in backend/src/api/v1/billing.py (Customer Portal)
+- [x] T124 [US4] Implement /billing/subscription GET endpoint in backend/src/api/v1/billing.py
+- [x] T125 [US4] Implement /billing/webhook POST endpoint in backend/src/api/v1/billing.py (signature 검증, FR-017)
+- [x] T126 [US4] Add subscription status sync logic in backend/src/services/subscription_service.py (webhook 처리)
+- [x] T127 [US4] Add plan upgrade immediate activation in backend/src/services/subscription_service.py (FR-009)
+- [x] T128 [US4] Add plan downgrade at period end in backend/src/services/subscription_service.py (FR-009)
 
 ### Frontend Implementation (US4)
 
-- [ ] T129 [P] [US4] Create useSubscription hook in frontend/src/lib/hooks/useSubscription.ts
-- [ ] T130 [P] [US4] Create Pricing cards in frontend/src/components/billing/PricingCards.tsx
-- [ ] T131 [P] [US4] Create Subscription status card in frontend/src/components/dashboard/SubscriptionCard.tsx
-- [ ] T132 [US4] Create Billing settings page in frontend/src/app/(dashboard)/settings/billing/page.tsx
-- [ ] T133 [US4] Add upgrade CTA when quota exceeded in frontend/src/components/dashboard/QuotaWarning.tsx (FR-008)
-- [ ] T134 [US4] Add plan cancellation UI in frontend/src/app/(dashboard)/settings/billing/page.tsx
+- [x] T129 [P] [US4] Create useSubscription hook in frontend/src/lib/hooks/useSubscription.ts
+- [x] T130 [P] [US4] Create Pricing cards in frontend/src/components/billing/PricingCards.tsx
+- [x] T131 [P] [US4] Create Subscription status card in frontend/src/components/dashboard/SubscriptionCard.tsx
+- [x] T132 [US4] Create Billing settings page in frontend/src/app/(dashboard)/settings/billing/page.tsx
+- [x] T133 [US4] Add upgrade CTA when quota exceeded in frontend/src/components/dashboard/QuotaWarning.tsx (FR-008)
+- [x] T134 [US4] Add plan cancellation UI in frontend/src/app/(dashboard)/settings/billing/page.tsx
 
 **Checkpoint**: 사용자가 플랜을 업그레이드, 변경, 해지할 수 있음 ✅
 
