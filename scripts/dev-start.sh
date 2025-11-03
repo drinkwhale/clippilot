@@ -136,6 +136,21 @@ start_celery() {
 
     cd "$PROJECT_ROOT/backend"
 
+    # Celery 바이너리 확인
+    if [ ! -f ".venv/bin/celery" ]; then
+        echo -e "${YELLOW}⚠️  Celery가 설치되어 있지 않습니다. 스킵합니다.${NC}"
+        echo -e "${YELLOW}   설치: cd backend && uv sync${NC}"
+        echo ""
+        return
+    fi
+
+    # src.workers.celery_app 모듈 확인
+    if [ ! -f "src/workers/celery_app.py" ]; then
+        echo -e "${YELLOW}⚠️  Celery Worker 소스 코드가 없습니다. 스킵합니다.${NC}"
+        echo ""
+        return
+    fi
+
     # Celery Worker 백그라운드 실행
     echo -e "${YELLOW}Celery Worker를 백그라운드로 실행합니다...${NC}"
     nohup .venv/bin/celery -A src.workers.celery_app worker --loglevel=info \
