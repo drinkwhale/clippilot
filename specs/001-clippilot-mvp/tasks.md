@@ -307,20 +307,20 @@
 
 ### Backend Implementation (US5)
 
-- [ ] T144 [US5] Implement MetricsService in backend/src/services/metrics_service.py (통계 집계 로직)
-- [ ] T145 [US5] Implement /metrics/dashboard GET endpoint in backend/src/api/v1/metrics.py (7d/30d/90d, FR-015)
-- [ ] T146 [US5] Implement /metrics/usage GET endpoint in backend/src/api/v1/metrics.py (월간 사용량, FR-033, FR-034)
-- [ ] T147 [US5] Add usage alert logic (80% → 배너, 100% → 이메일) in backend/src/services/alert_service.py (FR-033, FR-034)
+- [x] T144 [US5] Implement MetricsService in backend/src/services/metrics_service.py (통계 집계 로직)
+- [x] T145 [US5] Implement /metrics/dashboard GET endpoint in backend/src/api/v1/metrics.py (7d/30d/90d, FR-015)
+- [x] T146 [US5] Implement /metrics/usage GET endpoint in backend/src/api/v1/metrics.py (월간 사용량, FR-033, FR-034)
+- [x] T147 [US5] Add usage alert logic (80% → 배너, 100% → 이메일) in backend/src/services/alert_service.py (FR-033, FR-034)
 
 ### Frontend Implementation (US5)
 
-- [ ] T148 [P] [US5] Create useMetrics hook in frontend/src/lib/hooks/useMetrics.ts
-- [ ] T149 [P] [US5] Create Dashboard Stats cards in frontend/src/components/dashboard/StatsCards.tsx (총 생성, 성공률, 평균 시간)
-- [ ] T150 [P] [US5] Create Usage chart in frontend/src/components/dashboard/UsageChart.tsx (최근 30일)
-- [ ] T151 [P] [US5] Create Job History table in frontend/src/components/dashboard/JobHistoryTable.tsx (상세 정보)
-- [ ] T152 [US5] Create main Dashboard page in frontend/src/app/(dashboard)/page.tsx (위젯 조합)
-- [ ] T153 [US5] Add 80% usage banner in frontend/src/components/dashboard/UsageBanner.tsx (FR-033)
-- [ ] T154 [US5] Add channel filter for Agency users in frontend/src/components/dashboard/ChannelFilter.tsx
+- [x] T148 [P] [US5] Create useMetrics hook in frontend/src/lib/hooks/useMetrics.ts
+- [x] T149 [P] [US5] Create Dashboard Stats cards in frontend/src/components/dashboard/StatsCards.tsx (총 생성, 성공률, 평균 시간)
+- [x] T150 [P] [US5] Create Usage chart in frontend/src/components/dashboard/UsageChart.tsx (최근 30일)
+- [x] T151 [P] [US5] Create Job History table in frontend/src/components/dashboard/JobHistoryTable.tsx (상세 정보)
+- [x] T152 [US5] Create main Dashboard page in frontend/src/app/(dashboard)/page.tsx (위젯 조합)
+- [x] T153 [US5] Add 80% usage banner in frontend/src/components/dashboard/UsageBanner.tsx (FR-033)
+- [x] T154 [US5] Add channel filter for Agency users in frontend/src/components/dashboard/ChannelFilter.tsx
 
 **Checkpoint**: 사용자가 대시보드에서 모든 통계를 확인할 수 있음 ✅
 
