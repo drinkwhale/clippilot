@@ -2,7 +2,7 @@
 
 AI 숏폼 비디오 자동 생성 & YouTube 업로드 SaaS 플랫폼
 
-Auto-generated from all feature plans. Last updated: 2025-10-27
+Auto-generated from all feature plans. Last updated: 2025-11-03
 
 ---
 
@@ -12,9 +12,11 @@ TypeScript/Next.js, Python/FastAPI, Go로 만든 AI 기반 숏폼 비디오 자�
 
 ## 2. 현재 최우선 목표 (Current Goal)
 
-**MVP 개발**: Setup → Foundational → US0 → US6 → US1 → US2 (104 tasks)
-- Phase 2 (Foundational Infrastructure) 완료: 인증, 오류 처리, 로깅, 속도 제한 등 공통 인프라
-- Phase 3 (US0 Authentication) 시작 예정
+**MVP 개발**: Setup ✅ → Foundational ✅ → US0 ✅ → US6 🔜 → US1 🔜 → US2 🔜 (104 tasks)
+- Phase 1 (Setup) 완료: 프로젝트 구조, 의존성 설치, Docker 설정 ✅
+- Phase 2 (Foundational Infrastructure) 완료: 인증, 오류 처리, 로깅, 속도 제한 등 공통 인프라 ✅
+- Phase 3 (US0 Authentication) 완료: 회원가입, 로그인, 비밀번호 재설정, 인증 미들웨어 ✅
+- **다음 작업**: Phase 4 (US6 YouTube OAuth) - YouTube 채널 연동 및 OAuth 인증 구현 🔜
 
 ## 3. 기술 스택 (Tech Stack)
 
@@ -342,9 +344,12 @@ gofmt -w .                 # 코드 포맷팅
 
 ## Recent Changes
 
+- 2025-11-03: README.md 파일들 업데이트 (루트, frontend, backend, worker, specs)
+- 2025-11-03: Phase 3 (US0 Authentication) 완료 - 인증 시스템 구현
+- 2025-11-02: Phase 2 (Foundational Infrastructure) 완료 - 공통 인프라 구축
+- 2025-10-29: Phase 1 (Setup) 완료 - 프로젝트 초기 설정
 - 2025-10-27: 001-clippilot-mvp 브랜치 생성 및 전체 스펙 문서 완료
 - 2025-10-27: spec.md, plan.md, research.md, data-model.md, tasks.md, api-v1.yaml 생성
-- 2025-10-27: README.md 추가 및 CLAUDE.md 업데이트
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

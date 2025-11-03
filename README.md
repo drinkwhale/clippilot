@@ -237,11 +237,13 @@ SUPABASE_SERVICE_KEY=eyJxxx...
 - ✅ Backend API (포트 8000)
 - ✅ Frontend (포트 3000)
 
-**테스트 가능한 기능 (Phase 3 완료):**
+**테스트 가능한 기능 (Phase 3 완료 - US0 Authentication):**
 - ✅ 회원가입: http://localhost:3000/signup
 - ✅ 로그인: http://localhost:3000/login
-- ✅ 대시보드: http://localhost:3000/dashboard
+- ✅ 대시보드: http://localhost:3000/dashboard (인증 보호)
+- ✅ 비밀번호 재설정: http://localhost:3000/reset-password
 - ✅ API 문서: http://localhost:8000/docs
+- ✅ 인증 미들웨어: JWT 기반 보호, 로그인 실패 제한 (3회)
 
 상세한 사용법은 [scripts/README.md](scripts/README.md)를 참고하세요.
 
@@ -376,19 +378,19 @@ go test ./...
 
 ### MVP (Phase 1-6) - 104 tasks
 
-- [x] Setup (Phase 1)
-- [ ] Foundational Infrastructure (Phase 2) ⚠️ **CRITICAL BLOCKER**
-- [ ] Authentication (Phase 3) - P0
-- [ ] YouTube OAuth (Phase 4) - P0
-- [ ] Content Generation (Phase 5) - P0 **MVP CORE**
-- [ ] Rendering & Upload (Phase 6) - P0 **MVP CORE**
+- [x] Setup (Phase 1) ✅ **완료**
+- [x] Foundational Infrastructure (Phase 2) ✅ **완료**
+- [x] Authentication (Phase 3 - US0) ✅ **완료** - P0
+- [ ] YouTube OAuth (Phase 4 - US6) - P0
+- [ ] Content Generation (Phase 5 - US1) - P0 **MVP CORE**
+- [ ] Rendering & Upload (Phase 6 - US2) - P0 **MVP CORE**
 
 ### Post-MVP (Phase 7-11)
 
-- [ ] Brand Templates (Phase 7) - P1
-- [ ] Billing & Subscriptions (Phase 8) - P1
-- [ ] User Onboarding (Phase 9) - P1
-- [ ] Dashboard & Analytics (Phase 10) - P2
+- [ ] Brand Templates (Phase 7 - US3) - P1
+- [ ] Billing & Subscriptions (Phase 8 - US4) - P1
+- [ ] User Onboarding (Phase 9 - US7) - P1
+- [ ] Dashboard & Analytics (Phase 10 - US5) - P2
 - [ ] Polish & Optimization (Phase 11)
 
 자세한 태스크 목록은 [tasks.md](specs/001-clippilot-mvp/tasks.md)를 참고하세요.
