@@ -5,6 +5,7 @@
 """
 from pydantic_settings import BaseSettings
 from typing import Optional
+from pydantic import field_validator
 
 
 class Settings(BaseSettings):
@@ -20,11 +21,11 @@ class Settings(BaseSettings):
 
     # Supabase 설정
     SUPABASE_URL: str
-    SUPABASE_KEY: str
+    SUPABASE_KEY: Optional[str] = None
     SUPABASE_SERVICE_ROLE_KEY: str
 
-    # JWT 설정
-    JWT_SECRET: str
+    # JWT 설정 (개발 환경용 기본값)
+    JWT_SECRET: str = "dev-secret-key-change-in-production"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
@@ -39,29 +40,39 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str
     OPENAI_MODEL: str = "gpt-4o"
 
-    # YouTube API 설정
-    YOUTUBE_CLIENT_ID: str
-    YOUTUBE_CLIENT_SECRET: str
-    YOUTUBE_REDIRECT_URI: str
+    # YouTube API 설정 (개발 환경용 기본값)
+    YOUTUBE_CLIENT_ID: str = "placeholder-client-id"
+    YOUTUBE_CLIENT_SECRET: str = "placeholder-secret"
+    YOUTUBE_REDIRECT_URI: str = "http://localhost:3000/api/auth/callback/youtube"
 
-    # Pexels API 설정
-    PEXELS_API_KEY: str
+    # Pexels API 설정 (개발 환경용 기본값)
+    PEXELS_API_KEY: str = "placeholder-pexels-key"
 
-    # Stripe 설정
-    STRIPE_SECRET_KEY: str
-    STRIPE_PUBLISHABLE_KEY: str
-    STRIPE_WEBHOOK_SECRET: str
-    STRIPE_PRO_PRICE_ID: str
-    STRIPE_AGENCY_PRICE_ID: str
+    # Stripe 설정 (개발 환경용 기본값)
+    STRIPE_SECRET_KEY: str = "sk_test_placeholder"
+    STRIPE_PUBLISHABLE_KEY: str = "pk_test_placeholder"
+    STRIPE_WEBHOOK_SECRET: str = "whsec_placeholder"
+    STRIPE_PRO_PRICE_ID: str = "price_placeholder_pro"
+    STRIPE_AGENCY_PRICE_ID: str = "price_placeholder_agency"
 
     # CORS 설정
-    CORS_ORIGINS: list = ["http://localhost:3000"]
+    CORS_ORIGINS: str = "http://localhost:3000"
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        """CORS_ORIGINS를 리스트로 반환"""
+        if isinstance(self.CORS_ORIGINS, str):
+            return [origin.strip() for origin in self.CORS_ORIGINS.split(",")]
+        return self.CORS_ORIGINS if isinstance(self.CORS_ORIGINS, list) else [self.CORS_ORIGINS]
 
     # Sentry 설정 (선택적)
     SENTRY_DSN: Optional[str] = None
 
     # Rate Limiting (NFR-017)
     RATE_LIMIT_PER_MINUTE: int = 60
+
+    # Environment
+    PYTHON_ENV: str = "development"
 
     class Config:
         env_file = ".env"

@@ -177,6 +177,16 @@ start_celery() {
 start_worker() {
     echo -e "${BLUE}[4/5] Go Rendering Worker 실행...${NC}"
 
+    # Go가 설치되어 있는지 확인
+    if ! command -v go &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Go가 설치되어 있지 않습니다. Worker를 스킵합니다.${NC}"
+        echo -e "${YELLOW}   설치 방법:${NC}"
+        echo "  macOS: brew install go"
+        echo "  Ubuntu: sudo apt install golang-go"
+        echo ""
+        return
+    fi
+
     cd "$PROJECT_ROOT/worker"
 
     # Go 바이너리 확인

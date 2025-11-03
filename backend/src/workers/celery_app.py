@@ -16,7 +16,7 @@ celery_app = Celery(
     "clippilot",
     broker=REDIS_URL,
     backend=REDIS_URL,
-    include=["src.workers.tasks"],
+    include=["src.workers.generate", "src.workers.render", "src.workers.upload"],
 )
 
 # Celery configuration
@@ -47,8 +47,9 @@ celery_app.conf.update(
     ),
     # Task routing
     task_routes={
-        "src.workers.tasks.generate_content": {"queue": "generation"},
-        "src.workers.tasks.process_rendering": {"queue": "rendering"},
+        "generate_content": {"queue": "generation"},
+        "workers.render.*": {"queue": "rendering"},
+        "workers.upload.*": {"queue": "default"},
     },
     # Monitoring
     task_send_sent_event=True,
