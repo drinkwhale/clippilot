@@ -42,6 +42,56 @@ stop_backend() {
     fi
 }
 
+# Celery Worker 종료
+stop_celery() {
+    echo -e "${YELLOW}Celery Worker 종료 중...${NC}"
+
+    if [ -f "$LOG_DIR/celery.pid" ]; then
+        CELERY_PID=$(cat "$LOG_DIR/celery.pid")
+        if kill -0 $CELERY_PID 2>/dev/null; then
+            kill $CELERY_PID
+            echo -e "${GREEN}✓ Celery Worker 종료 완료 (PID: $CELERY_PID)${NC}"
+        else
+            echo -e "${YELLOW}⚠️  Celery Worker가 이미 종료되어 있습니다.${NC}"
+        fi
+        rm -f "$LOG_DIR/celery.pid"
+    else
+        # PID 파일이 없으면 프로세스명으로 찾아서 종료
+        CELERY_PIDS=$(pgrep -f "celery.*worker")
+        if [ ! -z "$CELERY_PIDS" ]; then
+            echo "$CELERY_PIDS" | xargs kill 2>/dev/null
+            echo -e "${GREEN}✓ Celery Worker 종료 완료${NC}"
+        else
+            echo -e "${YELLOW}⚠️  실행 중인 Celery Worker를 찾을 수 없습니다.${NC}"
+        fi
+    fi
+}
+
+# Go Rendering Worker 종료
+stop_worker() {
+    echo -e "${YELLOW}Go Rendering Worker 종료 중...${NC}"
+
+    if [ -f "$LOG_DIR/worker.pid" ]; then
+        WORKER_PID=$(cat "$LOG_DIR/worker.pid")
+        if kill -0 $WORKER_PID 2>/dev/null; then
+            kill $WORKER_PID
+            echo -e "${GREEN}✓ Go Rendering Worker 종료 완료 (PID: $WORKER_PID)${NC}"
+        else
+            echo -e "${YELLOW}⚠️  Go Rendering Worker가 이미 종료되어 있습니다.${NC}"
+        fi
+        rm -f "$LOG_DIR/worker.pid"
+    else
+        # PID 파일이 없으면 프로세스명으로 찾아서 종료
+        WORKER_PIDS=$(pgrep -f "go run cmd/worker/main.go")
+        if [ ! -z "$WORKER_PIDS" ]; then
+            echo "$WORKER_PIDS" | xargs kill 2>/dev/null
+            echo -e "${GREEN}✓ Go Rendering Worker 종료 완료${NC}"
+        else
+            echo -e "${YELLOW}⚠️  실행 중인 Go Rendering Worker를 찾을 수 없습니다.${NC}"
+        fi
+    fi
+}
+
 # Frontend 종료
 stop_frontend() {
     echo -e "${YELLOW}Frontend 종료 중...${NC}"
@@ -90,6 +140,8 @@ stop_redis() {
 # 메인 실행
 main() {
     stop_backend
+    stop_celery
+    stop_worker
     stop_frontend
 
     # Redis 종료 여부 선택

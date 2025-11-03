@@ -32,12 +32,14 @@ usage() {
     echo -e "${GREEN}서비스 옵션:${NC}"
     echo "  backend   - Backend API 로그"
     echo "  frontend  - Frontend 로그"
+    echo "  celery    - Celery Worker 로그"
+    echo "  worker    - Go Rendering Worker 로그"
     echo "  redis     - Redis 로그"
     echo "  all       - 모든 로그 (기본값)"
     echo ""
     echo -e "${GREEN}예시:${NC}"
     echo "  ./scripts/dev-logs.sh backend"
-    echo "  ./scripts/dev-logs.sh frontend"
+    echo "  ./scripts/dev-logs.sh celery"
     echo "  ./scripts/dev-logs.sh all"
 }
 
@@ -69,6 +71,22 @@ show_frontend_logs() {
     fi
 }
 
+# Celery 로그
+show_celery_logs() {
+    echo -e "${BLUE}=== Celery Worker 로그 ===${NC}"
+    if check_log_exists "$LOG_DIR/celery.log" "Celery"; then
+        tail -f "$LOG_DIR/celery.log"
+    fi
+}
+
+# Go Rendering Worker 로그
+show_worker_logs() {
+    echo -e "${BLUE}=== Go Rendering Worker 로그 ===${NC}"
+    if check_log_exists "$LOG_DIR/worker.log" "Worker"; then
+        tail -f "$LOG_DIR/worker.log"
+    fi
+}
+
 # Redis 로그
 show_redis_logs() {
     echo -e "${BLUE}=== Redis 로그 ===${NC}"
@@ -83,20 +101,35 @@ show_all_logs() {
     echo -e "${YELLOW}Tip: Ctrl+C로 종료${NC}"
     echo ""
 
+    # 존재하는 로그 파일만 선택
+    LOG_FILES=()
+    [ -f "$LOG_DIR/backend.log" ] && LOG_FILES+=("$LOG_DIR/backend.log")
+    [ -f "$LOG_DIR/frontend.log" ] && LOG_FILES+=("$LOG_DIR/frontend.log")
+    [ -f "$LOG_DIR/celery.log" ] && LOG_FILES+=("$LOG_DIR/celery.log")
+    [ -f "$LOG_DIR/worker.log" ] && LOG_FILES+=("$LOG_DIR/worker.log")
+    [ -f "$LOG_DIR/redis.log" ] && LOG_FILES+=("$LOG_DIR/redis.log")
+
+    if [ ${#LOG_FILES[@]} -eq 0 ]; then
+        echo -e "${YELLOW}⚠️  표시할 로그 파일이 없습니다.${NC}"
+        echo -e "${YELLOW}서버를 먼저 실행해주세요: ./scripts/dev-start.sh${NC}"
+        exit 1
+    fi
+
     # tmux나 multitail이 없으면 기본 tail 사용
     if command -v multitail &> /dev/null; then
-        multitail \
-            -l "tail -f $LOG_DIR/backend.log" \
-            -l "tail -f $LOG_DIR/frontend.log" \
-            -l "tail -f $LOG_DIR/redis.log"
+        # multitail 사용 (각 로그에 레이블 추가)
+        MULTITAIL_ARGS=()
+        for log_file in "${LOG_FILES[@]}"; do
+            MULTITAIL_ARGS+=(-l "tail -f $log_file")
+        done
+        multitail "${MULTITAIL_ARGS[@]}"
     else
         echo -e "${YELLOW}⚠️  multitail이 설치되어 있지 않아 순차적으로 표시합니다.${NC}"
-        echo -e "${YELLOW}설치: brew install multitail (macOS)${NC}"
+        echo -e "${YELLOW}설치: brew install multitail (macOS) | apt install multitail (Ubuntu)${NC}"
         echo ""
 
-        tail -f "$LOG_DIR/backend.log" \
-               "$LOG_DIR/frontend.log" \
-               "$LOG_DIR/redis.log"
+        # 기본 tail로 모든 로그 표시
+        tail -f "${LOG_FILES[@]}"
     fi
 }
 
@@ -110,6 +143,12 @@ main() {
             ;;
         frontend)
             show_frontend_logs
+            ;;
+        celery)
+            show_celery_logs
+            ;;
+        worker)
+            show_worker_logs
             ;;
         redis)
             show_redis_logs
