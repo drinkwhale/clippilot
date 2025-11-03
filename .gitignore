@@ -165,6 +165,9 @@ database.json
 *.pgsql
 *.dump
 
+# Redis
+dump.rdb
+
 # ====================
 # API Keys & Secrets
 # ====================
