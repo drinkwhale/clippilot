@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ClipPilot 개발 서버 통합 실행 스크립트
-# Phase 3 완료 상태 기준 (Backend + Frontend)
+# Phase 10 완료 상태 기준 (Backend + Frontend + Celery + Worker)
 
 set -e  # 에러 발생 시 스크립트 중단
 
@@ -65,7 +65,7 @@ check_env_files() {
 
 # Redis 확인 및 실행
 start_redis() {
-    echo -e "${BLUE}[1/3] Redis 상태 확인...${NC}"
+    echo -e "${BLUE}[1/5] Redis 상태 확인...${NC}"
 
     # Redis 실행 여부 확인
     if lsof -Pi :6379 -sTCP:LISTEN -t >/dev/null 2>&1 ; then
@@ -96,7 +96,7 @@ start_redis() {
 
 # Backend API 실행
 start_backend() {
-    echo -e "${BLUE}[2/3] Backend API 실행...${NC}"
+    echo -e "${BLUE}[2/5] Backend API 실행...${NC}"
 
     cd "$PROJECT_ROOT/backend"
 
@@ -108,8 +108,7 @@ start_backend() {
 
     # 백그라운드로 실행
     echo -e "${YELLOW}FastAPI 서버를 백그라운드로 실행합니다...${NC}"
-    source .venv/bin/activate
-    nohup uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload \
+    nohup .venv/bin/uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload \
         > "$LOG_DIR/backend.log" 2>&1 &
     BACKEND_PID=$!
 
@@ -131,9 +130,71 @@ start_backend() {
     echo ""
 }
 
+# Celery Worker 실행
+start_celery() {
+    echo -e "${BLUE}[3/5] Celery Worker 실행...${NC}"
+
+    cd "$PROJECT_ROOT/backend"
+
+    # Celery Worker 백그라운드 실행
+    echo -e "${YELLOW}Celery Worker를 백그라운드로 실행합니다...${NC}"
+    nohup .venv/bin/celery -A src.workers.celery_app worker --loglevel=info \
+        > "$LOG_DIR/celery.log" 2>&1 &
+    CELERY_PID=$!
+
+    # PID 저장
+    echo $CELERY_PID > "$LOG_DIR/celery.pid"
+
+    # Worker 시작 대기
+    sleep 3
+
+    if kill -0 $CELERY_PID 2>/dev/null; then
+        echo -e "${GREEN}✓ Celery Worker 실행 완료 (PID: $CELERY_PID)${NC}"
+    else
+        echo -e "${RED}❌ Celery Worker 실행 실패. 로그를 확인하세요:${NC}"
+        echo "  tail -f $LOG_DIR/celery.log"
+        # Celery 실패는 치명적이지 않으므로 계속 진행
+    fi
+    echo ""
+}
+
+# Go Rendering Worker 실행
+start_worker() {
+    echo -e "${BLUE}[4/5] Go Rendering Worker 실행...${NC}"
+
+    cd "$PROJECT_ROOT/worker"
+
+    # Go 바이너리 확인
+    if [ ! -f "cmd/worker/main.go" ]; then
+        echo -e "${YELLOW}⚠️  Worker 소스 코드가 없습니다. 스킵합니다.${NC}"
+        echo ""
+        return
+    fi
+
+    # Go Worker 백그라운드 실행
+    echo -e "${YELLOW}Go Rendering Worker를 백그라운드로 실행합니다...${NC}"
+    nohup go run cmd/worker/main.go > "$LOG_DIR/worker.log" 2>&1 &
+    WORKER_PID=$!
+
+    # PID 저장
+    echo $WORKER_PID > "$LOG_DIR/worker.pid"
+
+    # Worker 시작 대기
+    sleep 3
+
+    if kill -0 $WORKER_PID 2>/dev/null; then
+        echo -e "${GREEN}✓ Go Rendering Worker 실행 완료 (PID: $WORKER_PID)${NC}"
+    else
+        echo -e "${RED}❌ Go Rendering Worker 실행 실패. 로그를 확인하세요:${NC}"
+        echo "  tail -f $LOG_DIR/worker.log"
+        # Worker 실패는 치명적이지 않으므로 계속 진행
+    fi
+    echo ""
+}
+
 # Frontend 실행
 start_frontend() {
-    echo -e "${BLUE}[3/3] Frontend 실행...${NC}"
+    echo -e "${BLUE}[5/5] Frontend 실행...${NC}"
 
     cd "$PROJECT_ROOT/frontend"
 
@@ -167,7 +228,7 @@ start_frontend() {
 
 # PID 파일 정리
 cleanup_old_pids() {
-    rm -f "$LOG_DIR/backend.pid" "$LOG_DIR/frontend.pid"
+    rm -f "$LOG_DIR/backend.pid" "$LOG_DIR/frontend.pid" "$LOG_DIR/celery.pid" "$LOG_DIR/worker.pid"
 }
 
 # 메인 실행
@@ -176,16 +237,23 @@ main() {
     check_env_files
     start_redis
     start_backend
+    start_celery
+    start_worker
     start_frontend
 
     echo -e "${GREEN}========================================${NC}"
     echo -e "${GREEN}  ✓ 모든 서비스가 실행되었습니다!${NC}"
     echo -e "${GREEN}========================================${NC}"
     echo ""
-    echo -e "${BLUE}테스트 가능한 기능:${NC}"
+    echo -e "${BLUE}실행 중인 서비스:${NC}"
     echo "  • Frontend:  http://localhost:3000"
     echo "  • Backend:   http://localhost:8000"
     echo "  • API Docs:  http://localhost:8000/docs"
+    echo "  • Redis:     localhost:6379"
+    echo "  • Celery:    백그라운드 작업 큐"
+    echo "  • Worker:    렌더링 워커"
+    echo ""
+    echo -e "${BLUE}주요 페이지:${NC}"
     echo "  • 회원가입:   http://localhost:3000/signup"
     echo "  • 로그인:     http://localhost:3000/login"
     echo "  • 대시보드:   http://localhost:3000/dashboard"
@@ -193,7 +261,10 @@ main() {
     echo -e "${BLUE}로그 확인:${NC}"
     echo "  • Backend:  tail -f $LOG_DIR/backend.log"
     echo "  • Frontend: tail -f $LOG_DIR/frontend.log"
+    echo "  • Celery:   tail -f $LOG_DIR/celery.log"
+    echo "  • Worker:   tail -f $LOG_DIR/worker.log"
     echo "  • Redis:    tail -f $LOG_DIR/redis.log"
+    echo "  • All:      ./scripts/dev-logs.sh all"
     echo ""
     echo -e "${YELLOW}서버를 종료하려면 다음 명령어를 실행하세요:${NC}"
     echo "  ./scripts/dev-stop.sh"

@@ -69,13 +69,67 @@ check_backend() {
 
         # Health check
         if command -v curl &> /dev/null; then
-            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health 2>/dev/null)
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/api/v1/health 2>/dev/null)
             if [ "$HTTP_CODE" = "200" ]; then
                 echo -e "  Health: ${GREEN}✓ 정상${NC}"
             else
                 echo -e "  Health: ${YELLOW}⚠ 응답 없음 (HTTP $HTTP_CODE)${NC}"
             fi
         fi
+    fi
+    echo ""
+}
+
+# Celery Worker 상태 확인
+check_celery() {
+    echo -e "${BLUE}[Celery Worker]${NC}"
+
+    if [ -f "$LOG_DIR/celery.pid" ]; then
+        CELERY_PID=$(cat "$LOG_DIR/celery.pid")
+        if kill -0 $CELERY_PID 2>/dev/null; then
+            echo -e "  상태: ${GREEN}● 실행 중${NC} (PID: $CELERY_PID)"
+        else
+            echo -e "  상태: ${RED}● 중지됨${NC} (PID 파일 존재하지만 프로세스 없음)"
+        fi
+    else
+        CELERY_PIDS=$(pgrep -f "celery.*worker")
+        if [ ! -z "$CELERY_PIDS" ]; then
+            echo -e "  상태: ${GREEN}● 실행 중${NC} (PID: $CELERY_PIDS)"
+        else
+            echo -e "  상태: ${RED}● 중지됨${NC}"
+        fi
+    fi
+
+    if [ ! -z "$CELERY_PID" ] || [ ! -z "$CELERY_PIDS" ]; then
+        echo -e "  역할: 백그라운드 작업 큐"
+        echo -e "  로그: $LOG_DIR/celery.log"
+    fi
+    echo ""
+}
+
+# Go Rendering Worker 상태 확인
+check_worker() {
+    echo -e "${BLUE}[Go Rendering Worker]${NC}"
+
+    if [ -f "$LOG_DIR/worker.pid" ]; then
+        WORKER_PID=$(cat "$LOG_DIR/worker.pid")
+        if kill -0 $WORKER_PID 2>/dev/null; then
+            echo -e "  상태: ${GREEN}● 실행 중${NC} (PID: $WORKER_PID)"
+        else
+            echo -e "  상태: ${RED}● 중지됨${NC} (PID 파일 존재하지만 프로세스 없음)"
+        fi
+    else
+        WORKER_PIDS=$(pgrep -f "go run cmd/worker/main.go")
+        if [ ! -z "$WORKER_PIDS" ]; then
+            echo -e "  상태: ${GREEN}● 실행 중${NC} (PID: $WORKER_PIDS)"
+        else
+            echo -e "  상태: ${RED}● 중지됨${NC}"
+        fi
+    fi
+
+    if [ ! -z "$WORKER_PID" ] || [ ! -z "$WORKER_PIDS" ]; then
+        echo -e "  역할: 비디오 렌더링 워커"
+        echo -e "  로그: $LOG_DIR/worker.log"
     fi
     echo ""
 }
@@ -146,7 +200,7 @@ show_quick_actions() {
     echo -e "${BLUE}[빠른 액션]${NC}"
     echo "  서버 시작: ./scripts/dev-start.sh"
     echo "  서버 종료: ./scripts/dev-stop.sh"
-    echo "  로그 확인: ./scripts/dev-logs.sh [backend|frontend|redis|all]"
+    echo "  로그 확인: ./scripts/dev-logs.sh [backend|frontend|celery|worker|redis|all]"
     echo "  상태 확인: ./scripts/dev-status.sh"
     echo ""
 }
@@ -155,6 +209,8 @@ show_quick_actions() {
 main() {
     check_redis
     check_backend
+    check_celery
+    check_worker
     check_frontend
     show_env_info
     show_quick_actions
