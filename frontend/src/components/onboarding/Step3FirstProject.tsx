@@ -48,25 +48,29 @@ export function Step3FirstProject({ onComplete }: Step3FirstProjectProps) {
       );
 
       // 첫 프로젝트 생성
-      const job = await createJob.mutateAsync({
+      const job = await createJob({
         prompt: prompt.trim(),
-        template_id: selectedTemplateId || undefined,
+        templateId: selectedTemplateId || undefined,
       });
 
       // 로컬 스토리지 클리어
       localStorage.removeItem("onboarding_selected_template");
 
       // 온보딩 완료
+      setIsCreating(false);
       onComplete();
 
       // 프로젝트 상세 페이지로 이동
       router.push(`/dashboard/projects/${job.id}`);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to create project:", err);
-      setError(
-        err.response?.data?.error?.message ||
-          "프로젝트 생성에 실패했습니다. 다시 시도해주세요."
-      );
+      const fallbackMessage =
+        "프로젝트 생성에 실패했습니다. 다시 시도해주세요.";
+      if (err instanceof Error) {
+        setError(err.message || fallbackMessage);
+      } else {
+        setError(fallbackMessage);
+      }
       setIsCreating(false);
     }
   };

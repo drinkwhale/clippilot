@@ -13,7 +13,7 @@ interface Step1ConnectYouTubeProps {
 }
 
 export function Step1ConnectYouTube({ onNext }: Step1ConnectYouTubeProps) {
-  const { channels, isLoading } = useChannels();
+  const { channels, isLoading, connectYouTubeChannel } = useChannels();
   const [isConnecting, setIsConnecting] = useState(false);
 
   const hasConnectedChannel = channels && channels.length > 0;
@@ -21,8 +21,7 @@ export function Step1ConnectYouTube({ onNext }: Step1ConnectYouTubeProps) {
   const handleConnect = async () => {
     try {
       setIsConnecting(true);
-      // Redirect to YouTube OAuth
-      window.location.href = "/api/v1/channels/oauth/youtube";
+      await connectYouTubeChannel();
     } catch (error) {
       console.error("Failed to connect YouTube:", error);
       setIsConnecting(false);
@@ -62,7 +61,7 @@ export function Step1ConnectYouTube({ onNext }: Step1ConnectYouTubeProps) {
                 <div className="flex-1">
                   <p className="font-medium">{channel.yt_channel_id}</p>
                   <p className="text-sm text-muted-foreground">
-                    연결됨 · {new Date(channel.created_at).toLocaleDateString()}
+                    연결됨 · {new Date(channel.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
