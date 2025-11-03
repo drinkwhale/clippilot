@@ -47,9 +47,9 @@ celery_app.conf.update(
     ),
     # Task routing
     task_routes={
-        "src.workers.generate.*": {"queue": "generation"},
-        "src.workers.render.*": {"queue": "rendering"},
-        "src.workers.upload.*": {"queue": "default"},
+        "generate_content": {"queue": "generation"},
+        "workers.render.*": {"queue": "rendering"},
+        "workers.upload.*": {"queue": "default"},
     },
     # Monitoring
     task_send_sent_event=True,
