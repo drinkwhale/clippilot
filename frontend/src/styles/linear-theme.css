@@ -1,0 +1,475 @@
+/**
+ * Linear Theme - Global CSS Variables
+ * Generated from Linear.app design system
+ */
+
+:root {
+  /* ========================================
+     Colors - Background
+     ======================================== */
+  --color-bg-primary: #08090a;
+  --color-bg-secondary: #1c1c1f;
+  --color-bg-tertiary: #232326;
+  --color-bg-quaternary: #28282c;
+  --color-bg-quinary: #282828;
+  --color-bg-level-0: #08090a;
+  --color-bg-level-1: #0f1011;
+  --color-bg-level-2: #141516;
+  --color-bg-level-3: #191a1b;
+  --color-bg-marketing: #010102;
+  --color-bg-tint: #141516;
+  --color-bg-translucent: rgba(255, 255, 255, 0.05);
+
+  /* ========================================
+     Colors - Text & Foreground
+     ======================================== */
+  --color-text-primary: #f7f8f8;
+  --color-text-secondary: #d0d6e0;
+  --color-text-tertiary: #8a8f98;
+  --color-text-quaternary: #62666d;
+
+  --color-fg-primary: #f7f8f8;
+  --color-fg-secondary: #d0d6e0;
+  --color-fg-tertiary: #8a8f98;
+  --color-fg-quaternary: #62666d;
+
+  /* ========================================
+     Colors - Brand & Accent
+     ======================================== */
+  --color-brand-primary: #5e6ad2;
+  --color-brand-text: #ffffff;
+  --color-brand-bg: #5e6ad2;
+
+  --color-accent-primary: #7170ff;
+  --color-accent-hover: #828fff;
+  --color-accent-tint: #18182f;
+
+  /* ========================================
+     Colors - Border & Lines
+     ======================================== */
+  --color-border-primary: #23252a;
+  --color-border-secondary: #34343a;
+  --color-border-tertiary: #3e3e44;
+  --color-border-translucent: rgba(255, 255, 255, 0.05);
+
+  --color-line-primary: #37393a;
+  --color-line-secondary: #202122;
+  --color-line-tertiary: #18191a;
+  --color-line-quaternary: #141515;
+  --color-line-tint: #141516;
+
+  /* ========================================
+     Colors - Links
+     ======================================== */
+  --color-link-primary: #828fff;
+  --color-link-hover: #ffffff;
+
+  /* ========================================
+     Colors - Selection
+     ======================================== */
+  --color-selection-bg: #5e6ad2;
+  --color-selection-text: #ffffff;
+  --color-selection-dim: rgba(94, 106, 210, 0.2);
+
+  /* ========================================
+     Colors - Status
+     ======================================== */
+  --color-status-red: #eb5757;
+  --color-status-orange: #fc7840;
+  --color-status-yellow: #f2c94c;
+  --color-status-green: #4cb782;
+  --color-status-blue: #4ea7fc;
+  --color-status-indigo: #5e6ad2;
+
+  /* ========================================
+     Colors - Product
+     ======================================== */
+  --color-product-plan: #68cc58;
+  --color-product-build: #d4b144;
+  --color-product-security: #7a7fad;
+
+  /* ========================================
+     Colors - Overlay
+     ======================================== */
+  --color-overlay-primary: rgba(0, 0, 0, 0.9);
+  --color-overlay-dim: rgb(255, 255, 255);
+
+  /* ========================================
+     Typography - Font Family
+     ======================================== */
+  --font-family-regular: "Inter Variable", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Open Sans", "Helvetica Neue", sans-serif;
+  --font-family-monospace: "Berkeley Mono", ui-monospace, "SF Mono", "Menlo", monospace;
+  --font-family-serif: "Tiempos Headline", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-family-emoji: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Segoe UI", "Twemoji Mozilla", "Noto Color Emoji", "Android Emoji";
+
+  /* ========================================
+     Typography - Font Weight
+     ======================================== */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 510;
+  --font-weight-semibold: 590;
+  --font-weight-bold: 680;
+
+  /* ========================================
+     Typography - Font Size
+     ======================================== */
+  --font-size-micro: 0.6875rem;
+  --font-size-tiny: 0.625rem;
+  --font-size-mini: 0.75rem;
+  --font-size-small: 0.8125rem;
+  --font-size-regular: 0.9375rem;
+  --font-size-large: 1.125rem;
+  --font-size-title1: 1.0625rem;
+  --font-size-title2: 1.3125rem;
+  --font-size-title3: 1.5rem;
+  --font-size-title4: 2rem;
+  --font-size-title5: 2.5rem;
+  --font-size-title6: 3rem;
+  --font-size-title7: 3.5rem;
+  --font-size-title8: 4rem;
+  --font-size-title9: 4.5rem;
+
+  /* ========================================
+     Typography - Line Height
+     ======================================== */
+  --line-height-micro: 1.4;
+  --line-height-tiny: 1.5;
+  --line-height-mini: 1.5;
+  --line-height-small: 1.5;
+  --line-height-regular: 1.6;
+  --line-height-large: 1.6;
+  --line-height-title1: 1.4;
+  --line-height-title2: 1.33;
+  --line-height-title3: 1.33;
+  --line-height-title4: 1.125;
+  --line-height-title5: 1.1;
+  --line-height-title6: 1.1;
+  --line-height-title7: 1.1;
+  --line-height-title8: 1.06;
+  --line-height-title9: 1.0;
+
+  /* ========================================
+     Typography - Letter Spacing
+     ======================================== */
+  --letter-spacing-micro: 0;
+  --letter-spacing-tiny: -0.015em;
+  --letter-spacing-mini: -0.01em;
+  --letter-spacing-small: -0.013em;
+  --letter-spacing-regular: -0.011em;
+  --letter-spacing-large: 0;
+  --letter-spacing-title1: -0.012em;
+  --letter-spacing-title2: -0.012em;
+  --letter-spacing-title3: -0.012em;
+  --letter-spacing-title4: -0.022em;
+  --letter-spacing-title5: -0.022em;
+  --letter-spacing-title6: -0.022em;
+  --letter-spacing-title7: -0.022em;
+  --letter-spacing-title8: -0.022em;
+  --letter-spacing-title9: -0.022em;
+
+  /* ========================================
+     Spacing
+     ======================================== */
+  --spacing-header-height: 64px;
+  --spacing-page-padding-inline: 24px;
+  --spacing-page-padding-block: 64px;
+  --spacing-page-max-width: 1024px;
+  --spacing-prose-max-width: 624px;
+  --spacing-min-tap-size: 44px;
+  --spacing-scrollbar-size: 6px;
+  --spacing-scrollbar-size-active: 10px;
+  --spacing-scrollbar-gap: 4px;
+
+  /* ========================================
+     Border Radius
+     ======================================== */
+  --radius-4: 4px;
+  --radius-6: 6px;
+  --radius-8: 8px;
+  --radius-12: 12px;
+  --radius-16: 16px;
+  --radius-24: 24px;
+  --radius-32: 32px;
+  --radius-rounded: 9999px;
+  --radius-circle: 50%;
+
+  /* ========================================
+     Shadows
+     ======================================== */
+  --shadow-none: 0px 0px 0px transparent;
+  --shadow-tiny: 0px 0px 0px transparent;
+  --shadow-low: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0px 4px 24px rgba(0, 0, 0, 0.2);
+  --shadow-high: 0px 7px 32px rgba(0, 0, 0, 0.35);
+  --shadow-stack-low: 0px 8px 2px 0px transparent, 0px 5px 2px 0px rgba(0,0,0,0.01), 0px 3px 2px 0px rgba(0,0,0,0.04), 0px 1px 1px 0px rgba(0,0,0,0.07), 0px 0px 1px 0px rgba(0,0,0,0.08);
+
+  /* ========================================
+     Effects
+     ======================================== */
+  --effect-header-blur: 20px;
+  --effect-header-bg: rgba(11, 11, 11, 0.8);
+  --effect-header-border: rgba(255, 255, 255, 0.08);
+  --effect-scrollbar-color: rgba(255, 255, 255, 0.1);
+  --effect-scrollbar-color-hover: rgba(255, 255, 255, 0.2);
+  --effect-scrollbar-color-active: rgba(255, 255, 255, 0.4);
+
+  /* ========================================
+     Animation - Speed
+     ======================================== */
+  --animation-speed-quick: 0.1s;
+  --animation-speed-regular: 0.25s;
+  --animation-speed-highlight-fade-in: 0s;
+  --animation-speed-highlight-fade-out: 0.15s;
+
+  /* ========================================
+     Animation - Easing
+     ======================================== */
+  --animation-easing-in-quad: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  --animation-easing-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --animation-easing-in-out-quad: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --animation-easing-in-cubic: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  --animation-easing-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --animation-easing-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --animation-easing-in-quart: cubic-bezier(0.895, 0.03, 0.685, 0.22);
+  --animation-easing-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --animation-easing-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+  --animation-easing-in-quint: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+  --animation-easing-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --animation-easing-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+  --animation-easing-in-expo: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  --animation-easing-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --animation-easing-in-out-expo: cubic-bezier(1, 0, 0, 1);
+  --animation-easing-in-circ: cubic-bezier(0.6, 0.04, 0.98, 0.335);
+  --animation-easing-out-circ: cubic-bezier(0.075, 0.82, 0.165, 1);
+  --animation-easing-in-out-circ: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+
+  /* ========================================
+     Z-Index
+     ======================================== */
+  --z-index-layer1: 1;
+  --z-index-layer2: 2;
+  --z-index-layer3: 3;
+  --z-index-footer: 50;
+  --z-index-scrollbar: 75;
+  --z-index-header: 100;
+  --z-index-overlay: 500;
+  --z-index-popover: 600;
+  --z-index-command-menu: 650;
+  --z-index-dialog: 700;
+  --z-index-dialog-overlay: 699;
+  --z-index-toasts: 800;
+  --z-index-tooltip: 1100;
+  --z-index-context-menu: 1200;
+  --z-index-skip-nav: 5000;
+  --z-index-debug: 5100;
+  --z-index-max: 10000;
+
+  /* ========================================
+     Focus Ring
+     ======================================== */
+  --focus-ring-width: 2px;
+  --focus-ring-color: #5e6ad2;
+  --focus-ring-offset: 2px;
+  --focus-ring-outline: 2px solid #5e6ad2;
+
+  /* ========================================
+     Misc
+     ======================================== */
+  --border-hairline: 0.5px;
+  --transparent: rgba(255, 255, 255, 0);
+  --icon-grayscale-filter: grayscale(100%) brightness(400%);
+  --font-settings: "cv01", "ss03";
+  --font-variations: "opsz" auto;
+}
+
+/* ========================================
+   Base Styles
+   ======================================== */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-family-regular);
+  font-size: 16px;
+  line-height: var(--line-height-regular);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-feature-settings: var(--font-settings);
+  font-variation-settings: var(--font-variations);
+}
+
+/* ========================================
+   Selection
+   ======================================== */
+::selection {
+  background-color: var(--color-selection-bg);
+  color: var(--color-selection-text);
+}
+
+::-moz-selection {
+  background-color: var(--color-selection-bg);
+  color: var(--color-selection-text);
+}
+
+/* ========================================
+   Scrollbar
+   ======================================== */
+::-webkit-scrollbar {
+  width: var(--spacing-scrollbar-size);
+  height: var(--spacing-scrollbar-size);
+}
+
+::-webkit-scrollbar:hover {
+  width: var(--spacing-scrollbar-size-active);
+  height: var(--spacing-scrollbar-size-active);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--effect-scrollbar-color);
+  border-radius: var(--radius-rounded);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--effect-scrollbar-color-hover);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--effect-scrollbar-color-active);
+}
+
+/* ========================================
+   Focus Visible
+   ======================================== */
+:focus-visible {
+  outline: var(--focus-ring-outline);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* ========================================
+   Links
+   ======================================== */
+a {
+  color: var(--color-link-primary);
+  text-decoration: none;
+  transition: color var(--animation-speed-quick) var(--animation-easing-out-quad);
+}
+
+a:hover {
+  color: var(--color-link-hover);
+}
+
+/* ========================================
+   Typography Utility Classes
+   ======================================== */
+.text-micro {
+  font-size: var(--font-size-micro);
+  line-height: var(--line-height-micro);
+  letter-spacing: var(--letter-spacing-micro);
+}
+
+.text-tiny {
+  font-size: var(--font-size-tiny);
+  line-height: var(--line-height-tiny);
+  letter-spacing: var(--letter-spacing-tiny);
+}
+
+.text-mini {
+  font-size: var(--font-size-mini);
+  line-height: var(--line-height-mini);
+  letter-spacing: var(--letter-spacing-mini);
+}
+
+.text-small {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  letter-spacing: var(--letter-spacing-small);
+}
+
+.text-regular {
+  font-size: var(--font-size-regular);
+  line-height: var(--line-height-regular);
+  letter-spacing: var(--letter-spacing-regular);
+}
+
+.text-large {
+  font-size: var(--font-size-large);
+  line-height: var(--line-height-large);
+  letter-spacing: var(--letter-spacing-large);
+}
+
+.title-1 {
+  font-size: var(--font-size-title1);
+  line-height: var(--line-height-title1);
+  letter-spacing: var(--letter-spacing-title1);
+  font-weight: var(--font-weight-semibold);
+}
+
+.title-2 {
+  font-size: var(--font-size-title2);
+  line-height: var(--line-height-title2);
+  letter-spacing: var(--letter-spacing-title2);
+  font-weight: var(--font-weight-semibold);
+}
+
+.title-3 {
+  font-size: var(--font-size-title3);
+  line-height: var(--line-height-title3);
+  letter-spacing: var(--letter-spacing-title3);
+  font-weight: var(--font-weight-semibold);
+}
+
+.title-4 {
+  font-size: var(--font-size-title4);
+  line-height: var(--line-height-title4);
+  letter-spacing: var(--letter-spacing-title4);
+  font-weight: var(--font-weight-semibold);
+}
+
+.title-5 {
+  font-size: var(--font-size-title5);
+  line-height: var(--line-height-title5);
+  letter-spacing: var(--letter-spacing-title5);
+  font-weight: var(--font-weight-semibold);
+}
+
+.title-6 {
+  font-size: var(--font-size-title6);
+  line-height: var(--line-height-title6);
+  letter-spacing: var(--letter-spacing-title6);
+  font-weight: var(--font-weight-semibold);
+}
+
+.title-7 {
+  font-size: var(--font-size-title7);
+  line-height: var(--line-height-title7);
+  letter-spacing: var(--letter-spacing-title7);
+  font-weight: var(--font-weight-semibold);
+}
+
+.title-8 {
+  font-size: var(--font-size-title8);
+  line-height: var(--line-height-title8);
+  letter-spacing: var(--letter-spacing-title8);
+  font-weight: var(--font-weight-semibold);
+}
+
+.title-9 {
+  font-size: var(--font-size-title9);
+  line-height: var(--line-height-title9);
+  letter-spacing: var(--letter-spacing-title9);
+  font-weight: var(--font-weight-semibold);
+}
