@@ -31,3 +31,4 @@ export * from './Dropdown';
 
 // Overlay & Popups
 export * from './Tooltip';
+export * from './Popover';

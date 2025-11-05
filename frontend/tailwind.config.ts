@@ -27,6 +27,7 @@ export default {
           DEFAULT: linearTheme.colors.brand.primary,
           bg: linearTheme.colors.brand.background,
           text: linearTheme.colors.brand.text,
+          hover: linearTheme.colors.accent.hover,
         },
         accent: {
           DEFAULT: linearTheme.colors.accent.primary,
@@ -39,6 +40,10 @@ export default {
           tertiary: linearTheme.colors.border.tertiary,
         },
         status: linearTheme.colors.status,
+        overlay: {
+          primary: linearTheme.colors.overlay.primary,
+          dim: linearTheme.colors.overlay.dim,
+        },
       },
       fontFamily: {
         sans: linearTheme.typography.fontFamily.regular.split(',').map(f => f.trim()),
@@ -80,6 +85,7 @@ export default {
         DEFAULT: linearTheme.shadows.medium,
         md: linearTheme.shadows.medium,
         lg: linearTheme.shadows.high,
+        high: linearTheme.shadows.high,
       },
       maxWidth: {
         page: linearTheme.spacing.pageMaxWidth,
@@ -88,7 +94,14 @@ export default {
       spacing: {
         header: linearTheme.spacing.headerHeight,
       },
-      zIndex: linearTheme.zIndex,
+      zIndex: {
+        ...linearTheme.zIndex,
+        dropdown: linearTheme.zIndex.popover,
+        toast: linearTheme.zIndex.toasts,
+        tooltip: linearTheme.zIndex.tooltip,
+        popover: linearTheme.zIndex.popover,
+        dialog: linearTheme.zIndex.dialog,
+      },
       transitionTimingFunction: {
         'in-quad': linearTheme.animation.easing.inQuad,
         'out-quad': linearTheme.animation.easing.outQuad,
@@ -103,6 +116,55 @@ export default {
       transitionDuration: {
         quick: linearTheme.animation.speed.quick,
         regular: linearTheme.animation.speed.regular,
+      },
+      keyframes: {
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        'fade-out': {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
+        },
+        'zoom-in': {
+          '0%': { transform: 'scale(0.95)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        'zoom-out': {
+          '0%': { transform: 'scale(1)', opacity: '1' },
+          '100%': { transform: 'scale(0.95)', opacity: '0' },
+        },
+        'slide-in-from-top': {
+          '0%': { transform: 'translateY(-10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        'slide-in-from-right': {
+          '0%': { transform: 'translateX(10px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        'slide-in-from-bottom': {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        'slide-in-from-left': {
+          '0%': { transform: 'translateX(-10px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
+      },
+      animation: {
+        'fade-in': 'fade-in 0.2s ease-out',
+        'fade-out': 'fade-out 0.2s ease-out',
+        'zoom-in': 'zoom-in 0.2s ease-out',
+        'zoom-out': 'zoom-out 0.2s ease-out',
+        'slide-in-from-top': 'slide-in-from-top 0.2s ease-out',
+        'slide-in-from-right': 'slide-in-from-right 0.2s ease-out',
+        'slide-in-from-bottom': 'slide-in-from-bottom 0.2s ease-out',
+        'slide-in-from-left': 'slide-in-from-left 0.2s ease-out',
+        shimmer: 'shimmer 2s linear infinite',
       },
     },
   },

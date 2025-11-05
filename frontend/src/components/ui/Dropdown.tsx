@@ -192,7 +192,7 @@ export function DropdownContent({
         'min-w-[200px]',
         'bg-background-secondary border border-border-primary rounded-lg shadow-high',
         'py-1',
-        'animate-in fade-in zoom-in-95 duration-quick',
+        'animate-zoom-in duration-quick',
         alignStyles[align],
         className
       )}

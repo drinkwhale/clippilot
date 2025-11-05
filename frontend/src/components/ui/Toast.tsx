@@ -115,7 +115,7 @@ export function Toast({
       className={cn(
         'flex items-start gap-3 p-4 rounded-lg border shadow-high',
         'min-w-[320px] max-w-[420px]',
-        'animate-in slide-in-from-right duration-regular',
+        'animate-slide-in-from-right duration-regular',
         variantStyles[variant].container,
         className
       )}

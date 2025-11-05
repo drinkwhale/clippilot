@@ -155,7 +155,7 @@ export function Tooltip({
               'bg-overlay-primary text-foreground-primary',
               'text-small font-medium',
               'shadow-high',
-              'animate-in fade-in zoom-in-95 duration-quick',
+              'animate-zoom-in duration-quick',
               'pointer-events-auto'
             )}
             style={{
@@ -402,7 +402,7 @@ export function PopoverContent({
         'min-w-[200px] max-w-[400px]',
         'bg-background-secondary border border-border-primary rounded-lg shadow-high',
         'p-4',
-        'animate-in fade-in zoom-in-95 duration-quick',
+        'animate-zoom-in duration-quick',
         className
       )}
       style={{

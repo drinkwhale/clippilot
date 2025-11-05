@@ -78,7 +78,7 @@ export function Modal({
     >
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-overlay-primary/90 backdrop-blur-sm animate-in fade-in duration-regular"
+        className="absolute inset-0 bg-overlay-primary/90 backdrop-blur-sm animate-fade-in duration-regular"
         onClick={closeOnOverlayClick ? onClose : undefined}
         aria-hidden="true"
       />
@@ -89,7 +89,7 @@ export function Modal({
           'relative w-full',
           'bg-background-secondary border border-border-primary',
           'rounded-xl shadow-high',
-          'animate-in zoom-in-95 fade-in duration-regular',
+          'animate-zoom-in duration-regular',
           sizeStyles[size],
           className
         )}
