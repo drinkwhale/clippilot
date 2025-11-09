@@ -1,7 +1,7 @@
 # TODO - ClipPilot MVP
 
-**Last Updated**: 2025-11-03
-**Current Status**: Phase 10 완료, Phase 11 준비 중
+**Last Updated**: 2025-11-09
+**Current Status**: Priority 0 완료, Priority 1 진행 중
 
 본 문서는 ClipPilot MVP 개발 과정에서 발견된 개선사항, 기술 부채, 추후 구현 사항을 우선순위별로 정리한 목록입니다.
 
@@ -10,26 +10,29 @@
 ## 🚨 Priority 0: Critical (즉시 해결 필요)
 
 ### Backend
-- [ ] **DB 인덱스 추가** (성능 Critical)
+- [x] **DB 인덱스 추가** (성능 Critical) ✅ 2025-11-09
   ```sql
   CREATE INDEX idx_jobs_user_created ON jobs(user_id, created_at);
   CREATE INDEX idx_jobs_status ON jobs(status);
   CREATE INDEX idx_usage_logs_user_created ON usage_logs(user_id, created_at);
   ```
-  - **파일**: `backend/migrations/`
+  - **파일**: `backend/migrations/001_add_performance_indexes.sql`
   - **이유**: 대용량 데이터에서 쿼리 성능 저하 방지
-  - **예상 시간**: 30분
+  - **완료**: Migration 파일 작성 완료, Supabase에서 실행 필요
 
-- [ ] **Supabase 프로젝트 설정 완료** (T005)
-  - **파일**: `.env.example`, `.env`
-  - **작업**: Supabase 프로젝트 생성 및 credentials 저장
-  - **예상 시간**: 1시간
+- [x] **Supabase 프로젝트 설정 완료** (T005) ✅ 2025-11-09
+  - **파일**: `docs/SUPABASE_SETUP.md`
+  - **작업**: 완전한 Supabase 설정 가이드 문서화
+  - **내용**: 프로젝트 생성, 스키마 마이그레이션, RLS 정책, Storage 설정, 환경 변수, 검증 방법, 문제 해결
 
 ### Infrastructure
-- [ ] **환경 변수 검증**
-  - **파일**: `backend/src/config.py`, `frontend/.env.local`
-  - **작업**: 필수 환경 변수 누락 체크 및 validation 로직 추가
-  - **예상 시간**: 30분
+- [x] **환경 변수 검증** ✅ 2025-11-09
+  - **파일**: `backend/src/config.py:85-139`
+  - **구현**: Pydantic `model_validator`로 필수 환경 변수 검증
+  - **기능**:
+    - Production 환경: JWT_SECRET, API keys, Database URL 등 필수 검증
+    - Development 환경: 최소한 DATABASE_URL, SUPABASE_URL 검증
+    - 검증 실패 시 명확한 에러 메시지 출력
 
 ---
 
