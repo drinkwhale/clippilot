@@ -79,6 +79,10 @@ class MetricsService:
 
         Returns:
             DashboardMetrics 객체
+
+        Note:
+            AsyncSession은 동시 실행을 지원하지 않으므로 순차 실행합니다.
+            병렬 실행 시 InvalidRequestError 발생.
         """
         start_date = datetime.utcnow() - timedelta(days=period_days)
 
