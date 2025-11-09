@@ -9,7 +9,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ...core.supabase import get_db
+from ...core.database import get_db
 from ...middleware.auth import get_current_user
 from ...models.user import User
 from ...services.metrics_service import MetricsService

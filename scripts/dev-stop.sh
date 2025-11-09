@@ -115,6 +115,11 @@ stop_frontend() {
             echo -e "${YELLOW}⚠️  실행 중인 Frontend를 찾을 수 없습니다.${NC}"
         fi
     fi
+
+    # Next.js dev lock 파일 정리
+    if [ -f "$PROJECT_ROOT/frontend/.next/dev/lock" ]; then
+        rm -f "$PROJECT_ROOT/frontend/.next/dev/lock"
+    fi
 }
 
 # Redis 종료 (옵션)

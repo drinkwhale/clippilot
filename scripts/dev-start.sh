@@ -229,6 +229,12 @@ start_frontend() {
         pnpm install
     fi
 
+    # Next.js dev lock 파일 정리 (이전 실행에서 남은 lock 파일 제거)
+    if [ -f ".next/dev/lock" ]; then
+        echo -e "${YELLOW}⚠️  이전 실행의 lock 파일을 정리합니다...${NC}"
+        rm -f ".next/dev/lock"
+    fi
+
     # 백그라운드로 실행
     echo -e "${YELLOW}Next.js 서버를 백그라운드로 실행합니다...${NC}"
     nohup pnpm dev > "$LOG_DIR/frontend.log" 2>&1 &
