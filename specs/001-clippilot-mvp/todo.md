@@ -10,13 +10,13 @@
 ## 🚨 Priority 0: Critical (즉시 해결 필요)
 
 ### Backend
-- [ ] **DB 인덱스 추가** (성능 Critical)
+- [x] **DB 인덱스 추가** (성능 Critical) ✅ 2025-11-09
   ```sql
   CREATE INDEX idx_jobs_user_created ON jobs(user_id, created_at);
   CREATE INDEX idx_jobs_status ON jobs(status);
   CREATE INDEX idx_usage_logs_user_created ON usage_logs(user_id, created_at);
   ```
-  - **파일**: `backend/migrations/`
+  - **파일**: `backend/migrations/001_add_performance_indexes.sql`
   - **이유**: 대용량 데이터에서 쿼리 성능 저하 방지
   - **예상 시간**: 30분
 
@@ -24,12 +24,16 @@
   - **파일**: `.env.example`, `.env`
   - **작업**: Supabase 프로젝트 생성 및 credentials 저장
   - **예상 시간**: 1시간
+  - **노트**: 실제 Supabase 프로젝트 생성 및 DB 마이그레이션 실행 필요
 
 ### Infrastructure
-- [ ] **환경 변수 검증**
-  - **파일**: `backend/src/config.py`, `frontend/.env.local`
+- [x] **환경 변수 검증** ✅ 2025-11-09
+  - **파일**: `backend/src/config.py`, `frontend/src/lib/env-validation.ts`
   - **작업**: 필수 환경 변수 누락 체크 및 validation 로직 추가
   - **예상 시간**: 30분
+  - **구현 내용**:
+    - Backend: `@model_validator` 데코레이터로 환경별 검증
+    - Frontend: `validateEnvironmentVariables()` 유틸리티 함수
 
 ---
 
@@ -57,8 +61,8 @@
   - **예상 효과**: 응답 시간 30-40% 단축
   - **예상 시간**: 1시간
 
-- [ ] **할당량 설정 중앙화**
-  - **파일**: `backend/src/services/metrics_service.py:172-177`
+- [x] **할당량 설정 중앙화** ✅ 2025-11-09
+  - **파일**: `backend/src/config.py`, `backend/src/services/metrics_service.py`
   - **현재 문제**: 하드코딩된 할당량
   - **개선 방안**:
     ```python
@@ -72,12 +76,12 @@
 
     # metrics_service.py
     from ..config import settings
-    quota_limit = settings.QUOTA_LIMITS.get(user.plan, 20)
+    quota_limit = settings.QUOTA_LIMITS.get(user.plan, settings.QUOTA_LIMITS["free"])
     ```
   - **예상 시간**: 30분
 
-- [ ] **에러 처리 강화**
-  - **파일**: `backend/src/api/v1/metrics.py:69-76`
+- [x] **에러 처리 강화** ✅ 2025-11-09
+  - **파일**: `backend/src/api/v1/metrics.py`
   - **현재 문제**: 일반적인 Exception catch
   - **개선 방안**:
     ```python
@@ -92,6 +96,7 @@
         raise HTTPException(status_code=500, detail={...})
     ```
   - **예상 시간**: 1시간
+  - **구현 내용**: 모든 metrics 엔드포인트에 ValueError, TimeoutError, Exception 분리 처리
 
 ### Frontend - User Experience
 

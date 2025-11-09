@@ -6,6 +6,12 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Providers } from './providers';
+import { logEnvironmentValidation } from '@/lib/env-validation';
+
+// 환경 변수 검증 실행 (서버 사이드에서만)
+if (typeof window === 'undefined') {
+  logEnvironmentValidation();
+}
 
 export const metadata: Metadata = {
   title: 'ClipPilot - AI 숏폼 크리에이터 자동화',
