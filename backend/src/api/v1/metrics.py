@@ -5,6 +5,8 @@ Metrics API endpoints for ClipPilot
 
 from typing import Annotated
 from uuid import UUID
+import asyncio
+import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,6 +22,8 @@ from ...schemas.metrics import (
     DailyJobCountResponse,
     UsageAlertResponse
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/metrics", tags=["metrics"])
 
@@ -66,12 +70,34 @@ async def get_dashboard_metrics(
             period_days=metrics.period_days
         )
 
+    except ValueError as e:
+        # 잘못된 입력 값
+        logger.warning(f"Invalid dashboard metrics request: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "INVALID_REQUEST",
+                "message": f"잘못된 요청입니다: {str(e)}"
+            }
+        )
+    except asyncio.TimeoutError:
+        # 타임아웃 에러
+        logger.error(f"Dashboard metrics timeout for user {current_user.id}")
+        raise HTTPException(
+            status_code=504,
+            detail={
+                "code": "TIMEOUT_ERROR",
+                "message": "통계 조회 시간이 초과되었습니다. 잠시 후 다시 시도해주세요."
+            }
+        )
     except Exception as e:
+        # 예상치 못한 에러
+        logger.error(f"Dashboard metrics error for user {current_user.id}: {e}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail={
                 "code": "METRICS_ERROR",
-                "message": f"통계 조회 중 오류가 발생했습니다: {str(e)}"
+                "message": "통계 조회 중 오류가 발생했습니다. 관리자에게 문의해주세요."
             }
         )
 
@@ -156,12 +182,31 @@ async def get_daily_job_counts(
 
         return DailyJobCountResponse(daily_counts=daily_counts)
 
+    except ValueError as e:
+        logger.warning(f"Invalid daily job counts request: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "INVALID_REQUEST",
+                "message": f"잘못된 요청입니다: {str(e)}"
+            }
+        )
+    except asyncio.TimeoutError:
+        logger.error(f"Daily job counts timeout for user {current_user.id}")
+        raise HTTPException(
+            status_code=504,
+            detail={
+                "code": "TIMEOUT_ERROR",
+                "message": "일별 통계 조회 시간이 초과되었습니다. 잠시 후 다시 시도해주세요."
+            }
+        )
     except Exception as e:
+        logger.error(f"Daily job counts error for user {current_user.id}: {e}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail={
                 "code": "METRICS_ERROR",
-                "message": f"일별 통계 조회 중 오류가 발생했습니다: {str(e)}"
+                "message": "일별 통계 조회 중 오류가 발생했습니다. 관리자에게 문의해주세요."
             }
         )
 
@@ -200,11 +245,30 @@ async def get_usage_alert(
             message=alert.message
         )
 
+    except ValueError as e:
+        logger.warning(f"Invalid usage alert request: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "code": "INVALID_REQUEST",
+                "message": f"잘못된 요청입니다: {str(e)}"
+            }
+        )
+    except asyncio.TimeoutError:
+        logger.error(f"Usage alert timeout for user {current_user.id}")
+        raise HTTPException(
+            status_code=504,
+            detail={
+                "code": "TIMEOUT_ERROR",
+                "message": "알림 체크 시간이 초과되었습니다. 잠시 후 다시 시도해주세요."
+            }
+        )
     except Exception as e:
+        logger.error(f"Usage alert error for user {current_user.id}: {e}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail={
                 "code": "ALERT_ERROR",
-                "message": f"알림 체크 중 오류가 발생했습니다: {str(e)}"
+                "message": "알림 체크 중 오류가 발생했습니다. 관리자에게 문의해주세요."
             }
         )

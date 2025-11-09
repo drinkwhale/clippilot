@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..models.job import Job, JobStatus
 from ..models.usage_log import UsageLog
 from ..models.user import User
+from ..config import settings
 
 
 class DashboardMetrics:
@@ -168,13 +169,8 @@ class MetricsService:
         if not user:
             raise ValueError(f"User {user_id} not found")
 
-        # 플랜별 할당량 설정
-        quota_limits = {
-            "free": 20,
-            "pro": 500,
-            "agency": 2000
-        }
-        quota_limit = quota_limits.get(user.plan, 20)
+        # 플랜별 할당량 설정 (중앙화된 설정 사용)
+        quota_limit = settings.QUOTA_LIMITS.get(user.plan, settings.QUOTA_LIMITS["free"])
 
         # 현재 월의 job 수 집계
         current_count_query = select(
