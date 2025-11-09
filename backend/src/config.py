@@ -22,7 +22,8 @@ class Settings(BaseSettings):
 
     # Supabase 설정
     SUPABASE_URL: str
-    SUPABASE_KEY: Optional[str] = None
+    SUPABASE_ANON_KEY: Optional[str] = None  # Frontend에서 사용
+    SUPABASE_KEY: Optional[str] = None  # Deprecated, SUPABASE_ANON_KEY 사용 권장
     SUPABASE_SERVICE_ROLE_KEY: str
 
     # JWT 설정 (개발 환경용 기본값)
