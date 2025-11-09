@@ -3,7 +3,6 @@ MetricsService for ClipPilot
 통계 집계 및 대시보드 데이터 생성
 """
 
-import asyncio
 from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Optional
@@ -74,18 +73,20 @@ class MetricsService:
         """
         대시보드 메트릭 집계
 
-        Job 통계와 Usage 통계를 병렬로 실행하여 응답 시간을 30-40% 단축합니다.
-
         Args:
             user_id: 사용자 ID
             period_days: 집계 기간 (일)
 
         Returns:
             DashboardMetrics 객체
+
+        Note:
+            AsyncSession은 동시 실행을 지원하지 않으므로 순차 실행합니다.
+            병렬 실행 시 InvalidRequestError 발생.
         """
         start_date = datetime.utcnow() - timedelta(days=period_days)
 
-        # Job 통계 쿼리 준비
+        # Job 통계 집계
         job_stats_query = select(
             func.count(Job.id).label("total"),
             func.sum(
@@ -102,7 +103,18 @@ class MetricsService:
             )
         )
 
-        # Usage logs 쿼리 준비
+        job_stats = await self.db.execute(job_stats_query)
+        job_result = job_stats.one()
+
+        total_jobs = job_result.total or 0
+        successful_jobs = job_result.successful or 0
+        failed_jobs = job_result.failed or 0
+        avg_render_time = job_result.avg_render_time
+
+        # Success rate 계산
+        success_rate = (successful_jobs / total_jobs * 100) if total_jobs > 0 else 0.0
+
+        # Usage logs 집계
         usage_stats_query = select(
             func.sum(UsageLog.tokens).label("total_tokens"),
             func.sum(UsageLog.api_cost).label("total_cost")
@@ -113,24 +125,9 @@ class MetricsService:
             )
         )
 
-        # 병렬 실행으로 성능 향상 (30-40% 응답 시간 단축)
-        job_stats, usage_stats = await asyncio.gather(
-            self.db.execute(job_stats_query),
-            self.db.execute(usage_stats_query)
-        )
-
-        # Job 통계 결과 처리
-        job_result = job_stats.one()
-        total_jobs = job_result.total or 0
-        successful_jobs = job_result.successful or 0
-        failed_jobs = job_result.failed or 0
-        avg_render_time = job_result.avg_render_time
-
-        # Success rate 계산
-        success_rate = (successful_jobs / total_jobs * 100) if total_jobs > 0 else 0.0
-
-        # Usage 통계 결과 처리
+        usage_stats = await self.db.execute(usage_stats_query)
         usage_result = usage_stats.one()
+
         total_tokens = usage_result.total_tokens or 0
         total_cost = usage_result.total_cost or Decimal("0")
 

@@ -37,25 +37,19 @@
 
 ### Backend - Performance
 
-- [x] **MetricsService 병렬 쿼리 적용** ✅ 2025-11-09
+- [ ] **MetricsService 병렬 쿼리 적용** ⚠️ NOT FEASIBLE
   - **파일**: `backend/src/services/metrics_service.py:69-146`
   - **현재 문제**: Job 통계와 Usage 통계를 순차 실행
-  - **개선 방안**:
-    ```python
-    import asyncio
-
-    async def get_dashboard_metrics(self, user_id: UUID, period_days: int = 30):
-        start_date = datetime.utcnow() - timedelta(days=period_days)
-
-        # 병렬 실행
-        job_stats, usage_stats = await asyncio.gather(
-            self.db.execute(job_stats_query),
-            self.db.execute(usage_stats_query)
-        )
-        # ...
-    ```
-  - **예상 효과**: 응답 시간 30-40% 단축
-  - **예상 시간**: 1시간
+  - **검토 결과**:
+    - SQLAlchemy의 AsyncSession은 동시 실행을 지원하지 않음
+    - `asyncio.gather`로 같은 세션에서 두 쿼리를 병렬 실행하면 `InvalidRequestError` 발생
+    - "concurrent operations are not permitted on an AsyncSession"
+  - **대안**:
+    1. 두 개의 별도 세션 사용 (복잡도 증가, 트랜잭션 관리 어려움)
+    2. 단일 쿼리로 통합 (SQL 복잡도 증가)
+    3. 현재 순차 실행 유지 (권장)
+  - **결론**: 현재 순차 실행을 유지하는 것이 가장 안전하고 유지보수가 용이함
+  - **참고**: PR #21 코드 리뷰 피드백
 
 - [x] **할당량 설정 중앙화** ✅ 2025-11-09
   - **파일**: `backend/src/config.py`, `backend/src/services/metrics_service.py`
@@ -76,10 +70,10 @@
     ```
   - **예상 시간**: 30분
 
-- [ ] **에러 처리 강화**
+- [x] **에러 처리 강화** ✅ 2025-11-09 (PR #20)
   - **파일**: `backend/src/api/v1/metrics.py:69-76`
   - **현재 문제**: 일반적인 Exception catch
-  - **개선 방안**:
+  - **구현 내용**:
     ```python
     try:
         metrics = await metrics_service.get_dashboard_metrics(...)
@@ -92,7 +86,7 @@
         raise HTTPException(status_code=500, detail={...})
     ```
   - **예상 시간**: 1시간
-  - **노트**: Priority 0에서 이미 완료됨 (PR #20)
+  - **노트**: Priority 0에서 완료됨
 
 ### Frontend - User Experience
 
