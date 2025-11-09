@@ -10,13 +10,13 @@
 ## 🚨 Priority 0: Critical (즉시 해결 필요)
 
 ### Backend
-- [x] **DB 인덱스 추가** (성능 Critical) ✅ 2025-11-09
+- [ ] **DB 인덱스 추가** (성능 Critical)
   ```sql
   CREATE INDEX idx_jobs_user_created ON jobs(user_id, created_at);
   CREATE INDEX idx_jobs_status ON jobs(status);
   CREATE INDEX idx_usage_logs_user_created ON usage_logs(user_id, created_at);
   ```
-  - **파일**: `backend/migrations/001_add_performance_indexes.sql`
+  - **파일**: `backend/migrations/`
   - **이유**: 대용량 데이터에서 쿼리 성능 저하 방지
   - **예상 시간**: 30분
 
@@ -24,16 +24,12 @@
   - **파일**: `.env.example`, `.env`
   - **작업**: Supabase 프로젝트 생성 및 credentials 저장
   - **예상 시간**: 1시간
-  - **노트**: 실제 Supabase 프로젝트 생성 및 DB 마이그레이션 실행 필요
 
 ### Infrastructure
-- [x] **환경 변수 검증** ✅ 2025-11-09
-  - **파일**: `backend/src/config.py`, `frontend/src/lib/env-validation.ts`
+- [ ] **환경 변수 검증**
+  - **파일**: `backend/src/config.py`, `frontend/.env.local`
   - **작업**: 필수 환경 변수 누락 체크 및 validation 로직 추가
   - **예상 시간**: 30분
-  - **구현 내용**:
-    - Backend: `@model_validator` 데코레이터로 환경별 검증
-    - Frontend: `validateEnvironmentVariables()` 유틸리티 함수
 
 ---
 
@@ -41,8 +37,8 @@
 
 ### Backend - Performance
 
-- [ ] **MetricsService 병렬 쿼리 적용**
-  - **파일**: `backend/src/services/metrics_service.py:67-138`
+- [x] **MetricsService 병렬 쿼리 적용** ✅ 2025-11-09
+  - **파일**: `backend/src/services/metrics_service.py:69-146`
   - **현재 문제**: Job 통계와 Usage 통계를 순차 실행
   - **개선 방안**:
     ```python
@@ -52,10 +48,10 @@
         start_date = datetime.utcnow() - timedelta(days=period_days)
 
         # 병렬 실행
-        job_task = self.db.execute(job_stats_query)
-        usage_task = self.db.execute(usage_stats_query)
-
-        job_result, usage_result = await asyncio.gather(job_task, usage_task)
+        job_stats, usage_stats = await asyncio.gather(
+            self.db.execute(job_stats_query),
+            self.db.execute(usage_stats_query)
+        )
         # ...
     ```
   - **예상 효과**: 응답 시간 30-40% 단축
@@ -80,8 +76,8 @@
     ```
   - **예상 시간**: 30분
 
-- [x] **에러 처리 강화** ✅ 2025-11-09
-  - **파일**: `backend/src/api/v1/metrics.py`
+- [ ] **에러 처리 강화**
+  - **파일**: `backend/src/api/v1/metrics.py:69-76`
   - **현재 문제**: 일반적인 Exception catch
   - **개선 방안**:
     ```python
@@ -96,19 +92,21 @@
         raise HTTPException(status_code=500, detail={...})
     ```
   - **예상 시간**: 1시간
-  - **구현 내용**: 모든 metrics 엔드포인트에 ValueError, TimeoutError, Exception 분리 처리
+  - **노트**: Priority 0에서 이미 완료됨 (PR #20)
 
 ### Frontend - User Experience
 
-- [ ] **selectedChannel 상태 처리**
-  - **파일**: `frontend/src/app/(dashboard)/page.tsx:24`
+- [x] **selectedChannel 상태 처리** ✅ 2025-11-09
+  - **파일**: `frontend/src/app/(dashboard)/page.tsx`
   - **현재 문제**: 선언되었으나 사용되지 않음
-  - **해결 방안**:
-    - **Option A**: 채널 필터를 메트릭 API에 전달
-    - **Option B**: 주석 처리 후 Phase 11에서 구현
+  - **해결 방안**: Option B 선택 - 주석 처리 후 Phase 11에서 구현
+  - **구현 내용**:
+    - selectedChannel 상태 선언 주석 처리
+    - ChannelFilter 컴포넌트 주석 처리
+    - TODO 주석 추가 (Phase 11 - Priority 3)
   - **예상 시간**: 30분
 
-- [ ] **차트 접근성 개선**
+- [x] **차트 접근성 개선** ✅ 2025-11-09
   - **파일**: `frontend/src/components/dashboard/UsageChart.tsx`
   - **현재 문제**: ARIA 속성 부족
   - **개선 방안**:
@@ -117,13 +115,21 @@
       width="100%"
       height={300}
       role="img"
-      aria-label="최근 30일간 일별 작업 수 추이 차트"
+      aria-label="최근 30일간 일별 작업 수 추이 차트. 총 X개 작업, 일평균 Y개"
     >
-      <LineChart data={chartData}>
+      <LineChart data={chartData} accessibilityLayer>
+        <XAxis aria-label="날짜" />
+        <YAxis aria-label="작업 수" />
         ...
       </LineChart>
     </ResponsiveContainer>
     ```
+  - **구현 내용**:
+    - ResponsiveContainer에 role="img", aria-label 추가
+    - LineChart에 accessibilityLayer 추가
+    - XAxis, YAxis에 aria-label 추가
+    - 스크린 리더용 차트 요약 (sr-only) 추가
+    - 총 작업 수 및 일평균 계산하여 설명 제공
   - **예상 시간**: 30분
 
 ### Testing

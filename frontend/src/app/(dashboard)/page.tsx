@@ -21,7 +21,9 @@ export default function DashboardPage() {
   const { jobs } = useJobs({ status: undefined });
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [period, setPeriod] = useState(30); // 통계 집계 기간 (일)
-  const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
+
+  // TODO: Phase 11에서 채널별 통계 필터링 구현 예정 (Priority 3)
+  // const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
 
   // 첫 로그인 시 온보딩 모달 표시
   useEffect(() => {
@@ -66,7 +68,8 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <ChannelFilter onChannelChange={setSelectedChannel} />
+          {/* TODO: Phase 11에서 채널별 통계 필터링 구현 예정 (Priority 3) */}
+          {/* <ChannelFilter onChannelChange={setSelectedChannel} /> */}
           <Button onClick={() => router.push("/dashboard/projects/new")} size="lg">
             <Sparkles className="mr-2 h-5 w-5" />
             새 프로젝트

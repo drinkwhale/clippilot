@@ -52,6 +52,11 @@ export default function UsageChart({ period = 30 }: UsageChartProps) {
 
   const periodText = period === 7 ? "최근 7일" : period === 30 ? "최근 30일" : `최근 ${period}일`;
 
+  // 차트 데이터 요약 (스크린 리더용)
+  const totalJobs = chartData.reduce((sum, item) => sum + item.count, 0);
+  const averageJobs = totalJobs > 0 ? (totalJobs / chartData.length).toFixed(1) : 0;
+  const chartDescription = `${periodText}간 총 ${totalJobs}개의 작업이 생성되었으며, 일평균 ${averageJobs}개의 작업이 생성되었습니다.`;
+
   return (
     <Card>
       <CardHeader>
@@ -59,19 +64,35 @@ export default function UsageChart({ period = 30 }: UsageChartProps) {
         <CardDescription>{periodText}간의 작업 생성 추이</CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+        {/* 스크린 리더를 위한 차트 설명 */}
+        <div className="sr-only" aria-live="polite">
+          {chartDescription}
+        </div>
+
+        <ResponsiveContainer
+          width="100%"
+          height={300}
+          role="img"
+          aria-label={`${periodText}간 일별 작업 수 추이 차트. ${chartDescription}`}
+        >
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+            accessibilityLayer
+          >
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="date"
               className="text-xs text-muted-foreground"
               tick={{ fontSize: 12 }}
               interval="preserveStartEnd"
+              aria-label="날짜"
             />
             <YAxis
               className="text-xs text-muted-foreground"
               tick={{ fontSize: 12 }}
               allowDecimals={false}
+              aria-label="작업 수"
             />
             <Tooltip
               contentStyle={{
