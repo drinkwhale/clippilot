@@ -6,15 +6,17 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, _hasHydrated } = useAuthStore();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    // Zustand persist 재수화가 완료된 후에만 인증 상태 확인
+    if (_hasHydrated && !isAuthenticated) {
       router.push("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [_hasHydrated, isAuthenticated, router]);
 
-  if (!isAuthenticated) {
+  // 재수화가 완료되지 않았거나 인증되지 않은 경우 로딩 표시
+  if (!_hasHydrated || !isAuthenticated) {
     return null;
   }
 
