@@ -147,21 +147,18 @@
   - **목표 커버리지**: 70%
   - **예상 시간**: 3시간
 
-- [ ] **Frontend 컴포넌트 테스트 작성**
+- [x] **Frontend 컴포넌트 테스트 작성** ✅ 2025-11-09
   - **파일**: `frontend/__tests__/components/dashboard/` (신규)
-  - **테스트 케이스**:
-    ```typescript
-    describe("StatsCards", () => {
-      it("로딩 스켈레톤 표시", () => {});
-      it("에러 상태 표시", () => {});
-      it("success_rate 계산 정확성", () => {});
-    });
-
-    describe("UsageBanner", () => {
-      it("80% 도달 시 경고 배너 표시", () => {});
-      it("100% 도달 시 위험 배너 표시", () => {});
-    });
-    ```
+  - **완료 내용**:
+    - `StatsCards.test.tsx`: 로딩, 에러, 데이터 렌더링, 성공률 계산, 엣지 케이스 (16개 테스트)
+    - `UsageBanner.test.tsx`: 배너 표시 조건, 경고/위험 배너, 업그레이드 버튼 (12개 테스트)
+    - `UsageChart.test.tsx`: 로딩, 에러, 차트 렌더링, 접근성, 날짜 포맷 (14개 테스트)
+  - **테스트 결과**: 42개 테스트 모두 통과
+  - **설정 완료**:
+    - Jest + React Testing Library 설정
+    - `jest.config.js`, `jest.setup.js` 생성
+    - UI 컴포넌트 파일 생성 (card, skeleton, alert, button)
+    - recharts 패키지 추가 및 mock 설정
   - **예상 시간**: 3시간
 
 ---

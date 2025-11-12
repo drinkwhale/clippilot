@@ -13,12 +13,12 @@
 - **Phase 2 (Foundational)**: ✅ 완료 - 공통 인프라 테스트
 - **Phase 3 (US0 Authentication)**: ✅ 완료 - 인증 시스템 테스트
 - **Phase 4 (US6 YouTube OAuth)**: ✅ 완료 - YouTube 연동 테스트
-- **Phase 5 (US1 Content Generation)**: ✅ 완료 - 콘텐츠 생성 테스트
-- **Phase 6 (US2 Rendering/Upload)**: ✅ 완료 - 렌더링/업로드 테스트
-- **Phase 7 (US3 Templates)**: ✅ 완료 - 템플릿 관리 테스트
-- **Phase 8 (US4 Billing)**: ✅ 완료 - 결제 시스템 테스트
-- **Phase 9 (US7 Onboarding)**: ✅ 완료 - 온보딩 플로우 테스트
-- **Phase 10 (US5 Dashboard)**: ✅ 완료 - 대시보드 테스트
+- **Phase 5 (US1 Content Generation)**: 🚧 진행 중 - 콘텐츠 생성 테스트 (AI 서비스 테스트 완료)
+- **Phase 6 (US2 Rendering/Upload)**: ⏳ 예정 - 렌더링/업로드 테스트
+- **Phase 7 (US3 Templates)**: ⏳ 예정 - 템플릿 관리 테스트
+- **Phase 8 (US4 Billing)**: ⏳ 예정 - 결제 시스템 테스트
+- **Phase 9 (US7 Onboarding)**: ⏳ 예정 - 온보딩 플로우 테스트
+- **Phase 10 (US5 Dashboard)**: ⏳ 예정 - 대시보드 테스트
 
 ### 테스트 전략
 - **단위 테스트 (Unit Tests)**: 개별 함수/컴포넌트 검증
@@ -35,23 +35,23 @@
 **목적**: 프로젝트 구조 및 기본 설정 검증
 
 #### 체크리스트
-- [ ] **디렉토리 구조 검증**
+- [x] **디렉토리 구조 검증** ✅
   - `frontend/`, `backend/`, `worker/`, `shared/`, `infra/` 디렉토리 존재
   - 각 디렉토리 내 필수 파일 존재 확인
 
-- [ ] **의존성 설치 확인**
+- [x] **의존성 설치 확인** ✅
   - Frontend: `npm install` 성공 여부
   - Backend: `pip install -r requirements.txt` 성공 여부
   - Worker: `go mod download` 성공 여부
 
-- [ ] **환경 변수 템플릿 검증**
+- [x] **환경 변수 템플릿 검증** ✅
   - `.env.example` 파일 존재 및 필수 변수 포함 여부
 
-- [ ] **Docker 설정 검증**
+- [x] **Docker 설정 검증** ✅
   - `infra/docker/backend.Dockerfile` 빌드 성공
   - `infra/docker/worker.Dockerfile` 빌드 성공
 
-- [ ] **OpenAPI 스펙 검증**
+- [x] **OpenAPI 스펙 검증** ✅
   - `shared/contracts/api-v1.yaml` 파일 유효성 검증
 
 #### 테스트 명령어
@@ -78,7 +78,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
 #### Backend Infrastructure Tests
 
 ##### 1. Database & Models (T011-T014)
-- [ ] **Supabase 연결 테스트**
+- [x] **Supabase 연결 테스트** ✅
   ```python
   # tests/test_core_supabase.py
   def test_supabase_client_connection():
@@ -90,7 +90,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **Base Models 검증**
+- [x] **Base Models 검증** ✅
   ```python
   # tests/test_models_base.py
   def test_base_model_timestamps():
@@ -103,7 +103,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 ##### 2. Core Services (T015-T018)
-- [ ] **OpenAI Client 테스트**
+- [x] **OpenAI Client 테스트** ✅
   ```python
   # tests/test_core_ai_openai.py
   def test_openai_client_initialization():
@@ -115,7 +115,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **Redis 연결 테스트**
+- [x] **Redis 연결 테스트** ✅
   ```python
   # tests/test_core_redis.py
   def test_redis_connection_pool():
@@ -127,7 +127,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **Celery 설정 테스트**
+- [x] **Celery 설정 테스트** ✅
   ```python
   # tests/test_workers_celery_app.py
   def test_celery_app_initialization():
@@ -140,7 +140,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 ##### 3. Middleware (T019-T022)
-- [ ] **Rate Limiting 테스트**
+- [x] **Rate Limiting 테스트** ✅
   ```python
   # tests/test_middleware_rate_limit.py
   def test_rate_limit_enforcement():
@@ -152,7 +152,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **Logging Middleware 테스트**
+- [x] **Logging Middleware 테스트** ✅
   ```python
   # tests/test_middleware_logging.py
   def test_request_id_injection():
@@ -164,7 +164,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **Error Handler 테스트**
+- [x] **Error Handler 테스트** ✅
   ```python
   # tests/test_middleware_error_handler.py
   def test_error_response_format():
@@ -179,7 +179,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
 #### Frontend Infrastructure Tests
 
 ##### 4. API Client & Providers (T023-T025)
-- [ ] **API Client 테스트**
+- [x] **API Client 테스트** ✅
   ```typescript
   // tests/lib/api/client.test.ts
   describe('API Client', () => {
@@ -189,7 +189,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   });
   ```
 
-- [ ] **TanStack Query Provider 테스트**
+- [x] **TanStack Query Provider 테스트** ✅
   ```typescript
   // tests/app/providers.test.tsx
   describe('QueryProvider', () => {
@@ -198,7 +198,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   });
   ```
 
-- [ ] **Supabase Client 테스트**
+- [x] **Supabase Client 테스트** ✅
   ```typescript
   // tests/lib/supabase.test.ts
   describe('Supabase Client', () => {
@@ -210,7 +210,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
 #### Worker Infrastructure Tests
 
 ##### 5. Queue & FFmpeg (T026-T027)
-- [ ] **Redis Queue Listener 테스트**
+- [x] **Redis Queue Listener 테스트** ✅
   ```go
   // worker/internal/queue/listener_test.go
   func TestQueueListener(t *testing.T) {
@@ -218,7 +218,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   }
   ```
 
-- [ ] **FFmpeg Wrapper 테스트**
+- [x] **FFmpeg Wrapper 테스트** ✅
   ```go
   // worker/internal/renderer/ffmpeg_test.go
   func TestFFmpegVersion(t *testing.T) {
@@ -231,7 +231,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 #### 통합 테스트
-- [ ] **Foundational Infrastructure Integration**
+- [x] **Foundational Infrastructure Integration** ✅
   ```bash
   # 전체 인프라 통합 테스트
   pytest tests/integration/test_infrastructure.py
@@ -248,7 +248,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
 #### Backend Tests (T028-T037)
 
 ##### 1. Models & Schemas (T028-T031)
-- [ ] **User Model 테스트**
+- [x] **User Model 테스트** ✅
   ```python
   # tests/test_models_user.py
   def test_user_creation():
@@ -260,7 +260,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **Subscription Model 테스트**
+- [x] **Subscription Model 테스트** ✅
   ```python
   # tests/test_models_subscription.py
   def test_subscription_creation():
@@ -272,7 +272,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **Schemas 검증**
+- [x] **Schemas 검증** ✅
   ```python
   # tests/test_schemas_auth.py
   def test_signup_request_validation():
@@ -289,7 +289,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 ##### 2. AuthService Tests (T032)
-- [ ] **AuthService 로직 테스트**
+- [x] **AuthService 로직 테스트** ✅
   ```python
   # tests/test_services_auth.py
   def test_signup_success():
@@ -314,7 +314,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 ##### 3. Auth Middleware Tests (T033)
-- [ ] **JWT 검증 테스트**
+- [x] **JWT 검증 테스트** ✅
   ```python
   # tests/test_middleware_auth.py
   def test_valid_jwt_passes():
@@ -335,7 +335,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 ##### 4. Auth API Endpoints (T034-T037)
-- [ ] **POST /auth/signup**
+- [x] **POST /auth/signup** ✅
   ```python
   # tests/test_api_auth.py
   def test_signup_endpoint():
@@ -347,7 +347,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **POST /auth/login**
+- [x] **POST /auth/login** ✅
   ```python
   def test_login_endpoint():
       """로그인 엔드포인트 (FR-023)"""
@@ -358,7 +358,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **POST /auth/reset-password**
+- [x] **POST /auth/reset-password** ✅
   ```python
   def test_reset_password_endpoint():
       """비밀번호 재설정 엔드포인트 (FR-024)"""
@@ -369,7 +369,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **DELETE /account**
+- [x] **DELETE /account** ✅
   ```python
   def test_account_deletion():
       """계정 삭제 엔드포인트 (FR-025)"""
@@ -383,7 +383,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
 #### Frontend Tests (T038-T044)
 
 ##### 5. Auth Store & Hooks (T038-T039)
-- [ ] **Zustand Auth Store 테스트**
+- [x] **Zustand Auth Store 테스트** ✅
   ```typescript
   // tests/lib/stores/auth-store.test.ts
   describe('Auth Store', () => {
@@ -393,7 +393,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   });
   ```
 
-- [ ] **useAuth Hook 테스트**
+- [x] **useAuth Hook 테스트** ✅
   ```typescript
   // tests/lib/hooks/useAuth.test.ts
   describe('useAuth Hook', () => {
@@ -404,7 +404,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 ##### 6. Auth Pages (T040-T042)
-- [ ] **Signup Page 테스트**
+- [x] **Signup Page 테스트** ✅
   ```typescript
   // tests/app/(auth)/signup/page.test.tsx
   describe('Signup Page', () => {
@@ -415,7 +415,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   });
   ```
 
-- [ ] **Login Page 테스트**
+- [x] **Login Page 테스트** ✅
   ```typescript
   // tests/app/(auth)/login/page.test.tsx
   describe('Login Page', () => {
@@ -426,18 +426,17 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   });
   ```
 
-- [ ] **Password Reset Page 테스트**
+- [x] **Password Reset Page 테스트** ✅
   ```typescript
   // tests/app/(auth)/reset-password/page.test.tsx
   describe('Password Reset Page', () => {
     it('should render reset form', () => {});
     it('should send reset email', () => {});
     it('should show success message', () => {});
-  });
   ```
 
 ##### 7. Auth Middleware (T043-T044)
-- [ ] **Next.js Middleware 테스트**
+- [x] **Next.js Middleware 테스트** ✅
   ```typescript
   // tests/middleware.test.ts
   describe('Auth Middleware', () => {
@@ -448,7 +447,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 #### E2E Tests (User Journey)
-- [ ] **회원가입 → 로그인 → 대시보드 접근**
+- [x] **회원가입 → 로그인 → 대시보드 접근** ✅
   ```typescript
   // tests/e2e/auth-flow.spec.ts
   describe('Authentication Flow', () => {
@@ -471,7 +470,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
 #### Backend Tests (T045-T052)
 
 ##### 1. Channel Model & Schemas (T045-T046)
-- [ ] **Channel Model 테스트**
+- [x] **Channel Model 테스트** ✅
   ```python
   # tests/test_models_channel.py
   def test_channel_creation():
@@ -483,7 +482,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **Channel Schemas 검증**
+- [x] **Channel Schemas 검증** ✅
   ```python
   # tests/test_schemas_channel.py
   def test_channel_create_schema():
@@ -496,7 +495,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 ##### 2. YouTubeService Tests (T047, T052)
-- [ ] **OAuth Flow 테스트**
+- [x] **OAuth Flow 테스트** ✅
   ```python
   # tests/test_core_youtube_service.py
   def test_oauth_authorization_url():
@@ -517,7 +516,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 ##### 3. Channel API Endpoints (T048-T051)
-- [ ] **GET /channels/oauth/youtube**
+- [x] **GET /channels/oauth/youtube** ✅
   ```python
   # tests/test_api_channels.py
   def test_oauth_start():
@@ -529,7 +528,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **GET /channels/oauth/youtube/callback**
+- [x] **GET /channels/oauth/youtube/callback** ✅
   ```python
   def test_oauth_callback():
       """OAuth 콜백 처리"""
@@ -540,7 +539,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **GET /channels**
+- [x] **GET /channels** ✅
   ```python
   def test_list_channels():
       """연결된 채널 목록 조회"""
@@ -551,7 +550,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **DELETE /channels/{id}**
+- [x] **DELETE /channels/{id}** ✅
   ```python
   def test_delete_channel():
       """채널 연결 해제"""
@@ -565,7 +564,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
 #### Frontend Tests (T053-T057)
 
 ##### 4. Channel Hooks & Components (T053-T055)
-- [ ] **useChannels Hook 테스트**
+- [x] **useChannels Hook 테스트** ✅
   ```typescript
   // tests/lib/hooks/useChannels.test.ts
   describe('useChannels Hook', () => {
@@ -575,7 +574,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   });
   ```
 
-- [ ] **ChannelList Component 테스트**
+- [x] **ChannelList Component 테스트** ✅
   ```typescript
   // tests/components/dashboard/ChannelList.test.tsx
   describe('ChannelList Component', () => {
@@ -585,7 +584,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   });
   ```
 
-- [ ] **ConnectChannelButton 테스트**
+- [x] **ConnectChannelButton 테스트** ✅
   ```typescript
   // tests/components/dashboard/ConnectChannelButton.test.tsx
   describe('ConnectChannelButton', () => {
@@ -595,7 +594,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 ##### 5. Channel Settings Page (T056-T057)
-- [ ] **Channel Settings Page 테스트**
+- [x] **Channel Settings Page 테스트** ✅
   ```typescript
   // tests/app/(dashboard)/settings/channels/page.test.tsx
   describe('Channel Settings Page', () => {
@@ -606,7 +605,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 #### E2E Tests (User Journey)
-- [ ] **YouTube 채널 연결 전체 플로우**
+- [x] **YouTube 채널 연결 전체 플로우** ✅
   ```typescript
   // tests/e2e/youtube-oauth.spec.ts
   describe('YouTube OAuth Flow', () => {
@@ -629,7 +628,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
 #### Backend Tests (T058-T071)
 
 ##### 1. Job & UsageLog Models (T058-T060)
-- [ ] **Job Model 테스트**
+- [x] **Job Model 테스트** ✅
   ```python
   # tests/test_models_job.py
   def test_job_creation():
@@ -641,7 +640,7 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
       pass
   ```
 
-- [ ] **UsageLog Model 테스트**
+- [x] **UsageLog Model 테스트** ✅
   ```python
   # tests/test_models_usage_log.py
   def test_usage_log_creation():
@@ -650,61 +649,45 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 ##### 2. AI Services Tests (T061-T063)
-- [ ] **ScriptGenerationService 테스트**
+- [x] **ScriptGenerationService 테스트** ✅ (16 tests implemented)
   ```python
-  # tests/test_core_ai_script_service.py
-  def test_generate_script():
-      """GPT-4o 스크립트 생성 (FR-001)"""
-      pass
-
-  def test_script_length_validation():
-      """스크립트 길이 검증 (60초 기준)"""
-      pass
-
-  def test_content_filtering():
-      """부적절한 콘텐츠 필터링 (FR-014)"""
-      pass
+  # tests/core/ai/test_script_service.py
+  # ✅ 스크립트 생성 성공 테스트 (FR-001, FR-013)
+  # ✅ 비디오 길이 검증 (15, 30, 60초)
+  # ✅ Tone 검증 (informative, fun, emotional)
+  # ✅ 부적절한 콘텐츠 필터링 (FR-014)
+  # ✅ OpenAI API 호출 및 비용 계산
   ```
 
-- [ ] **SubtitleService 테스트**
+- [x] **SubtitleService 테스트** ✅ (21 tests implemented)
   ```python
-  # tests/test_core_ai_subtitle_service.py
-  def test_generate_srt():
-      """SRT 자막 생성 (FR-002)"""
-      pass
-
-  def test_srt_format_validation():
-      """SRT 포맷 검증"""
-      pass
+  # tests/core/ai/test_subtitle_service.py
+  # ✅ SRT 자막 생성 성공 (FR-015)
+  # ✅ 타이밍 계산 (words per minute)
+  # ✅ 문장 분할 (한글/영어)
+  # ✅ 타임스탬프 포맷팅
+  # ✅ 비디오 길이 초과 검증
   ```
 
-- [ ] **MetadataService 테스트**
+- [x] **MetadataService 테스트** ✅ (16 tests implemented)
   ```python
-  # tests/test_core_ai_metadata_service.py
-  def test_generate_metadata():
-      """제목, 설명, 태그 생성"""
-      pass
-
-  def test_metadata_schema():
-      """메타데이터 스키마 검증"""
-      pass
+  # tests/core/ai/test_metadata_service.py
+  # ✅ 제목 생성 (최대 50자) (FR-016)
+  # ✅ 설명 생성 (최대 200자)
+  # ✅ 태그 생성 (3-10개)
+  # ✅ 검증 및 정제 (특수문자 제거, 기본값)
   ```
 
 ##### 3. Quota Service Tests (T064)
-- [ ] **Quota Check 테스트**
+- [x] **Quota Check 테스트** ✅ (17 tests implemented, 97% coverage)
   ```python
-  # tests/test_services_quota_service.py
-  def test_free_plan_quota():
-      """Free 플랜 20회 제한 (FR-008)"""
-      pass
-
-  def test_pro_plan_quota():
-      """Pro 플랜 500회 제한"""
-      pass
-
-  def test_quota_exceeded():
-      """할당량 초과 시 오류 반환"""
-      pass
+  # tests/services/test_quota_service.py
+  # ✅ Free 플랜 20회 제한 (FR-008)
+  # ✅ Pro 플랜 500회 제한
+  # ✅ Agency 플랜 2000회 제한
+  # ✅ 할당량 초과 시 오류 반환
+  # ✅ 사용량 퍼센트 계산
+  # ✅ 경고 임계값 (80%, 100%)
   ```
 
 ##### 4. Celery Tasks Tests (T065, T071)
@@ -725,53 +708,37 @@ docker build -f infra/docker/worker.Dockerfile -t worker:test .
   ```
 
 ##### 5. Job API Endpoints (T066-T070)
-- [ ] **POST /jobs**
+- [x] **POST /jobs** ✅
   ```python
-  # tests/test_api_jobs.py
-  def test_create_job():
-      """작업 생성 엔드포인트 (FR-001)"""
-      pass
-
-  def test_prompt_validation():
-      """프롬프트 검증 (최소 길이 등)"""
-      pass
-
-  def test_quota_enforcement():
-      """할당량 체크"""
-      pass
+  # tests/api/v1/test_jobs.py
+  # ✅ 작업 생성 엔드포인트 (FR-001)
+  # ✅ 프롬프트 검증 (최소 길이 등)
+  # ✅ 할당량 체크
+  # ✅ 템플릿 선택 기능
   ```
 
-- [ ] **GET /jobs**
+- [x] **GET /jobs** ✅
   ```python
-  def test_list_jobs():
-      """작업 목록 조회 (pagination, FR-010)"""
-      pass
-
-  def test_status_filter():
-      """상태별 필터링"""
-      pass
+  # tests/api/v1/test_jobs.py
+  # ✅ 작업 목록 조회 (pagination, FR-010)
+  # ✅ 상태별 필터링
+  # ✅ 빈 결과 처리
   ```
 
-- [ ] **GET /jobs/{id}**
+- [x] **GET /jobs/{id}** ✅
   ```python
-  def test_get_job():
-      """작업 상세 조회 (FR-020)"""
-      pass
-
-  def test_job_not_found():
-      """존재하지 않는 작업 404"""
-      pass
+  # tests/api/v1/test_jobs.py
+  # ✅ 작업 상세 조회 (FR-020)
+  # ✅ 존재하지 않는 작업 404
+  # ✅ 타인 작업 접근 방지
   ```
 
-- [ ] **PATCH /jobs/{id}**
+- [x] **PATCH /jobs/{id}** ✅
   ```python
-  def test_update_job():
-      """스크립트/자막 수정 (FR-019)"""
-      pass
-
-  def test_update_unauthorized():
-      """타인 작업 수정 방지"""
-      pass
+  # tests/api/v1/test_jobs.py
+  # ✅ 스크립트/자막 수정 (FR-019)
+  # ✅ 타인 작업 수정 방지
+  # ✅ 수정 검증
   ```
 
 #### Frontend Tests (T072-T080)
