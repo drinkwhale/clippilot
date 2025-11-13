@@ -33,7 +33,7 @@ export function useOnboarding() {
   } = useQuery<OnboardingStatus>({
     queryKey: ["onboarding", "status"],
     queryFn: async () => {
-      const response = await apiClient.get("/v1/users/me/onboarding");
+      const response = await apiClient.get("/api/v1/users/me/onboarding");
       return response.data;
     },
   });
@@ -41,7 +41,7 @@ export function useOnboarding() {
   // 온보딩 완료 처리
   const completeOnboarding = useMutation({
     mutationFn: async (completed: boolean = true) => {
-      const response = await apiClient.put("/v1/users/me/onboarding", {
+      const response = await apiClient.put("/api/v1/users/me/onboarding", {
         onboarding_completed: completed,
       });
       return response.data;
@@ -56,7 +56,7 @@ export function useOnboarding() {
   // 온보딩 재시작 (완료 상태를 false로 설정)
   const restartOnboarding = useMutation({
     mutationFn: async () => {
-      const response = await apiClient.put("/v1/users/me/onboarding", {
+      const response = await apiClient.put("/api/v1/users/me/onboarding", {
         onboarding_completed: false,
       });
       return response.data;
