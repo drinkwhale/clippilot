@@ -4,6 +4,7 @@ API v1 routes for ClipPilot
 
 from fastapi import APIRouter
 
+from .admin import router as admin_router
 from .auth import router as auth_router
 # from .billing import router as billing_router
 # from .channels import router as channels_router
@@ -20,6 +21,7 @@ router = APIRouter(prefix="/v1")
 # Phase 3 (US0 Authentication) - Currently implemented
 router.include_router(auth_router)
 router.include_router(users_router)
+router.include_router(admin_router)
 
 # Phase 4+ - To be implemented
 # router.include_router(billing_router)

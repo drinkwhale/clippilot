@@ -39,6 +39,14 @@ export function Step1ConnectYouTube({ onNext }: Step1ConnectYouTubeProps) {
           <p className="text-sm text-muted-foreground mt-2">
             생성한 영상을 자동으로 YouTube에 업로드하려면 채널을 연결해주세요
           </p>
+          <Button
+            variant="link"
+            size="sm"
+            className="text-xs"
+            onClick={() => window.open("/oauth/youtube/setup", "_blank")}
+          >
+            OAuth 설정이 필요하신가요?
+          </Button>
         </div>
       </div>
 

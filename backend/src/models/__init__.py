@@ -9,6 +9,7 @@ from .subscription import Subscription, SubscriptionStatus, SubscriptionPlan
 from .template import Template
 from .job import Job, JobStatus
 from .usage_log import UsageLog
+from .oauth_config import OAuthConfig
 
 __all__ = [
     "Base",
@@ -26,4 +27,5 @@ __all__ = [
     "Job",
     "JobStatus",
     "UsageLog",
+    "OAuthConfig",
 ]

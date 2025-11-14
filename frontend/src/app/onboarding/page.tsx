@@ -46,6 +46,10 @@ export default function OnboardingPage() {
       router.push("/dashboard");
     } catch (error) {
       console.error("Failed to skip onboarding:", error);
+      // 인증 오류인 경우 로그인 페이지로 리디렉션
+      if (error instanceof Error && error.message.includes("인증")) {
+        router.push("/login?redirect=/onboarding");
+      }
     }
   };
 
