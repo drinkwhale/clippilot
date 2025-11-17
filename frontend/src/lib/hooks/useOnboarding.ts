@@ -41,10 +41,18 @@ export function useOnboarding() {
   // 온보딩 완료 처리
   const completeOnboarding = useMutation({
     mutationFn: async (completed: boolean = true) => {
-      const response = await apiClient.put("/api/v1/users/me/onboarding", {
-        onboarding_completed: completed,
-      });
-      return response.data;
+      try {
+        const response = await apiClient.put("/api/v1/users/me/onboarding", {
+          onboarding_completed: completed,
+        });
+        return response.data;
+      } catch (error) {
+        // 인증 오류를 더 명확하게 처리
+        if (error instanceof Error) {
+          throw error;
+        }
+        throw new Error("온보딩 상태 업데이트에 실패했습니다.");
+      }
     },
     onSuccess: () => {
       // 온보딩 상태 캐시 무효화
