@@ -60,6 +60,7 @@ class User(BaseModel):
     )
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="true")
     email_verified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
+    is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
     last_login_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
     login_attempts: Mapped[int] = mapped_column(nullable=False, default=0, server_default="0")
     locked_until: Mapped[Optional[datetime]] = mapped_column(nullable=True)

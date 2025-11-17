@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import get_db
-from src.middleware.auth import get_current_user
+from src.middleware.auth import get_admin_user
 from src.models.oauth_config import OAuthConfig
 from src.models.user import User
 
@@ -45,7 +45,7 @@ class YouTubeOAuthResponse(BaseModel):
 )
 async def save_youtube_oauth_config(
     request: YouTubeOAuthRequest,
-    current_user: Annotated[User, Depends(get_current_user)],
+    admin_user: Annotated[User, Depends(get_admin_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> YouTubeOAuthResponse:
     """
@@ -53,7 +53,7 @@ async def save_youtube_oauth_config(
 
     Args:
         request: OAuth configuration data
-        current_user: Currently authenticated user (must be admin)
+        admin_user: Currently authenticated admin user
         db: Database session
 
     Returns:
@@ -62,9 +62,6 @@ async def save_youtube_oauth_config(
     Raises:
         HTTPException: If user is not admin or save fails
     """
-    # TODO: Add admin role check
-    # For now, any authenticated user can save OAuth config
-    # In production, this should be restricted to admin users only
 
     # Check if config already exists
     from sqlalchemy import select
@@ -117,21 +114,21 @@ async def save_youtube_oauth_config(
     description="저장된 YouTube OAuth 설정을 조회합니다",
 )
 async def get_youtube_oauth_config(
-    current_user: Annotated[User, Depends(get_current_user)],
+    admin_user: Annotated[User, Depends(get_admin_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> YouTubeOAuthResponse:
     """
     Get YouTube OAuth configuration from database.
 
     Args:
-        current_user: Currently authenticated user (must be admin)
+        admin_user: Currently authenticated admin user
         db: Database session
 
     Returns:
         YouTubeOAuthResponse: OAuth configuration
 
     Raises:
-        HTTPException: If config not found
+        HTTPException: If config not found or user is not admin
     """
     from sqlalchemy import select
 

@@ -196,3 +196,32 @@ async def get_optional_user(
         return user if user and user.is_active else None
     except Exception:
         return None
+
+
+async def get_admin_user(
+    current_user: User = Depends(get_current_user),
+) -> User:
+    """
+    Get current user and verify admin privileges
+
+    Args:
+        current_user: Current authenticated user
+
+    Returns:
+        User model instance
+
+    Raises:
+        HTTPException: If user is not an admin
+    """
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "error": {
+                    "code": "FORBIDDEN",
+                    "message": "관리자 권한이 필요합니다",
+                }
+            },
+        )
+
+    return current_user
