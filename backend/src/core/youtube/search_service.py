@@ -30,6 +30,7 @@ class YouTubeSearchService:
         published_before: Optional[datetime] = None,
         video_duration: Optional[str] = None,
         order: str = "relevance",
+        min_subscriber_count: Optional[int] = None,
     ) -> List[Dict[str, Any]]:
         """
         YouTube 영상 검색
@@ -42,9 +43,10 @@ class YouTubeSearchService:
             published_before: 업로드 종료 날짜
             video_duration: 영상 길이 (short, medium, long)
             order: 정렬 기준 (relevance, date, viewCount, rating)
+            min_subscriber_count: 최소 구독자 수 (선택)
 
         Returns:
-            검색된 영상 ID 목록
+            검색된 영상 정보 목록
 
         Raises:
             YouTubeAPIError: YouTube API 오류
@@ -87,6 +89,12 @@ class YouTubeSearchService:
 
             # 영상 상세 정보 조회
             videos = await self.get_video_details(video_ids)
+
+            # 구독자 수 필터 적용
+            if min_subscriber_count is not None:
+                videos = await self._filter_by_subscriber_count(
+                    videos, min_subscriber_count
+                )
 
             logger.info(f"YouTube 검색 완료: {len(videos)}개 영상")
             return videos
@@ -141,6 +149,62 @@ class YouTubeSearchService:
         except Exception as e:
             logger.error(f"영상 상세 정보 조회 중 오류 발생: {e}")
             raise YouTubeAPIError(f"영상 정보 처리 중 오류가 발생했습니다: {e}")
+
+    async def _filter_by_subscriber_count(
+        self, videos: List[Dict[str, Any]], min_subscribers: int
+    ) -> List[Dict[str, Any]]:
+        """
+        구독자 수로 영상 필터링
+
+        Args:
+            videos: 영상 목록
+            min_subscribers: 최소 구독자 수
+
+        Returns:
+            필터링된 영상 목록
+        """
+        try:
+            # 채널 ID 추출
+            channel_ids = list(set(video["channel_id"] for video in videos))
+
+            if not channel_ids:
+                return []
+
+            # 채널 정보 조회
+            channels_response = (
+                self.youtube.channels()
+                .list(
+                    part="statistics",
+                    id=",".join(channel_ids),
+                )
+                .execute()
+            )
+
+            # 채널 ID → 구독자 수 매핑
+            channel_subscribers = {}
+            for item in channels_response.get("items", []):
+                channel_id = item["id"]
+                subscriber_count = int(
+                    item.get("statistics", {}).get("subscriberCount", 0)
+                )
+                channel_subscribers[channel_id] = subscriber_count
+
+            # 필터링
+            filtered_videos = [
+                video
+                for video in videos
+                if channel_subscribers.get(video["channel_id"], 0) >= min_subscribers
+            ]
+
+            logger.info(
+                f"구독자 수 필터 적용: {len(videos)}개 → {len(filtered_videos)}개"
+            )
+            return filtered_videos
+
+        except Exception as e:
+            logger.error(f"구독자 수 필터링 중 오류: {e}")
+            # 오류 발생 시 원본 반환
+            return videos
 
     def _parse_video_item(self, item: Dict[str, Any]) -> Dict[str, Any]:
         """

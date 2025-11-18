@@ -12,11 +12,18 @@ TypeScript/Next.js, Python/FastAPI, Go로 만든 AI 기반 숏폼 비디오 자�
 
 ## 2. 현재 최우선 목표 (Current Goal)
 
-**MVP 개발**: Setup ✅ → Foundational ✅ → US0 ✅ → US6 🔜 → US1 🔜 → US2 🔜 (104 tasks)
+**002-youtube-search 개발 중**: Phase 1 ✅ → Phase 2 ✅ → Phase 3 ✅ → Phase 4 ✅ → Phase 5 🔜 (100 tasks)
+- Phase 1 (Setup) 완료: YouTube API 연동, 의존성 설치, 환경 변수 설정 ✅
+- Phase 2 (Foundational) 완료: YouTube API 클라이언트, 캐시 서비스, Rate Limiting ✅
+- Phase 3 (US1 - 기본 검색) 완료: 키워드 검색, 영상 목록 표시, 기본 정보 조회 ✅
+- Phase 4 (US2 - 고급 필터링) 완료: 영상 타입, 업로드 기간, 국가, 조회수, 구독자 수 필터 ✅
+- **다음 작업**: Phase 5 (US3 - CII 계산) - 채널 영향력 지수 계산 및 필터링 🔜
+
+**001-clippilot-mvp 상태**: Phase 1-3 완료, Phase 4-6 대기 중
 - Phase 1 (Setup) 완료: 프로젝트 구조, 의존성 설치, Docker 설정 ✅
-- Phase 2 (Foundational Infrastructure) 완료: 인증, 오류 처리, 로깅, 속도 제한 등 공통 인프라 ✅
+- Phase 2 (Foundational Infrastructure) 완료: 인증, 오류 처리, 로깅, 속도 제한 ✅
 - Phase 3 (US0 Authentication) 완료: 회원가입, 로그인, 비밀번호 재설정, 인증 미들웨어 ✅
-- **다음 작업**: Phase 4 (US6 YouTube OAuth) - YouTube 채널 연동 및 OAuth 인증 구현 🔜
+- Phase 4-6 대기: YouTube OAuth, Content Generation, Rendering & Upload 🔜
 
 ## 3. 기술 스택 (Tech Stack)
 
@@ -67,11 +74,18 @@ clippilot/
 │   │   ├── app/              # Next.js 14 App Router
 │   │   │   ├── (auth)/       # 인증 라우트 그룹
 │   │   │   ├── dashboard/    # 대시보드
+│   │   │   │   └── youtube-search/  # YouTube 검색 기능
 │   │   │   └── api/          # API 라우트
 │   │   ├── components/       # 재사용 UI 컴포넌트
 │   │   │   ├── ui/           # shadcn/ui 컴포넌트
 │   │   │   └── features/     # 기능별 컴포넌트
-│   │   └── lib/              # 유틸리티 및 헬퍼
+│   │   │       └── youtube/  # YouTube 검색 관련 컴포넌트
+│   │   ├── lib/              # 유틸리티 및 헬퍼
+│   │   │   ├── api/          # API 클라이언트
+│   │   │   │   └── youtube.ts  # YouTube API 클라이언트
+│   │   │   └── utils/        # 유틸리티 함수
+│   │   └── hooks/            # 커스텀 훅
+│   │       └── useYouTubeSearch.ts
 │   └── public/               # 정적 파일
 │
 ├── backend/                  # FastAPI 백엔드 API
@@ -81,13 +95,20 @@ clippilot/
 │   │   │   ├── jobs.py      # 작업 관리
 │   │   │   ├── templates.py # 템플릿 관리
 │   │   │   ├── channels.py  # YouTube 채널 관리
+│   │   │   ├── youtube.py   # YouTube 검색 엔드포인트
 │   │   │   └── billing.py   # 결제 관리
 │   │   ├── core/            # 핵심 비즈니스 로직
 │   │   │   ├── ai/          # AI 서비스 (스크립트, 메타데이터 생성)
-│   │   │   └── youtube/     # YouTube API 연동
+│   │   │   ├── youtube/     # YouTube API 연동
+│   │   │   │   ├── __init__.py        # YouTube API 클라이언트 초기화
+│   │   │   │   ├── search_service.py  # 검색 서비스
+│   │   │   │   ├── exceptions.py      # 에러 핸들러
+│   │   │   │   └── utils.py          # 유틸리티
+│   │   │   └── cache.py     # Redis 캐시 서비스
 │   │   ├── models/          # SQLAlchemy 모델
 │   │   ├── workers/         # Celery 태스크
 │   │   ├── middleware/      # FastAPI 미들웨어
+│   │   │   └── rate_limit.py  # Rate Limiting
 │   │   └── config.py        # 설정 관리
 │   └── tests/               # pytest 테스트
 │
@@ -99,14 +120,16 @@ clippilot/
 │   │   └── storage/         # Supabase Storage 업로드
 │   └── pkg/                 # 공용 패키지
 │
-├── specs/001-clippilot-mvp/ # 기능 명세 및 설계 문서
-│   ├── spec.md              # 요구사항 명세서
-│   ├── plan.md              # 구현 계획
-│   ├── research.md          # 기술 선정 문서
-│   ├── data-model.md        # 데이터베이스 스키마
-│   ├── tasks.md             # 구현 태스크 목록 (170개)
-│   ├── quickstart.md        # 개발 환경 가이드
-│   └── contracts/api-v1.yaml # OpenAPI 3.1 스펙
+├── specs/                    # 기능 명세 및 설계 문서
+│   ├── 001-clippilot-mvp/   # MVP 개발 스펙
+│   │   ├── spec.md
+│   │   ├── plan.md
+│   │   ├── tasks.md         # 구현 태스크 목록 (104개)
+│   │   └── contracts/api-v1.yaml
+│   └── 002-youtube-search/  # YouTube 검색 기능 스펙
+│       ├── spec.md          # 요구사항 명세서
+│       ├── plan.md          # 구현 계획
+│       └── tasks.md         # 구현 태스크 목록 (100개)
 │
 └── docs/                     # 문서
     └── clippilot.md         # 원본 기획 문서
@@ -117,11 +140,31 @@ clippilot/
 ### Frontend (Next.js)
 - **`frontend/src/app/(auth)/login/page.tsx`**: 로그인 페이지
 - **`frontend/src/app/dashboard/page.tsx`**: 대시보드 메인
+- **`frontend/src/app/dashboard/youtube-search/page.tsx`**: YouTube 검색 페이지
+- **`frontend/src/components/features/youtube/`**: YouTube 검색 관련 컴포넌트
+  - `SearchBar.tsx`: 검색 입력 폼
+  - `SearchFilters.tsx`: 고급 필터링 UI
+  - `VideoCard.tsx`: 영상 카드 컴포넌트
+  - `VideoGrid.tsx`: 영상 그리드 레이아웃
+  - `filters/`: 개별 필터 컴포넌트 (VideoType, UploadPeriod, Region, ViewCount, Subscriber)
+- **`frontend/src/hooks/useYouTubeSearch.ts`**: YouTube 검색 커스텀 훅 (TanStack Query)
+- **`frontend/src/lib/api/youtube.ts`**: YouTube API 클라이언트
+- **`frontend/src/lib/utils/format.ts`**: 날짜/시간 포맷팅 유틸리티
 - **`frontend/src/components/features/JobCreator.tsx`**: 작업 생성 폼 컴포넌트
 - **`frontend/src/lib/supabase.ts`**: Supabase 클라이언트 초기화
 
 ### Backend (FastAPI)
 - **`backend/src/api/v1/jobs.py`**: 작업 생성/조회/수정 API 엔드포인트
+- **`backend/src/api/v1/youtube.py`**: YouTube 검색 API 엔드포인트
+  - `GET /api/v1/youtube/search`: 영상 검색
+  - `GET /api/v1/youtube/videos/{videoId}`: 영상 상세 조회
+- **`backend/src/core/youtube/search_service.py`**: YouTube 검색 서비스
+  - `search_videos()`: YouTube Data API search.list 호출
+  - `get_video_details()`: 영상 상세 정보 조회
+  - 고급 필터링 로직: 영상 타입, 업로드 기간, 국가, 조회수, 구독자 수
+- **`backend/src/core/youtube/__init__.py`**: YouTube API 클라이언트 초기화
+- **`backend/src/core/cache.py`**: Redis 캐시 서비스 (검색 결과 15분 TTL)
+- **`backend/src/middleware/rate_limit.py`**: slowapi 기반 Rate Limiting (10 req/min)
 - **`backend/src/core/ai/script_service.py`**: OpenAI GPT-4o 스크립트 생성 로직
   - `generate_script()`: 프롬프트 → 스크립트 생성 핵심 함수
 - **`backend/src/core/youtube/upload_service.py`**: YouTube 업로드 로직
@@ -139,7 +182,10 @@ clippilot/
 - **`specs/001-clippilot-mvp/spec.md`**: 8개 User Story, 40개 FR, 21개 NFR
 - **`specs/001-clippilot-mvp/data-model.md`**: 7개 테이블 스키마 (users, channels, templates, jobs, subscriptions, usage_logs, webhooks)
 - **`specs/001-clippilot-mvp/contracts/api-v1.yaml`**: 23개 API 엔드포인트 OpenAPI 스펙
-- **`specs/001-clippilot-mvp/tasks.md`**: 170개 구현 태스크
+- **`specs/001-clippilot-mvp/tasks.md`**: 104개 구현 태스크
+- **`specs/002-youtube-search/spec.md`**: YouTube 검색 기능 요구사항 (6개 User Story, 8개 FR)
+- **`specs/002-youtube-search/plan.md`**: 구현 계획 및 아키텍처
+- **`specs/002-youtube-search/tasks.md`**: 100개 구현 태스크 (Phase 1-9)
 
 ## 6. 로컬 실행 및 테스트 방법 (How to Run & Test)
 
@@ -149,6 +195,26 @@ clippilot/
 - `.env` 파일 설정 (OpenAI, YouTube, Pexels, Stripe API 키)
 
 ### 로컬 실행
+
+**권장: 관리 스크립트 사용**
+```bash
+# 모든 서버 시작 (Backend, Frontend, Celery, Worker, Redis)
+./scripts/dev-start.sh
+
+# 서버 상태 확인
+./scripts/dev-status.sh
+
+# 로그 확인
+./scripts/dev-logs.sh [service]  # service: backend, frontend, celery, worker, redis, all
+
+# 서버 재시작
+./scripts/dev-restart.sh
+
+# 모든 서버 중지
+./scripts/dev-stop.sh
+```
+
+**개별 실행 (개발 시 필요한 경우)**
 ```bash
 # Redis 실행
 redis-server
@@ -344,10 +410,18 @@ gofmt -w .                 # 코드 포맷팅
 
 ## Recent Changes
 
+### 002-youtube-search (진행 중)
+- 2025-11-19: Phase 4 (US2 - 고급 필터링) 완료 - 영상 타입, 업로드 기간, 국가, 조회수, 구독자 수 필터 구현 ✅
+- 2025-11-18: Phase 3 (US1 - 기본 검색) 완료 - YouTube 검색 기본 기능 구현 ✅
+- 2025-11-17: Phase 2 (Foundational) 완료 - YouTube API 클라이언트, 캐시, Rate Limiting ✅
+- 2025-11-16: Phase 1 (Setup) 완료 - 의존성 설치 및 환경 설정 ✅
+- 2025-11-15: 002-youtube-search 브랜치 생성 및 스펙 문서 작성
+
+### 001-clippilot-mvp
 - 2025-11-03: README.md 파일들 업데이트 (루트, frontend, backend, worker, specs)
-- 2025-11-03: Phase 3 (US0 Authentication) 완료 - 인증 시스템 구현
-- 2025-11-02: Phase 2 (Foundational Infrastructure) 완료 - 공통 인프라 구축
-- 2025-10-29: Phase 1 (Setup) 완료 - 프로젝트 초기 설정
+- 2025-11-03: Phase 3 (US0 Authentication) 완료 - 인증 시스템 구현 ✅
+- 2025-11-02: Phase 2 (Foundational Infrastructure) 완료 - 공통 인프라 구축 ✅
+- 2025-10-29: Phase 1 (Setup) 완료 - 프로젝트 초기 설정 ✅
 - 2025-10-27: 001-clippilot-mvp 브랜치 생성 및 전체 스펙 문서 완료
 - 2025-10-27: spec.md, plan.md, research.md, data-model.md, tasks.md, api-v1.yaml 생성
 
