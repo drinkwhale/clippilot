@@ -43,6 +43,7 @@ class Settings(BaseSettings):
     OPENAI_MODEL: str = "gpt-4o"
 
     # YouTube API 설정 (개발 환경용 기본값)
+    YOUTUBE_API_KEY: str = "placeholder-youtube-api-key"  # YouTube Data API v3 키
     YOUTUBE_CLIENT_ID: str = "placeholder-client-id"
     YOUTUBE_CLIENT_SECRET: str = "placeholder-secret"
     YOUTUBE_REDIRECT_URI: str = "http://localhost:3000/api/auth/callback/youtube"
@@ -109,6 +110,8 @@ class Settings(BaseSettings):
                 errors.append("OPENAI_API_KEY is required")
 
             # YouTube API 검증
+            if self.YOUTUBE_API_KEY == "placeholder-youtube-api-key":
+                errors.append("YOUTUBE_API_KEY must be set in production environment")
             if self.YOUTUBE_CLIENT_ID == "placeholder-client-id":
                 errors.append("YOUTUBE_CLIENT_ID must be set in production environment")
             if self.YOUTUBE_CLIENT_SECRET == "placeholder-secret":

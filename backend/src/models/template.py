@@ -3,11 +3,12 @@ Template model for ClipPilot
 Manages brand presets and video templates
 """
 
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from sqlalchemy import Boolean, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import ARRAY, BigInteger, Boolean, ForeignKey, Integer, String, Text
+from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
@@ -42,6 +43,66 @@ class Template(BaseModel):
         default=False,
         index=True,
         comment="System default templates (리뷰, 뉴스, 교육)"
+    )
+
+    # YouTube 관련 컬럼 (002-youtube-search 기능)
+    youtube_video_id: Mapped[Optional[str]] = mapped_column(
+        String(255),
+        nullable=True,
+        index=True,
+        comment="YouTube video ID if template was created from YouTube video"
+    )
+    youtube_title: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True,
+        comment="Original YouTube video title"
+    )
+    youtube_description: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True,
+        comment="Original YouTube video description"
+    )
+    youtube_thumbnail_url: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True,
+        comment="YouTube video thumbnail URL"
+    )
+    youtube_channel_id: Mapped[Optional[str]] = mapped_column(
+        String(255),
+        nullable=True,
+        index=True,
+        comment="YouTube channel ID"
+    )
+    youtube_channel_name: Mapped[Optional[str]] = mapped_column(
+        String(255),
+        nullable=True,
+        comment="YouTube channel name"
+    )
+    youtube_published_at: Mapped[Optional[datetime]] = mapped_column(
+        TIMESTAMP(timezone=True),
+        nullable=True,
+        index=True,
+        comment="YouTube video publication date"
+    )
+    youtube_view_count: Mapped[Optional[int]] = mapped_column(
+        BigInteger,
+        nullable=True,
+        comment="YouTube video view count at time of saving"
+    )
+    youtube_duration_seconds: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        nullable=True,
+        comment="YouTube video duration in seconds"
+    )
+    youtube_captions: Mapped[Optional[dict]] = mapped_column(
+        JSONB,
+        nullable=True,
+        comment="YouTube video captions (multiple languages)"
+    )
+    youtube_tags: Mapped[Optional[list[str]]] = mapped_column(
+        ARRAY(Text),
+        nullable=True,
+        comment="YouTube video tags"
     )
 
     # 관계

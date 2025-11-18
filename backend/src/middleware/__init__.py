@@ -13,12 +13,14 @@ from .error_handler import (
     validation_exception_handler,
 )
 from .logging import LoggingMiddleware, log_event, log_security_event
-from .rate_limit import RateLimitMiddleware
+from .rate_limit import limiter, rate_limit_exceeded_handler, get_limiter
 
 __all__ = [
     # Middleware
     "LoggingMiddleware",
-    "RateLimitMiddleware",
+    "limiter",
+    "rate_limit_exceeded_handler",
+    "get_limiter",
     # Exceptions
     "ClipPilotException",
     "AuthenticationError",
