@@ -195,6 +195,26 @@ clippilot/
 - `.env` 파일 설정 (OpenAI, YouTube, Pexels, Stripe API 키)
 
 ### 로컬 실행
+
+**권장: 관리 스크립트 사용**
+```bash
+# 모든 서버 시작 (Backend, Frontend, Celery, Worker, Redis)
+./scripts/dev-start.sh
+
+# 서버 상태 확인
+./scripts/dev-status.sh
+
+# 로그 확인
+./scripts/dev-logs.sh [service]  # service: backend, frontend, celery, worker, redis, all
+
+# 서버 재시작
+./scripts/dev-restart.sh
+
+# 모든 서버 중지
+./scripts/dev-stop.sh
+```
+
+**개별 실행 (개발 시 필요한 경우)**
 ```bash
 # Redis 실행
 redis-server
