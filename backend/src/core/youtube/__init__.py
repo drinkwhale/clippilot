@@ -10,6 +10,7 @@ from .youtube_service import (
     InvalidOAuthStateError,
     ChannelOwnershipError,
 )
+from .client import YouTubeClient, get_youtube_client
 
 __all__ = [
     "YouTubeService",
@@ -18,4 +19,6 @@ __all__ = [
     "TokenRefreshError",
     "InvalidOAuthStateError",
     "ChannelOwnershipError",
+    "YouTubeClient",
+    "get_youtube_client",
 ]

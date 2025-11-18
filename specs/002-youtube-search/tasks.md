@@ -26,13 +26,13 @@ YouTube Data API v3를 활용하여 영상 검색, 고급 필터링, CII 계산,
 
 **목표**: YouTube API 연동 및 필요한 라이브러리 설치
 
-- [ ] T001 [P] Backend에 google-api-python-client 추가 in backend/requirements.txt
-- [ ] T002 [P] Backend에 slowapi (Rate Limiting) 추가 in backend/requirements.txt
-- [ ] T003 [P] Frontend에 react-youtube 추가 in frontend/package.json
-- [ ] T004 [P] Frontend에 lucide-react 추가 (이미 설치되어 있으면 스킵) in frontend/package.json
-- [ ] T005 Backend 환경 변수에 YOUTUBE_API_KEY 추가 in backend/src/config.py
-- [ ] T006 Redis 연결 설정 확인 in backend/src/config.py
-- [ ] T007 [P] templates 테이블 마이그레이션: youtube 관련 컬럼 추가 in backend/alembic/versions/xxx_add_youtube_columns.py
+- [x] T001 [P] Backend에 google-api-python-client 추가 in backend/pyproject.toml (이미 설치됨)
+- [x] T002 [P] Backend에 slowapi (Rate Limiting) 추가 in backend/pyproject.toml
+- [x] T003 [P] Frontend에 react-youtube 추가 in frontend/package.json
+- [x] T004 [P] Frontend에 lucide-react 추가 (이미 설치되어 있으면 스킵) in frontend/package.json (이미 설치됨)
+- [x] T005 Backend 환경 변수에 YOUTUBE_API_KEY 추가 in backend/src/config.py
+- [x] T006 Redis 연결 설정 확인 in backend/src/config.py (이미 설정됨 - REDIS_URL)
+- [x] T007 [P] templates 테이블 마이그레이션: youtube 관련 컬럼 추가 in backend/migrations/002_add_youtube_columns_to_templates.sql
 
 **Phase 1 완료 기준**:
 - ✅ 모든 의존성 설치 완료
@@ -47,17 +47,17 @@ YouTube Data API v3를 활용하여 영상 검색, 고급 필터링, CII 계산,
 
 ### Backend Foundational
 
-- [ ] T008 [P] YouTube API 클라이언트 초기화 in backend/src/core/youtube/__init__.py
-- [ ] T009 [P] Redis 캐시 서비스 구현 (get/set/delete) in backend/src/core/cache.py
-- [ ] T010 [P] Rate Limiting 미들웨어 구현 (slowapi) in backend/src/middleware/rate_limit.py
-- [ ] T011 [P] YouTube API 에러 핸들러 구현 in backend/src/core/youtube/exceptions.py
-- [ ] T012 [P] ISO 8601 duration 파싱 유틸리티 (PT1M30S → 초 변환) in backend/src/core/youtube/utils.py
+- [x] T008 [P] YouTube API 클라이언트 초기화 in backend/src/core/youtube/__init__.py
+- [x] T009 [P] Redis 캐시 서비스 구현 (get/set/delete) in backend/src/core/cache.py
+- [x] T010 [P] Rate Limiting 미들웨어 구현 (slowapi) in backend/src/middleware/rate_limit.py
+- [x] T011 [P] YouTube API 에러 핸들러 구현 in backend/src/core/youtube/exceptions.py
+- [x] T012 [P] ISO 8601 duration 파싱 유틸리티 (PT1M30S → 초 변환) in backend/src/core/youtube/utils.py
 
 ### Frontend Foundational
 
-- [ ] T013 [P] YouTube API 클라이언트 타입 정의 in frontend/src/lib/api/youtube.ts
-- [ ] T014 [P] 날짜/시간 포맷팅 유틸리티 (formatDuration, formatViewCount, formatDate) in frontend/src/lib/utils/format.ts
-- [ ] T015 [P] API 클라이언트 axios 인스턴스 설정 in frontend/src/lib/api/client.ts
+- [x] T013 [P] YouTube API 클라이언트 타입 정의 in frontend/src/lib/api/youtube.ts
+- [x] T014 [P] 날짜/시간 포맷팅 유틸리티 (formatDuration, formatViewCount, formatDate) in frontend/src/lib/utils/format.ts
+- [x] T015 [P] API 클라이언트 axios 인스턴스 설정 in frontend/src/lib/api/client.ts
 
 **Phase 2 완료 기준**:
 - ✅ 캐시 서비스 동작 확인 (set → get)
