@@ -130,13 +130,49 @@ export interface CIIMetrics {
 export async function searchVideos(
   params: YouTubeSearchParams
 ): Promise<YouTubeSearchResult> {
+  const filters = params.filters || {};
+
+  // 백엔드 API 파라미터로 변환
+  const apiParams: Record<string, any> = {
+    query: params.query,
+    max_results: params.maxResults || 25,
+  };
+
+  if (params.pageToken) {
+    apiParams.page_token = params.pageToken;
+  }
+
+  if (filters.regionCode) {
+    apiParams.region_code = filters.regionCode;
+  }
+
+  if (filters.publishedAfter) {
+    apiParams.published_after = filters.publishedAfter;
+  }
+
+  if (filters.publishedBefore) {
+    apiParams.published_before = filters.publishedBefore;
+  }
+
+  if (filters.videoType && filters.videoType !== 'all') {
+    // videoType을 YouTube API의 videoDuration으로 변환
+    apiParams.video_duration = filters.videoType === 'shorts' ? 'short' : filters.videoType;
+  }
+
+  if (filters.order) {
+    apiParams.order = filters.order;
+  }
+
+  if (filters.minViewCount !== undefined && filters.minViewCount > 0) {
+    apiParams.min_view_count = filters.minViewCount;
+  }
+
+  if (filters.minSubscribers !== undefined && filters.minSubscribers > 0) {
+    apiParams.min_subscriber_count = filters.minSubscribers;
+  }
+
   const response = await apiClient.get('/api/v1/youtube/search', {
-    params: {
-      query: params.query,
-      max_results: params.maxResults || 25,
-      page_token: params.pageToken,
-      ...params.filters,
-    },
+    params: apiParams,
   });
   return response.data;
 }

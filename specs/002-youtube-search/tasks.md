@@ -126,23 +126,23 @@ YouTube Data API v3를 활용하여 영상 검색, 고급 필터링, CII 계산,
 
 ### Backend - US2
 
-- [ ] T039 [P] [US2] videoType 필터 로직 (duration ≤ 60초 → shorts) in backend/src/core/youtube/search_service.py
-- [ ] T040 [P] [US2] publishedAfter/publishedBefore 파라미터 처리 in backend/src/core/youtube/search_service.py
-- [ ] T041 [P] [US2] regionCode 파라미터 처리 in backend/src/core/youtube/search_service.py
-- [ ] T042 [US2] 조회수 필터 (minViewCount) 백엔드 로직 in backend/src/core/youtube/search_service.py
-- [ ] T043 [US2] 구독자 수 필터 (minSubscribers) - 채널 정보 조회 in backend/src/core/youtube/search_service.py
-- [ ] T044 [US2] /search 엔드포인트에 필터 파라미터 추가 in backend/src/api/v1/youtube.py
+- [x] T039 [P] [US2] videoType 필터 로직 (duration ≤ 60초 → shorts) in backend/src/core/youtube/search_service.py
+- [x] T040 [P] [US2] publishedAfter/publishedBefore 파라미터 처리 in backend/src/core/youtube/search_service.py
+- [x] T041 [P] [US2] regionCode 파라미터 처리 in backend/src/core/youtube/search_service.py
+- [x] T042 [US2] 조회수 필터 (minViewCount) 백엔드 로직 in backend/src/core/youtube/search_service.py
+- [x] T043 [US2] 구독자 수 필터 (minSubscribers) - 채널 정보 조회 in backend/src/core/youtube/search_service.py
+- [x] T044 [US2] /search 엔드포인트에 필터 파라미터 추가 in backend/src/api/v1/youtube.py
 
 ### Frontend - US2
 
-- [ ] T045 [P] [US2] VideoTypeFilter 컴포넌트 (쇼츠/롱폼/전체) in frontend/src/components/features/youtube/filters/VideoTypeFilter.tsx
-- [ ] T046 [P] [US2] UploadPeriodFilter 컴포넌트 (1시간~사용자 지정) in frontend/src/components/features/youtube/filters/UploadPeriodFilter.tsx
-- [ ] T047 [P] [US2] RegionSelector 컴포넌트 (KR, JP, US 등) in frontend/src/components/features/youtube/filters/RegionSelector.tsx
-- [ ] T048 [P] [US2] ViewCountFilter 컴포넌트 (최소 조회수 입력) in frontend/src/components/features/youtube/filters/ViewCountFilter.tsx
-- [ ] T049 [P] [US2] SubscriberFilter 컴포넌트 (최소 구독자 수) in frontend/src/components/features/youtube/filters/SubscriberFilter.tsx
-- [ ] T050 [US2] SearchFilters 컨테이너 컴포넌트 (모든 필터 통합) in frontend/src/components/features/youtube/SearchFilters.tsx
-- [ ] T051 [US2] VideoTypeBadge 컴포넌트 (쇼츠/롱폼 표시) in frontend/src/components/features/youtube/VideoTypeBadge.tsx
-- [ ] T052 [US2] SearchBar에 필터 통합 in frontend/src/components/features/youtube/SearchBar.tsx
+- [x] T045 [P] [US2] VideoTypeFilter 컴포넌트 (쇼츠/롱폼/전체) in frontend/src/components/features/youtube/filters/VideoTypeFilter.tsx
+- [x] T046 [P] [US2] UploadPeriodFilter 컴포넌트 (1시간~사용자 지정) in frontend/src/components/features/youtube/filters/UploadPeriodFilter.tsx
+- [x] T047 [P] [US2] RegionSelector 컴포넌트 (KR, JP, US 등) in frontend/src/components/features/youtube/filters/RegionSelector.tsx
+- [x] T048 [P] [US2] ViewCountFilter 컴포넌트 (최소 조회수 입력) in frontend/src/components/features/youtube/filters/ViewCountFilter.tsx
+- [x] T049 [P] [US2] SubscriberFilter 컴포넌트 (최소 구독자 수) in frontend/src/components/features/youtube/filters/SubscriberFilter.tsx
+- [x] T050 [US2] SearchFilters 컨테이너 컴포넌트 (모든 필터 통합) in frontend/src/components/features/youtube/SearchFilters.tsx
+- [x] T051 [US2] VideoTypeBadge 컴포넌트 (쇼츠/롱폼 표시) in frontend/src/components/features/youtube/VideoTypeBadge.tsx
+- [x] T052 [US2] SearchBar에 필터 통합 in frontend/src/app/dashboard/youtube-search/page.tsx
 
 **US2 완료 기준**:
 - ✅ "Music" 검색 + 쇼츠 필터 → 60초 이하 영상만 표시

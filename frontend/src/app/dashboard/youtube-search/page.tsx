@@ -7,6 +7,10 @@
 import { useState } from "react";
 import { SearchBar } from "@/components/features/youtube/SearchBar";
 import { CollectionCountSelector } from "@/components/features/youtube/CollectionCountSelector";
+import {
+  SearchFilters,
+  type SearchFiltersState,
+} from "@/components/features/youtube/SearchFilters";
 import { VideoGrid } from "@/components/features/youtube/VideoGrid";
 import { VideoSkeletonGrid } from "@/components/features/youtube/VideoSkeleton";
 import { EmptyState } from "@/components/features/youtube/EmptyState";
@@ -15,13 +19,50 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import type { YouTubeVideo } from "@/lib/api/youtube";
 
+// 업로드 기간을 ISO 8601 날짜로 변환하는 헬퍼 함수
+function getPublishedAfterDate(period: string): string | undefined {
+  const now = new Date();
+  switch (period) {
+    case "hour":
+      return new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+    case "today":
+      return new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+    case "week":
+      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    case "month":
+      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    case "year":
+      return new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000).toISOString();
+    default:
+      return undefined;
+  }
+}
+
 export default function YouTubeSearchPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [maxResults, setMaxResults] = useState(25);
+  const [filters, setFilters] = useState<SearchFiltersState>({
+    videoDuration: "any",
+    uploadPeriod: "all",
+    regionCode: "",
+    minViewCount: 0,
+    minSubscriberCount: 0,
+  });
 
   const { data, isLoading, error } = useYouTubeSearch({
     query: searchQuery,
     maxResults,
+    filters: {
+      videoType:
+        filters.videoDuration === "any"
+          ? "all"
+          : (filters.videoDuration as "shorts" | "long"),
+      publishedAfter: getPublishedAfterDate(filters.uploadPeriod),
+      regionCode: filters.regionCode || undefined,
+      minViewCount: filters.minViewCount > 0 ? filters.minViewCount : undefined,
+      minSubscribers:
+        filters.minSubscriberCount > 0 ? filters.minSubscriberCount : undefined,
+    },
   });
 
   const handleSearch = (query: string) => {
@@ -31,6 +72,16 @@ export default function YouTubeSearchPage() {
   const handleVideoClick = (video: YouTubeVideo) => {
     // TODO: 영상 상세 모달 열기 (Phase 7에서 구현)
     console.log("Video clicked:", video);
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      videoDuration: "any",
+      uploadPeriod: "all",
+      regionCode: "",
+      minViewCount: 0,
+      minSubscriberCount: 0,
+    });
   };
 
   return (
@@ -49,6 +100,12 @@ export default function YouTubeSearchPage() {
           onChange={setMaxResults}
         />
       </div>
+
+      <SearchFilters
+        filters={filters}
+        onChange={setFilters}
+        onReset={handleResetFilters}
+      />
 
       {error && (
         <Alert variant="destructive">

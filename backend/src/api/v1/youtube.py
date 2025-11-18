@@ -62,6 +62,9 @@ async def search_youtube_videos(
         description="정렬 기준 (relevance, date, viewCount, rating, title)",
     ),
     min_view_count: Optional[int] = Query(None, ge=0, description="최소 조회수"),
+    min_subscriber_count: Optional[int] = Query(
+        None, ge=0, description="최소 구독자 수"
+    ),
     current_user: dict = Depends(get_current_user),
     youtube_service: YouTubeSearchService = Depends(get_youtube_service),
     cache_service: CacheService = Depends(get_cache_service),
@@ -77,6 +80,7 @@ async def search_youtube_videos(
     - **video_duration**: 영상 길이 (short, medium, long, any)
     - **order**: 정렬 기준 (relevance, date, viewCount, rating, title)
     - **min_view_count**: 최소 조회수 필터
+    - **min_subscriber_count**: 최소 구독자 수 필터
 
     Rate Limit: 10 req/min
     Cache: 15분 TTL
@@ -100,6 +104,7 @@ async def search_youtube_videos(
             published_before=published_before,
             video_duration=video_duration,
             order=order,
+            min_subscriber_count=min_subscriber_count,
         )
 
         # 클라이언트 사이드 필터링 (최소 조회수)
