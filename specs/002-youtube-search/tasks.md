@@ -78,32 +78,32 @@ YouTube Data API v3를 활용하여 영상 검색, 고급 필터링, CII 계산,
 
 ### Backend - US1
 
-- [ ] T016 [P] [US1] YouTubeSearchService 클래스 생성 in backend/src/core/youtube/search_service.py
-- [ ] T017 [US1] search_videos() 메서드 구현 (YouTube Data API search.list 호출) in backend/src/core/youtube/search_service.py
-- [ ] T018 [US1] get_video_details() 메서드 구현 (videos.list 호출) in backend/src/core/youtube/search_service.py
-- [ ] T019 [US1] YouTube API 응답 → YouTubeSearchResult 변환 로직 in backend/src/core/youtube/search_service.py
-- [ ] T020 [P] [US1] Pydantic 스키마: SearchQuery 정의 in backend/src/api/v1/schemas/youtube.py
-- [ ] T021 [P] [US1] Pydantic 스키마: YouTubeSearchResult 정의 in backend/src/api/v1/schemas/youtube.py
-- [ ] T022 [US1] API 라우터 생성 (prefix="/youtube") in backend/src/api/v1/youtube.py
-- [ ] T023 [US1] GET /api/v1/youtube/search 엔드포인트 구현 in backend/src/api/v1/youtube.py
-- [ ] T024 [US1] GET /api/v1/youtube/videos/{videoId} 엔드포인트 구현 in backend/src/api/v1/youtube.py
-- [ ] T025 [US1] Rate Limiting 적용 (/search에 10/min) in backend/src/api/v1/youtube.py
-- [ ] T026 [US1] 검색 결과 캐싱 적용 (15분 TTL) in backend/src/api/v1/youtube.py
-- [ ] T027 [US1] main.py에 youtube 라우터 등록 in backend/src/main.py
+- [x] T016 [P] [US1] YouTubeSearchService 클래스 생성 in backend/src/core/youtube/search_service.py
+- [x] T017 [US1] search_videos() 메서드 구현 (YouTube Data API search.list 호출) in backend/src/core/youtube/search_service.py
+- [x] T018 [US1] get_video_details() 메서드 구현 (videos.list 호출) in backend/src/core/youtube/search_service.py
+- [x] T019 [US1] YouTube API 응답 → YouTubeSearchResult 변환 로직 in backend/src/core/youtube/search_service.py
+- [x] T020 [P] [US1] Pydantic 스키마: SearchQuery 정의 in backend/src/api/v1/schemas/youtube.py
+- [x] T021 [P] [US1] Pydantic 스키마: YouTubeSearchResult 정의 in backend/src/api/v1/schemas/youtube.py
+- [x] T022 [US1] API 라우터 생성 (prefix="/youtube") in backend/src/api/v1/youtube.py
+- [x] T023 [US1] GET /api/v1/youtube/search 엔드포인트 구현 in backend/src/api/v1/youtube.py
+- [x] T024 [US1] GET /api/v1/youtube/videos/{videoId} 엔드포인트 구현 in backend/src/api/v1/youtube.py
+- [x] T025 [US1] Rate Limiting 적용 (/search에 10/min) in backend/src/api/v1/youtube.py
+- [x] T026 [US1] 검색 결과 캐싱 적용 (15분 TTL) in backend/src/api/v1/youtube.py
+- [x] T027 [US1] main.py에 youtube 라우터 등록 in backend/src/api/v1/__init__.py
 
 ### Frontend - US1
 
-- [ ] T028 [P] [US1] YouTube API 클라이언트 함수 (search, getVideoDetails) in frontend/src/lib/api/youtube.ts
-- [ ] T029 [P] [US1] useYouTubeSearch 커스텀 훅 (TanStack Query) in frontend/src/hooks/useYouTubeSearch.ts
-- [ ] T030 [P] [US1] useVideoDetails 커스텀 훅 in frontend/src/hooks/useYouTubeSearch.ts
-- [ ] T031 [P] [US1] SearchBar 컴포넌트 (검색 입력 폼) in frontend/src/components/features/youtube/SearchBar.tsx
-- [ ] T032 [P] [US1] CollectionCountSelector 컴포넌트 (25~50개 선택) in frontend/src/components/features/youtube/CollectionCountSelector.tsx
-- [ ] T033 [P] [US1] VideoCard 컴포넌트 (썸네일, 제목, 채널명, 조회수, 날짜) in frontend/src/components/features/youtube/VideoCard.tsx
-- [ ] T034 [P] [US1] VideoGrid 컴포넌트 (그리드 레이아웃) in frontend/src/components/features/youtube/VideoGrid.tsx
-- [ ] T035 [P] [US1] VideoSkeleton 컴포넌트 (로딩 UI) in frontend/src/components/features/youtube/VideoSkeleton.tsx
-- [ ] T036 [P] [US1] EmptyState 컴포넌트 (검색 결과 없음) in frontend/src/components/features/youtube/EmptyState.tsx
-- [ ] T037 [US1] YouTubeSearchPage 생성 (/dashboard/youtube-search) in frontend/src/app/dashboard/youtube-search/page.tsx
-- [ ] T038 [US1] 대시보드 네비게이션에 "YouTube 검색" 메뉴 추가 in frontend/src/components/layout/DashboardNav.tsx
+- [x] T028 [P] [US1] YouTube API 클라이언트 함수 (search, getVideoDetails) in frontend/src/lib/api/youtube.ts
+- [x] T029 [P] [US1] useYouTubeSearch 커스텀 훅 (TanStack Query) in frontend/src/hooks/useYouTubeSearch.ts
+- [x] T030 [P] [US1] useVideoDetails 커스텀 훅 in frontend/src/hooks/useYouTubeSearch.ts
+- [x] T031 [P] [US1] SearchBar 컴포넌트 (검색 입력 폼) in frontend/src/components/features/youtube/SearchBar.tsx
+- [x] T032 [P] [US1] CollectionCountSelector 컴포넌트 (25~50개 선택) in frontend/src/components/features/youtube/CollectionCountSelector.tsx
+- [x] T033 [P] [US1] VideoCard 컴포넌트 (썸네일, 제목, 채널명, 조회수, 날짜) in frontend/src/components/features/youtube/VideoCard.tsx
+- [x] T034 [P] [US1] VideoGrid 컴포넌트 (그리드 레이아웃) in frontend/src/components/features/youtube/VideoGrid.tsx
+- [x] T035 [P] [US1] VideoSkeleton 컴포넌트 (로딩 UI) in frontend/src/components/features/youtube/VideoSkeleton.tsx
+- [x] T036 [P] [US1] EmptyState 컴포넌트 (검색 결과 없음) in frontend/src/components/features/youtube/EmptyState.tsx
+- [x] T037 [US1] YouTubeSearchPage 생성 (/dashboard/youtube-search) in frontend/src/app/dashboard/youtube-search/page.tsx
+- [x] T038 [US1] 대시보드 네비게이션에 "YouTube 검색" 메뉴 추가 in frontend/src/app/dashboard/page.tsx
 
 **US1 완료 기준**:
 - ✅ "React Tutorial" 검색 → 25개 영상 목록 표시
