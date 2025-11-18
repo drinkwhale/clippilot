@@ -1,105 +1,92 @@
 """
-Rate limiting middleware for ClipPilot API
-Implements per-user rate limiting: 60 requests per minute (NFR-017)
+Rate Limiting 미들웨어
+
+slowapi를 사용하여 API 요청 속도를 제한합니다.
+YouTube 검색 API: 10 req/min (FR-003)
+기타 API: 60 req/min (NFR-017)
 """
 
-from typing import Optional
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from fastapi import Request
+from fastapi.responses import JSONResponse
+from src.config import settings
+import logging
 
-from fastapi import HTTPException, Request, status
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response
-
-from src.core.redis_client import get_redis
+logger = logging.getLogger(__name__)
 
 
-class RateLimitMiddleware(BaseHTTPMiddleware):
+def get_user_identifier(request: Request) -> str:
     """
-    Rate limiting middleware using Redis
-    Limits: 60 requests per minute per user
+    사용자 식별자 반환 (인증된 사용자 ID 또는 IP 주소)
+
+    Args:
+        request: FastAPI Request 객체
+
+    Returns:
+        str: 사용자 식별자
     """
+    # request.state에서 사용자 ID 추출 시도 (auth middleware에서 설정)
+    if hasattr(request.state, "user_id"):
+        return f"user:{request.state.user_id}"
 
-    def __init__(self, app, requests_per_minute: int = 60):
-        super().__init__(app)
-        self.requests_per_minute = requests_per_minute
-        self.window_seconds = 60  # 1 minute window
+    # Authorization 헤더에서 사용자 ID 추출 시도
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1]
+        return f"token:{token[:20]}"
 
-    async def dispatch(self, request: Request, call_next) -> Response:
-        """
-        Process request with rate limiting
+    # 인증되지 않은 경우 IP 주소 사용
+    return f"ip:{get_remote_address(request)}"
 
-        Args:
-            request: FastAPI request
-            call_next: Next middleware in chain
 
-        Returns:
-            Response
+# Limiter 인스턴스 생성
+limiter = Limiter(
+    key_func=get_user_identifier,
+    default_limits=["60/minute"],  # 기본 제한: 분당 60 요청
+    storage_uri=settings.REDIS_URL,
+    strategy="fixed-window",
+)
 
-        Raises:
-            HTTPException: 429 if rate limit exceeded
-        """
-        # Skip rate limiting for health check and docs
-        if request.url.path in ["/", "/health", "/docs", "/redoc", "/openapi.json"]:
-            return await call_next(request)
 
-        # Get user identifier
-        user_id = self._get_user_id(request)
+async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded) -> JSONResponse:
+    """
+    Rate Limit 초과 에러 핸들러
 
-        if not user_id:
-            # No user ID, skip rate limiting (handled by auth middleware)
-            return await call_next(request)
+    Args:
+        request: FastAPI Request 객체
+        exc: RateLimitExceeded 예외
 
-        # Check rate limit
-        redis_client = get_redis()
-        key = f"ratelimit:{user_id}"
+    Returns:
+        JSONResponse: 에러 응답
+    """
+    logger.warning(
+        f"Rate limit exceeded for {get_user_identifier(request)}: {exc.detail}"
+    )
 
-        allowed, current, remaining = await redis_client.check_rate_limit(
-            key=key,
-            limit=self.requests_per_minute,
-            window=self.window_seconds,
-        )
+    return JSONResponse(
+        status_code=429,
+        content={
+            "error": {
+                "code": "RATE_LIMIT_EXCEEDED",
+                "message": "요청 횟수가 제한을 초과했습니다. 잠시 후 다시 시도해주세요.",
+                "detail": exc.detail,
+            }
+        },
+        headers={
+            "Retry-After": str(exc.retry_after) if hasattr(exc, 'retry_after') else "60",
+            "X-RateLimit-Limit": request.headers.get("X-RateLimit-Limit", "60"),
+            "X-RateLimit-Remaining": "0",
+        },
+    )
 
-        if not allowed:
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail={
-                    "error": {
-                        "code": "RATE_LIMIT_EXCEEDED",
-                        "message": "요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요.",
-                        "details": {
-                            "limit": self.requests_per_minute,
-                            "window": "1 minute",
-                            "current": current,
-                        },
-                    }
-                },
-            )
 
-        # Process request
-        response = await call_next(request)
+def get_limiter() -> Limiter:
+    """
+    Limiter 인스턴스 반환 (의존성 주입용)
 
-        # Add rate limit headers
-        response.headers["X-RateLimit-Limit"] = str(self.requests_per_minute)
-        response.headers["X-RateLimit-Remaining"] = str(remaining)
-        response.headers["X-RateLimit-Window"] = str(self.window_seconds)
-
-        return response
-
-    def _get_user_id(self, request: Request) -> Optional[str]:
-        """
-        Extract user ID from request
-
-        Args:
-            request: FastAPI request
-
-        Returns:
-            User ID or None
-        """
-        # Try to get user ID from request state (set by auth middleware)
-        if hasattr(request.state, "user_id"):
-            return request.state.user_id
-
-        # Fallback to IP address for unauthenticated requests
-        if request.client and request.client.host:
-            return f"ip:{request.client.host}"
-
-        return None
+    Returns:
+        Limiter: Rate limiter
+    """
+    return limiter
