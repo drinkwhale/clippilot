@@ -2,7 +2,13 @@
 
 from typing import Optional, List
 from datetime import datetime
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, ConfigDict
+
+
+def to_camel(string: str) -> str:
+    """snake_case를 camelCase로 변환"""
+    components = string.split('_')
+    return components[0] + ''.join(x.title() for x in components[1:])
 
 
 class SearchQuery(BaseModel):
@@ -73,6 +79,11 @@ class YouTubeSearchResult(BaseModel):
     tags: List[str] = Field(default_factory=list, description="태그 목록")
     category_id: str = Field(..., description="카테고리 ID")
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel
+    )
+
     class Config:
         json_schema_extra = {
             "example": {
@@ -96,9 +107,14 @@ class YouTubeSearchResult(BaseModel):
 class YouTubeSearchResponse(BaseModel):
     """YouTube 검색 응답 스키마"""
 
-    results: List[YouTubeSearchResult] = Field(..., description="검색 결과 목록")
+    videos: List[YouTubeSearchResult] = Field(..., description="검색 결과 목록", alias="results")
     total_results: int = Field(..., description="총 결과 수")
     query: str = Field(..., description="검색 쿼리")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel
+    )
 
     class Config:
         json_schema_extra = {
@@ -142,6 +158,11 @@ class VideoDetail(BaseModel):
     comment_count: int = Field(..., description="댓글 수")
     tags: List[str] = Field(default_factory=list, description="태그 목록")
     category_id: str = Field(..., description="카테고리 ID")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel
+    )
 
     class Config:
         json_schema_extra = {

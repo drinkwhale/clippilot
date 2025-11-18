@@ -40,6 +40,7 @@ def get_cache_service() -> CacheService:
 @router.get(
     "/search",
     response_model=YouTubeSearchResponse,
+    response_model_by_alias=True,
     summary="YouTube 영상 검색",
     description="키워드로 YouTube 영상을 검색하고 기본 정보를 반환합니다.",
 )
@@ -84,7 +85,7 @@ async def search_youtube_videos(
         cache_key = f"youtube:search:{query}:{max_results}:{region_code}:{video_duration}:{order}"
 
         # 캐시 확인
-        cached_result = await cache_service.get(cache_key)
+        cached_result = cache_service.get(cache_key)
         if cached_result:
             logger.info(f"캐시된 검색 결과 반환: query={query}")
             return cached_result
@@ -106,13 +107,13 @@ async def search_youtube_videos(
 
         # 응답 구성
         response = YouTubeSearchResponse(
-            results=[YouTubeSearchResult(**video) for video in videos],
+            videos=[YouTubeSearchResult(**video) for video in videos],
             total_results=len(videos),
             query=query,
         )
 
         # 캐시 저장 (15분 TTL)
-        await cache_service.set(cache_key, response.model_dump(), ttl=900)
+        cache_service.set(cache_key, response.model_dump(by_alias=True), ttl=900)
 
         logger.info(
             f"YouTube 검색 성공: query={query}, results={len(videos)}, user_id={current_user['id']}"
@@ -142,6 +143,7 @@ async def search_youtube_videos(
 @router.get(
     "/videos/{video_id}",
     response_model=VideoDetail,
+    response_model_by_alias=True,
     summary="YouTube 영상 상세 정보 조회",
     description="특정 YouTube 영상의 상세 정보를 반환합니다.",
 )
@@ -165,7 +167,7 @@ async def get_video_details(
         cache_key = f"youtube:video:{video_id}"
 
         # 캐시 확인
-        cached_result = await cache_service.get(cache_key)
+        cached_result = cache_service.get(cache_key)
         if cached_result:
             logger.info(f"캐시된 영상 정보 반환: video_id={video_id}")
             return cached_result
@@ -182,7 +184,7 @@ async def get_video_details(
         video_detail = VideoDetail(**videos[0])
 
         # 캐시 저장 (15분 TTL)
-        await cache_service.set(cache_key, video_detail.model_dump(), ttl=900)
+        cache_service.set(cache_key, video_detail.model_dump(by_alias=True), ttl=900)
 
         logger.info(
             f"YouTube 영상 정보 조회 성공: video_id={video_id}, user_id={current_user['id']}"
