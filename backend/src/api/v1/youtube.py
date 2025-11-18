@@ -4,7 +4,7 @@ from typing import Optional
 from datetime import datetime
 import logging
 
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi import APIRouter, Depends, Query, HTTPException, status, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -46,6 +46,7 @@ def get_cache_service() -> CacheService:
 )
 @limiter.limit("10/minute")
 async def search_youtube_videos(
+    request: Request,
     query: str = Query(..., min_length=1, max_length=500, description="검색 키워드"),
     max_results: int = Query(25, ge=25, le=50, description="최대 결과 수 (25~50)"),
     region_code: Optional[str] = Query(
@@ -149,6 +150,7 @@ async def search_youtube_videos(
 )
 @limiter.limit("30/minute")
 async def get_video_details(
+    request: Request,
     video_id: str,
     current_user: dict = Depends(get_current_user),
     youtube_service: YouTubeSearchService = Depends(get_youtube_service),
