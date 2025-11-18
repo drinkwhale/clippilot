@@ -86,8 +86,12 @@ async def search_youtube_videos(
     Cache: 15분 TTL
     """
     try:
-        # 캐시 키 생성
-        cache_key = f"youtube:search:{query}:{max_results}:{region_code}:{video_duration}:{order}"
+        # 캐시 키 생성 (모든 필터 파라미터 포함)
+        cache_key = (
+            f"youtube:search:{query}:{max_results}:{region_code}:"
+            f"{published_after}:{published_before}:{video_duration}:{order}:"
+            f"{min_view_count}:{min_subscriber_count}"
+        )
 
         # 캐시 확인
         cached_result = cache_service.get(cache_key)
