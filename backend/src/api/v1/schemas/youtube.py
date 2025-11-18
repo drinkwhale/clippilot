@@ -81,11 +81,8 @@ class YouTubeSearchResult(BaseModel):
 
     model_config = ConfigDict(
         populate_by_name=True,
-        alias_generator=to_camel
-    )
-
-    class Config:
-        json_schema_extra = {
+        alias_generator=to_camel,
+        json_schema_extra={
             "example": {
                 "video_id": "dQw4w9WgXcQ",
                 "title": "Rick Astley - Never Gonna Give You Up",
@@ -102,6 +99,7 @@ class YouTubeSearchResult(BaseModel):
                 "category_id": "10",
             }
         }
+    )
 
 
 class YouTubeSearchResponse(BaseModel):
@@ -113,11 +111,8 @@ class YouTubeSearchResponse(BaseModel):
 
     model_config = ConfigDict(
         populate_by_name=True,
-        alias_generator=to_camel
-    )
-
-    class Config:
-        json_schema_extra = {
+        alias_generator=to_camel,
+        json_schema_extra={
             "example": {
                 "results": [
                     {
@@ -140,6 +135,7 @@ class YouTubeSearchResponse(BaseModel):
                 "query": "Rick Astley",
             }
         }
+    )
 
 
 class VideoDetail(BaseModel):
@@ -161,11 +157,8 @@ class VideoDetail(BaseModel):
 
     model_config = ConfigDict(
         populate_by_name=True,
-        alias_generator=to_camel
-    )
-
-    class Config:
-        json_schema_extra = {
+        alias_generator=to_camel,
+        json_schema_extra={
             "example": {
                 "video_id": "dQw4w9WgXcQ",
                 "title": "Rick Astley - Never Gonna Give You Up",
@@ -182,3 +175,4 @@ class VideoDetail(BaseModel):
                 "category_id": "10",
             }
         }
+    )
