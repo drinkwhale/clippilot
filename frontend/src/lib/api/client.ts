@@ -236,4 +236,9 @@ export const api = {
     createCheckout: (plan: string) =>
       apiClient.post('/api/v1/billing/checkout', { plan }),
   },
+
+  // Dashboard endpoints
+  dashboard: {
+    stats: () => apiClient.get('/api/v1/dashboard/stats'),
+  },
 }
