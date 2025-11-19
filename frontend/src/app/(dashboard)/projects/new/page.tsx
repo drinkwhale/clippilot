@@ -54,7 +54,7 @@ export default function NewProjectPage() {
     try {
       const job = await createJob({
         prompt: prompt.trim(),
-        template_id: selectedTemplateId || undefined,
+        templateId: selectedTemplateId || undefined,
       })
 
       toast({
