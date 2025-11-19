@@ -72,8 +72,6 @@ export default function UsageChart({ period = 30 }: UsageChartProps) {
         <ResponsiveContainer
           width="100%"
           height={300}
-          role="img"
-          aria-label={`${periodText}간 일별 작업 수 추이 차트. ${chartDescription}`}
         >
           <LineChart
             data={chartData}

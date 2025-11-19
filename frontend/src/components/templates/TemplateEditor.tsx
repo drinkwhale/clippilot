@@ -52,7 +52,7 @@ export function TemplateEditor({
   // Load template data when editing
   useEffect(() => {
     if (template) {
-      const config = template.brand_config_json
+      const config = template.brandConfig
       setFormData({
         name: template.name,
         description: template.description || '',

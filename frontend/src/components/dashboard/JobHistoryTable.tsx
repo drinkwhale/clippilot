@@ -52,7 +52,7 @@ interface JobHistoryTableProps {
  */
 export default function JobHistoryTable({ limit = 10 }: JobHistoryTableProps) {
   const [page, setPage] = useState(1);
-  const { data, isLoading, error } = useJobs({ page, limit });
+  const { jobs, total, isLoading, error } = useJobs({ page, pageSize: limit });
 
   if (isLoading) {
     return (
@@ -72,7 +72,7 @@ export default function JobHistoryTable({ limit = 10 }: JobHistoryTableProps) {
     );
   }
 
-  if (error || !data) {
+  if (error) {
     return (
       <Card className="border-destructive">
         <CardHeader>
@@ -83,8 +83,7 @@ export default function JobHistoryTable({ limit = 10 }: JobHistoryTableProps) {
     );
   }
 
-  const jobs = data.jobs;
-  const totalPages = Math.ceil(data.total / limit);
+  const totalPages = Math.ceil(total / limit);
   const hasNext = page < totalPages;
   const hasPrev = page > 1;
 
@@ -93,7 +92,7 @@ export default function JobHistoryTable({ limit = 10 }: JobHistoryTableProps) {
       <CardHeader>
         <CardTitle>작업 히스토리</CardTitle>
         <CardDescription>
-          최근 작업 {data.total.toLocaleString()}개
+          최근 작업 {total.toLocaleString()}개
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -131,7 +130,7 @@ export default function JobHistoryTable({ limit = 10 }: JobHistoryTableProps) {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {new Date(job.created_at).toLocaleDateString("ko-KR", {
+                        {new Date(job.createdAt).toLocaleDateString("ko-KR", {
                           year: "numeric",
                           month: "short",
                           day: "numeric",

@@ -23,7 +23,7 @@ interface ChannelFilterProps {
  */
 export default function ChannelFilter({ onChannelChange }: ChannelFilterProps) {
   const [selectedChannel, setSelectedChannel] = useState<string>("all");
-  const { data: channels, isLoading } = useChannels();
+  const { channels, isLoading } = useChannels();
 
   const handleChannelChange = (value: string) => {
     setSelectedChannel(value);
@@ -55,7 +55,7 @@ export default function ChannelFilter({ onChannelChange }: ChannelFilterProps) {
           <SelectItem value="all">모든 채널</SelectItem>
           {channels.map((channel) => (
             <SelectItem key={channel.id} value={channel.id}>
-              {channel.channel_name}
+              {channel.channelName}
             </SelectItem>
           ))}
         </SelectContent>

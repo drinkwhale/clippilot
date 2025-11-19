@@ -29,14 +29,14 @@ export function TemplatePreview({ template }: TemplatePreviewProps) {
     )
   }
 
-  const config = template.brand_config_json
+  const config = template.brandConfig
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-start justify-between">
           <CardTitle>{template.name}</CardTitle>
-          {template.is_system_default && (
+          {template.isSystemDefault && (
             <Badge variant="secondary">시스템 템플릿</Badge>
           )}
         </div>

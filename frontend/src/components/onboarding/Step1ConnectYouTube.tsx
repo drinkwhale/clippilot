@@ -67,7 +67,7 @@ export function Step1ConnectYouTube({ onNext }: Step1ConnectYouTubeProps) {
               >
                 <Youtube className="w-5 h-5 text-red-600" />
                 <div className="flex-1">
-                  <p className="font-medium">{channel.yt_channel_id}</p>
+                  <p className="font-medium">{channel.ytChannelId}</p>
                   <p className="text-sm text-muted-foreground">
                     연결됨 · {new Date(channel.createdAt).toLocaleDateString()}
                   </p>

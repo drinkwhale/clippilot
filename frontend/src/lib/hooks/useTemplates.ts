@@ -42,7 +42,7 @@ export interface BrandConfig {
   watermark_opacity?: number
 }
 
-export interface Template {
+export interface TemplateApiResponse {
   id: string
   user_id: string | null
   name: string
@@ -51,6 +51,17 @@ export interface Template {
   is_system_default: boolean
   created_at: string
   updated_at: string
+}
+
+export interface Template {
+  id: string
+  userId: string | null
+  name: string
+  description: string | null
+  brandConfig: BrandConfig
+  isSystemDefault: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 interface TemplateListApiResponse {
@@ -69,6 +80,20 @@ interface TemplateUpdateInput {
   description?: string
   brand_config_json?: BrandConfig
 }
+
+/**
+ * Map API response to Template
+ */
+const mapTemplate = (template: TemplateApiResponse): Template => ({
+  id: template.id,
+  userId: template.user_id,
+  name: template.name,
+  description: template.description,
+  brandConfig: template.brand_config_json,
+  isSystemDefault: template.is_system_default,
+  createdAt: template.created_at,
+  updatedAt: template.updated_at,
+})
 
 /**
  * Fetch templates from the API
@@ -96,7 +121,11 @@ async function fetchTemplates(
     throw new Error(errorData.error?.message || '템플릿 목록 조회에 실패했습니다')
   }
 
-  return response.json()
+  const data = await response.json()
+  return {
+    templates: data.templates.map(mapTemplate),
+    total: data.total,
+  }
 }
 
 /**
