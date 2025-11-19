@@ -221,6 +221,9 @@ datasets/
 !frontend/vercel.json
 !backend/railway.json
 
+# Explicitly ignore __pycache__ even in backend/src/models
+backend/src/models/__pycache__/
+
 # ====================
 # Generated Files
 # ====================
@@ -284,3 +287,6 @@ coverage/
 .specify/cache/
 
 .openai/
+
+# Project-specific
+img/
