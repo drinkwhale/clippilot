@@ -22,7 +22,7 @@ export function Step2SelectTemplate({ onNext }: Step2SelectTemplateProps) {
 
   // 기본 시스템 템플릿 3개만 표시
   const systemTemplates =
-    templates?.filter((t) => t.is_system_default).slice(0, 3) || [];
+    templates?.filter((t) => t.isSystemDefault).slice(0, 3) || [];
 
   const handleContinue = () => {
     if (selectedTemplateId) {
@@ -79,7 +79,7 @@ export function Step2SelectTemplate({ onNext }: Step2SelectTemplateProps) {
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">
                       <h4 className="font-semibold">{template.name}</h4>
-                      {template.is_system_default && (
+                      {template.isSystemDefault && (
                         <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400 rounded">
                           추천
                         </span>
@@ -91,21 +91,21 @@ export function Step2SelectTemplate({ onNext }: Step2SelectTemplateProps) {
 
                     {/* 템플릿 설정 미리보기 */}
                     <div className="flex flex-wrap gap-2 mt-3">
-                      {template.brand_config && (
+                      {template.brandConfig && (
                         <>
-                          {template.brand_config.fonts && (
+                          {template.brandConfig.fonts && (
                             <span className="inline-flex items-center px-2 py-1 text-xs bg-muted rounded">
-                              폰트: {template.brand_config.fonts.primary}
+                              폰트: {template.brandConfig.fonts.title}
                             </span>
                           )}
-                          {template.brand_config.colors && (
+                          {template.brandConfig.colors && (
                             <span className="inline-flex items-center px-2 py-1 text-xs bg-muted rounded">
                               색상:{" "}
                               <span
                                 className="inline-block w-3 h-3 ml-1 rounded-full border"
                                 style={{
                                   backgroundColor:
-                                    template.brand_config.colors.primary,
+                                    template.brandConfig.colors.primary,
                                 }}
                               />
                             </span>

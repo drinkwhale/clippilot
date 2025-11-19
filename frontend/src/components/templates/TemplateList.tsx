@@ -117,7 +117,7 @@ export function TemplateList({
                 )}
               </div>
               <div className="mt-2 flex gap-2">
-                {template.is_system_default && (
+                {template.isSystemDefault && (
                   <Badge variant="secondary">시스템 템플릿</Badge>
                 )}
               </div>
@@ -130,29 +130,29 @@ export function TemplateList({
                   브랜드 색상
                 </p>
                 <div className="flex gap-2">
-                  {template.brand_config_json.colors.primary && (
+                  {template.brandConfig.colors.primary && (
                     <div
                       className="h-8 w-8 rounded border"
                       style={{
-                        backgroundColor: template.brand_config_json.colors.primary,
+                        backgroundColor: template.brandConfig.colors.primary,
                       }}
                       title="Primary"
                     />
                   )}
-                  {template.brand_config_json.colors.secondary && (
+                  {template.brandConfig.colors.secondary && (
                     <div
                       className="h-8 w-8 rounded border"
                       style={{
-                        backgroundColor: template.brand_config_json.colors.secondary,
+                        backgroundColor: template.brandConfig.colors.secondary,
                       }}
                       title="Secondary"
                     />
                   )}
-                  {template.brand_config_json.colors.accent && (
+                  {template.brandConfig.colors.accent && (
                     <div
                       className="h-8 w-8 rounded border"
                       style={{
-                        backgroundColor: template.brand_config_json.colors.accent,
+                        backgroundColor: template.brandConfig.colors.accent,
                       }}
                       title="Accent"
                     />
@@ -161,7 +161,7 @@ export function TemplateList({
               </div>
 
               {/* 액션 버튼 (시스템 템플릿이 아닌 경우만) */}
-              {!template.is_system_default && (
+              {!template.isSystemDefault && (
                 <div className="flex gap-2">
                   <Button
                     variant="outline"

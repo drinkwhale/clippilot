@@ -107,7 +107,7 @@ export default function NewProjectPage() {
               {templates.map((template) => (
                 <SelectItem key={template.id} value={template.id}>
                   {template.name}
-                  {template.is_system_default && ' (시스템 템플릿)'}
+                  {template.isSystemDefault && ' (시스템 템플릿)'}
                 </SelectItem>
               ))}
             </SelectContent>
