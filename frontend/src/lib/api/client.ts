@@ -198,7 +198,7 @@ export const api = {
   // Jobs endpoints (will be implemented in Phase 5)
   jobs: {
     list: (params?: { page?: number; page_size?: number; status?: string }) =>
-      apiClient.get('/api/v1/jobs', { params }),
+      apiClient.get<{ jobs: any[]; total: number; page: number; page_size: number }>('/api/v1/jobs', { params }),
     get: (id: string) => apiClient.get(`/api/v1/jobs/${id}`),
     create: (data: {
       prompt: string
