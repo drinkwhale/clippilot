@@ -7,6 +7,10 @@ from typing import AsyncGenerator
 from dotenv import load_dotenv
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.orm import declarative_base
+
+# Declarative base for models
+Base = declarative_base()
 
 # .env 파일 로드
 load_dotenv()

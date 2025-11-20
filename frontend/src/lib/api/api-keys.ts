@@ -9,7 +9,7 @@ import type { APIKey, APIKeyWithSecret, APIKeyCreateRequest, ServiceName } from 
  * 사용자의 모든 API 키 목록 조회
  */
 export async function listAPIKeys(): Promise<APIKey[]> {
-  const response = await apiClient.get<APIKey[]>('/api-keys');
+  const response = await apiClient.get<APIKey[]>('/api/v1/api-keys');
   return response.data;
 }
 
@@ -17,7 +17,7 @@ export async function listAPIKeys(): Promise<APIKey[]> {
  * 특정 서비스의 API 키 조회
  */
 export async function getAPIKey(serviceName: ServiceName): Promise<APIKey> {
-  const response = await apiClient.get<APIKey>(`/api-keys/${serviceName}`);
+  const response = await apiClient.get<APIKey>(`/api/v1/api-keys/${serviceName}`);
   return response.data;
 }
 
@@ -27,7 +27,7 @@ export async function getAPIKey(serviceName: ServiceName): Promise<APIKey> {
  * @returns 생성된 API 키 (평문 포함, 한 번만 조회 가능)
  */
 export async function createAPIKey(payload: APIKeyCreateRequest): Promise<APIKeyWithSecret> {
-  const response = await apiClient.post<APIKeyWithSecret>('/api-keys', payload);
+  const response = await apiClient.post<APIKeyWithSecret>('/api/v1/api-keys', payload);
   return response.data;
 }
 
@@ -35,7 +35,7 @@ export async function createAPIKey(payload: APIKeyCreateRequest): Promise<APIKey
  * API 키 삭제
  */
 export async function deleteAPIKey(serviceName: ServiceName): Promise<void> {
-  await apiClient.delete(`/api-keys/${serviceName}`);
+  await apiClient.delete(`/api/v1/api-keys/${serviceName}`);
 }
 
 /**

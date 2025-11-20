@@ -2,7 +2,8 @@
 from datetime import datetime
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from pydantic import BaseModel, Field
 
 from src.core.database import get_db
@@ -41,16 +42,17 @@ class APIKeyWithSecret(APIKeyResponse):
 @router.get("", response_model=List[APIKeyResponse])
 async def list_api_keys(
     current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """
     현재 사용자의 모든 API 키 목록 조회
 
     - 암호화된 키 값은 반환하지 않음 (보안)
     """
-    api_keys = db.query(APIKey).filter(
-        APIKey.user_id == current_user["id"]
-    ).all()
+    result = await db.execute(
+        select(APIKey).where(APIKey.user_id == current_user["id"])
+    )
+    api_keys = result.scalars().all()
 
     return [
         APIKeyResponse(
@@ -68,17 +70,20 @@ async def list_api_keys(
 async def get_api_key(
     service_name: str,
     current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """
     특정 서비스의 API 키 조회
 
     - service_name: youtube, openai, pexels 등
     """
-    api_key = db.query(APIKey).filter(
-        APIKey.user_id == current_user["id"],
-        APIKey.service_name == service_name
-    ).first()
+    result = await db.execute(
+        select(APIKey).where(
+            APIKey.user_id == current_user["id"],
+            APIKey.service_name == service_name
+        )
+    )
+    api_key = result.scalar_one_or_none()
 
     if not api_key:
         raise HTTPException(
@@ -99,7 +104,7 @@ async def get_api_key(
 async def create_api_key(
     payload: APIKeyCreate,
     current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """
     새 API 키 생성 또는 기존 키 업데이트
@@ -110,10 +115,13 @@ async def create_api_key(
     encryption_service = get_encryption_service()
 
     # 기존 키 확인
-    existing_key = db.query(APIKey).filter(
-        APIKey.user_id == current_user["id"],
-        APIKey.service_name == payload.service_name
-    ).first()
+    result = await db.execute(
+        select(APIKey).where(
+            APIKey.user_id == current_user["id"],
+            APIKey.service_name == payload.service_name
+        )
+    )
+    existing_key = result.scalar_one_or_none()
 
     # API 키 암호화
     encrypted_key = encryption_service.encrypt(payload.api_key)
@@ -122,8 +130,8 @@ async def create_api_key(
         # 기존 키 업데이트
         existing_key.api_key_encrypted = encrypted_key
         existing_key.updated_at = datetime.utcnow()
-        db.commit()
-        db.refresh(existing_key)
+        await db.commit()
+        await db.refresh(existing_key)
 
         return APIKeyWithSecret(
             id=str(existing_key.id),
@@ -141,8 +149,8 @@ async def create_api_key(
             api_key_encrypted=encrypted_key
         )
         db.add(new_key)
-        db.commit()
-        db.refresh(new_key)
+        await db.commit()
+        await db.refresh(new_key)
 
         return APIKeyWithSecret(
             id=str(new_key.id),
@@ -158,17 +166,20 @@ async def create_api_key(
 async def delete_api_key(
     service_name: str,
     current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """
     API 키 삭제
 
     - service_name: youtube, openai, pexels 등
     """
-    api_key = db.query(APIKey).filter(
-        APIKey.user_id == current_user["id"],
-        APIKey.service_name == service_name
-    ).first()
+    result = await db.execute(
+        select(APIKey).where(
+            APIKey.user_id == current_user["id"],
+            APIKey.service_name == service_name
+        )
+    )
+    api_key = result.scalar_one_or_none()
 
     if not api_key:
         raise HTTPException(
@@ -176,8 +187,8 @@ async def delete_api_key(
             detail=f"{service_name} API 키를 찾을 수 없습니다."
         )
 
-    db.delete(api_key)
-    db.commit()
+    await db.delete(api_key)
+    await db.commit()
 
     return None
 
@@ -186,7 +197,7 @@ async def delete_api_key(
 async def decrypt_api_key(
     service_name: str,
     current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """
     API 키 복호화 (내부 서비스 사용)
@@ -194,10 +205,13 @@ async def decrypt_api_key(
     - 프론트엔드에서는 호출하지 않음
     - 백엔드 서비스 간 통신에서만 사용
     """
-    api_key = db.query(APIKey).filter(
-        APIKey.user_id == current_user["id"],
-        APIKey.service_name == service_name
-    ).first()
+    result = await db.execute(
+        select(APIKey).where(
+            APIKey.user_id == current_user["id"],
+            APIKey.service_name == service_name
+        )
+    )
+    api_key = result.scalar_one_or_none()
 
     if not api_key:
         raise HTTPException(
@@ -210,7 +224,7 @@ async def decrypt_api_key(
 
     # last_used_at 업데이트
     api_key.last_used_at = datetime.utcnow()
-    db.commit()
+    await db.commit()
 
     return APIKeyWithSecret(
         id=str(api_key.id),
