@@ -8,17 +8,14 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { RecentJobs } from "@/components/features/dashboard/RecentJobs";
 import { YouTubeSearchPreview } from "@/components/features/dashboard/YouTubeSearchPreview";
+import { QuickSettings } from "@/components/features/dashboard/QuickSettings";
 import { api } from "@/lib/api/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileVideo, CheckCircle2, Youtube, TrendingUp } from "lucide-react";
-
-interface DashboardStats {
-  total_jobs: number;
-  completed_jobs: number;
-  connected_channels: number;
-  monthly_usage: number;
-}
+import { isMockApi, waitFor } from "@/lib/config";
+import { mockDashboardStats } from "@/lib/mocks/dashboard";
+import type { DashboardStats } from "@/lib/types/dashboard";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -26,8 +23,12 @@ export default function DashboardPage() {
 
   // 대시보드 통계 조회
   const { data: stats, isLoading } = useQuery<DashboardStats>({
-    queryKey: ["dashboard-stats"],
+    queryKey: ["dashboard-stats", isMockApi],
     queryFn: async () => {
+      if (isMockApi) {
+        await waitFor(300);
+        return mockDashboardStats;
+      }
       const response = await api.dashboard.stats();
       return response.data;
     },
@@ -52,10 +53,15 @@ export default function DashboardPage() {
       <div className="lg:pl-64">
         <Navbar />
         <div className="container py-8">
-          <h1 className="text-3xl font-bold mb-4">대시보드</h1>
-          <p className="text-muted-foreground mb-8">
-            환영합니다, {user?.email}님!
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold">대시보드</h1>
+              <p className="text-muted-foreground mt-2">
+                환영합니다, {user?.email}님!
+              </p>
+            </div>
+            <QuickSettings />
+          </div>
 
           {/* 통계 카드 */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">

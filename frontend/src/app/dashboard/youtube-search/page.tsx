@@ -4,7 +4,11 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/stores/auth-store";
+import { Navbar } from "@/components/layout/Navbar";
+import { Sidebar } from "@/components/layout/Sidebar";
 import { SearchBar } from "@/components/features/youtube/SearchBar";
 import { CollectionCountSelector } from "@/components/features/youtube/CollectionCountSelector";
 import {
@@ -39,6 +43,8 @@ function getPublishedAfterDate(period: string): string | undefined {
 }
 
 export default function YouTubeSearchPage() {
+  const router = useRouter();
+  const { isAuthenticated, _hasHydrated } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [maxResults, setMaxResults] = useState(25);
   const [filters, setFilters] = useState<SearchFiltersState>({
@@ -48,6 +54,16 @@ export default function YouTubeSearchPage() {
     minViewCount: 0,
     minSubscriberCount: 0,
   });
+
+  useEffect(() => {
+    if (_hasHydrated && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [_hasHydrated, isAuthenticated, router]);
+
+  if (!_hasHydrated || !isAuthenticated) {
+    return null;
+  }
 
   const { data, isLoading, error } = useYouTubeSearch({
     query: searchQuery,
@@ -85,62 +101,68 @@ export default function YouTubeSearchPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold">YouTube 영상 검색</h1>
-        <p className="text-muted-foreground">
-          키워드로 YouTube 영상을 검색하고 템플릿으로 저장하세요.
-        </p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Sidebar />
+      <div className="lg:pl-64">
+        <Navbar />
+        <div className="container py-8 space-y-6">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold">YouTube 영상 검색</h1>
+            <p className="text-muted-foreground">
+              키워드로 YouTube 영상을 검색하고 템플릿으로 저장하세요.
+            </p>
+          </div>
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <SearchBar onSearch={handleSearch} />
-        <CollectionCountSelector
-          value={maxResults}
-          onChange={setMaxResults}
-        />
-      </div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <SearchBar onSearch={handleSearch} />
+            <CollectionCountSelector
+              value={maxResults}
+              onChange={setMaxResults}
+            />
+          </div>
 
-      <SearchFilters
-        filters={filters}
-        onChange={setFilters}
-        onReset={handleResetFilters}
-      />
+          <SearchFilters
+            filters={filters}
+            onChange={setFilters}
+            onReset={handleResetFilters}
+          />
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            검색 중 오류가 발생했습니다: {error.message}
-          </AlertDescription>
-        </Alert>
-      )}
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                검색 중 오류가 발생했습니다: {error.message}
+              </AlertDescription>
+            </Alert>
+          )}
 
-      {isLoading && <VideoSkeletonGrid count={maxResults} />}
+          {isLoading && <VideoSkeletonGrid count={maxResults} />}
 
-      {!isLoading && data && data.videos.length === 0 && (
-        <EmptyState
-          message="검색 결과가 없습니다"
-          description="다른 키워드로 검색해보세요."
-        />
-      )}
+          {!isLoading && data && data.videos.length === 0 && (
+            <EmptyState
+              message="검색 결과가 없습니다"
+              description="다른 키워드로 검색해보세요."
+            />
+          )}
 
-      {!isLoading && data && data.videos.length > 0 && (
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            총 {data.totalResults}개의 영상을 찾았습니다.
-          </p>
-          <VideoGrid videos={data.videos} onVideoClick={handleVideoClick} />
+          {!isLoading && data && data.videos.length > 0 && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                총 {data.totalResults}개의 영상을 찾았습니다.
+              </p>
+              <VideoGrid videos={data.videos} onVideoClick={handleVideoClick} />
+            </div>
+          )}
+
+          {!searchQuery && !isLoading && (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <p className="text-lg text-muted-foreground">
+                검색어를 입력하여 YouTube 영상을 검색해보세요.
+              </p>
+            </div>
+          )}
         </div>
-      )}
-
-      {!searchQuery && !isLoading && (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <p className="text-lg text-muted-foreground">
-            검색어를 입력하여 YouTube 영상을 검색해보세요.
-          </p>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

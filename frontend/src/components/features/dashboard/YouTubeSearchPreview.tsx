@@ -7,6 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Youtube, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { mockSearchHistory } from "@/lib/mocks/dashboard";
+import { isMockApi, waitFor } from "@/lib/config";
 
 /**
  * 검색 히스토리 항목
@@ -22,14 +24,17 @@ interface SearchHistoryItem {
  */
 export function YouTubeSearchPreview() {
   const { data: searchHistory, isLoading } = useQuery<SearchHistoryItem[]>({
-    queryKey: ["youtube-search-history-preview"],
+    queryKey: ["youtube-search-history-preview", isMockApi],
     queryFn: async () => {
       try {
-        const history = await getSearchHistory();
+        if (isMockApi) {
+          await waitFor(150);
+        }
+        const history = isMockApi ? mockSearchHistory : await getSearchHistory();
         // 최근 3개만 반환 (문자열 배열을 객체 배열로 변환)
-        return history.slice(0, 3).map((keyword) => ({
+        return history.slice(0, 3).map((keyword, index) => ({
           keyword,
-          searched_at: new Date().toISOString(),
+          searched_at: new Date(Date.now() - index * 1000 * 60 * 5).toISOString(),
           result_count: 0,
         }));
       } catch (error) {

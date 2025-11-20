@@ -6,6 +6,8 @@
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/stores/auth-store';
+import { isMockApi } from '@/lib/config';
+import { mockLogin, mockSignup } from '@/lib/mocks/auth';
 
 interface SignupData {
   email: string;
@@ -52,20 +54,29 @@ export function useAuth() {
     async (data: SignupData) => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/auth/signup`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        });
+        let authData: AuthResponse;
 
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error?.message || '회원가입에 실패했습니다');
+        if (isMockApi) {
+          // Use mock API
+          authData = await mockSignup(data.email, data.password);
+        } else {
+          // Use real API
+          const response = await fetch(`${API_BASE_URL}/api/v1/auth/signup`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error?.message || '회원가입에 실패했습니다');
+          }
+
+          authData = await response.json();
         }
 
-        const authData: AuthResponse = await response.json();
         setAuth(authData.user, authData.access_token);
 
         // Redirect to onboarding or dashboard
@@ -91,26 +102,35 @@ export function useAuth() {
     async (data: LoginData) => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        });
+        let authData: AuthResponse;
 
-        if (!response.ok) {
-          const error = await response.json();
+        if (isMockApi) {
+          // Use mock API
+          authData = await mockLogin(data.email, data.password);
+        } else {
+          // Use real API
+          const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
 
-          // Handle account locked error (status 423)
-          if (response.status === 423) {
-            throw new Error(error.error?.message || '계정이 잠겼습니다');
+          if (!response.ok) {
+            const error = await response.json();
+
+            // Handle account locked error (status 423)
+            if (response.status === 423) {
+              throw new Error(error.error?.message || '계정이 잠겼습니다');
+            }
+
+            throw new Error(error.error?.message || '로그인에 실패했습니다');
           }
 
-          throw new Error(error.error?.message || '로그인에 실패했습니다');
+          authData = await response.json();
         }
 
-        const authData: AuthResponse = await response.json();
         setAuth(authData.user, authData.access_token);
 
         // Redirect to onboarding or dashboard
