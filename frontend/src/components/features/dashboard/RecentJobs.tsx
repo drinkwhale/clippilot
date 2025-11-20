@@ -9,24 +9,9 @@ import { FileVideo, Clock, CheckCircle2, XCircle, Loader2, Upload } from "lucide
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
-
-/**
- * 작업 상태
- */
-type JobStatus = 'queued' | 'generating' | 'rendering' | 'uploading' | 'done' | 'failed';
-
-/**
- * 작업 정보
- */
-interface Job {
-  id: string;
-  prompt: string;
-  status: JobStatus;
-  created_at: string;
-  updated_at: string;
-  video_url?: string;
-  error_message?: string;
-}
+import { mockJobs } from "@/lib/mocks/dashboard";
+import type { Job, JobStatus } from "@/lib/types/dashboard";
+import { isMockApi, waitFor } from "@/lib/config";
 
 /**
  * 작업 상태별 배지 컴포넌트
@@ -79,13 +64,17 @@ function JobStatusBadge({ status }: { status: JobStatus }) {
  * 최근 작업 목록 컴포넌트
  */
 export function RecentJobs() {
-  const { data: jobs, isLoading } = useQuery<Job[]>({
-    queryKey: ["recent-jobs"],
+  const { data: jobs = [], isLoading } = useQuery<Job[]>({
+    queryKey: ["recent-jobs", isMockApi],
     queryFn: async () => {
+      if (isMockApi) {
+        await waitFor(200);
+        return mockJobs;
+      }
       const response = await api.jobs.list({ page: 1, page_size: 5 });
       return response.data.jobs || [];
     },
-    refetchInterval: 10000, // 10초마다 자동 갱신 (진행 중인 작업 확인)
+    refetchInterval: isMockApi ? false : 10000, // 10초마다 자동 갱신 (진행 중인 작업 확인)
   });
 
   if (isLoading) {

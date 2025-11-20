@@ -15,6 +15,8 @@ from typing import Optional, Tuple
 from uuid import UUID
 
 from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core.supabase import get_supabase
 from ..models.user import User, PlanType, OAuthProvider
@@ -89,9 +91,10 @@ class AuthService:
             AuthenticationError: If signup fails
         """
         # Check if user already exists
-        existing_user = self.db.query(User).filter(
-            User.email == signup_data.email.lower()
-        ).first()
+        result = await self.db.execute(
+            select(User).filter(User.email == signup_data.email.lower())
+        )
+        existing_user = result.scalar_one_or_none()
 
         if existing_user:
             raise AccountExistsError("이미 등록된 이메일 주소입니다")
@@ -127,8 +130,8 @@ class AuthService:
             )
             self.db.add(subscription)
 
-            self.db.commit()
-            self.db.refresh(user)
+            await self.db.commit()
+            await self.db.refresh(user)
 
             # Generate access token
             session_response = self.supabase.service.auth.admin.generate_link({
@@ -181,9 +184,10 @@ class AuthService:
             InvalidCredentialsError: If credentials are invalid
         """
         # Get user from database
-        user = self.db.query(User).filter(
-            User.email == login_data.email.lower()
-        ).first()
+        result = await self.db.execute(
+            select(User).filter(User.email == login_data.email.lower())
+        )
+        user = result.scalar_one_or_none()
 
         if not user:
             raise InvalidCredentialsError("이메일 또는 비밀번호가 올바르지 않습니다")
@@ -196,7 +200,7 @@ class AuthService:
         if user.locked_until and user.locked_until <= datetime.utcnow():
             user.locked_until = None
             user.login_attempts = 0
-            self.db.commit()
+            await self.db.commit()
 
         # Attempt login with Supabase Auth
         try:
@@ -212,8 +216,8 @@ class AuthService:
             user.login_attempts = 0
             user.locked_until = None
             user.last_login_at = datetime.utcnow()
-            self.db.commit()
-            self.db.refresh(user)
+            await self.db.commit()
+            await self.db.refresh(user)
 
             return TokenResponse(
                 access_token=sign_in_response.session.access_token,
@@ -230,10 +234,10 @@ class AuthService:
                 user.locked_until = datetime.utcnow() + timedelta(
                     minutes=self.LOCKOUT_DURATION_MINUTES
                 )
-                self.db.commit()
+                await self.db.commit()
                 raise AccountLockedError(user.locked_until)
 
-            self.db.commit()
+            await self.db.commit()
             raise
         except Exception:
             # Other exceptions - also increment attempts
@@ -244,10 +248,10 @@ class AuthService:
                 user.locked_until = datetime.utcnow() + timedelta(
                     minutes=self.LOCKOUT_DURATION_MINUTES
                 )
-                self.db.commit()
+                await self.db.commit()
                 raise AccountLockedError(user.locked_until)
 
-            self.db.commit()
+            await self.db.commit()
             raise InvalidCredentialsError("이메일 또는 비밀번호가 올바르지 않습니다")
 
     async def reset_password(self, reset_data: ResetPasswordRequest) -> bool:
@@ -281,9 +285,10 @@ class AuthService:
         Returns:
             Tuple of (attempts_count, locked_until_datetime)
         """
-        user = self.db.query(User).filter(
-            User.email == email.lower()
-        ).first()
+        result = await self.db.execute(
+            select(User).filter(User.email == email.lower())
+        )
+        user = result.scalar_one_or_none()
 
         if not user:
             return (0, None)
@@ -292,7 +297,7 @@ class AuthService:
         if user.locked_until and user.locked_until <= datetime.utcnow():
             user.locked_until = None
             user.login_attempts = 0
-            self.db.commit()
+            await self.db.commit()
             return (0, None)
 
         return (user.login_attempts, user.locked_until)
@@ -314,7 +319,10 @@ class AuthService:
         Raises:
             InvalidCredentialsError: If password is incorrect
         """
-        user = self.db.query(User).filter(User.id == user_id).first()
+        result = await self.db.execute(
+            select(User).filter(User.id == user_id)
+        )
+        user = result.scalar_one_or_none()
 
         if not user:
             raise InvalidCredentialsError("사용자를 찾을 수 없습니다")
@@ -336,7 +344,7 @@ class AuthService:
         user.is_active = False
         # In production, schedule actual deletion after 30 days
         # For MVP, we just deactivate immediately
-        self.db.commit()
+        await self.db.commit()
 
         # Delete from Supabase Auth
         try:

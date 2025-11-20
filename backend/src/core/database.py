@@ -3,11 +3,14 @@ Database connection and session management for ClipPilot
 """
 
 import os
-from typing import Generator
+from typing import AsyncGenerator
 from dotenv import load_dotenv
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.orm import declarative_base
+
+# Declarative base for models
+Base = declarative_base()
 
 # .env 파일 로드
 load_dotenv()
@@ -18,36 +21,43 @@ DATABASE_URL = os.getenv(
     "postgresql://postgres:postgres@localhost:5432/clippilot"
 )
 
-# Create engine
-engine = create_engine(
+# Convert to async URL if needed
+if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+# Create async engine
+engine = create_async_engine(
     DATABASE_URL,
     pool_pre_ping=True,
     pool_size=10,
     max_overflow=20,
+    echo=False,
 )
 
-# Create session factory
-SessionLocal = sessionmaker(
+# Create async session factory
+AsyncSessionLocal = async_sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
     autocommit=False,
     autoflush=False,
-    bind=engine
 )
 
 
-def get_db() -> Generator[Session, None, None]:
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
-    Get database session
+    Get async database session
 
     Yields:
-        SQLAlchemy session
+        AsyncSession: Async SQLAlchemy session
 
     Usage:
         @app.get("/")
-        def endpoint(db: Session = Depends(get_db)):
+        async def endpoint(db: AsyncSession = Depends(get_db)):
             ...
     """
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()

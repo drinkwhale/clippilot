@@ -22,15 +22,21 @@ export const RegionSelector: FC<RegionSelectorProps> = ({
   value,
   onChange,
 }) => {
+  const normalizedValue = value || "all";
+
+  const handleChange = (selected: string) => {
+    onChange(selected === "all" ? "" : selected);
+  };
+
   return (
     <div className="space-y-2">
       <Label htmlFor="region">국가/지역</Label>
-      <Select value={value} onValueChange={onChange}>
+      <Select value={normalizedValue} onValueChange={handleChange}>
         <SelectTrigger id="region">
           <SelectValue placeholder="전체" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">전체</SelectItem>
+          <SelectItem value="all">전체</SelectItem>
           <SelectItem value="KR">🇰🇷 대한민국</SelectItem>
           <SelectItem value="US">🇺🇸 미국</SelectItem>
           <SelectItem value="JP">🇯🇵 일본</SelectItem>
