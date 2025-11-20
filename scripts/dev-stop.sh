@@ -21,49 +21,47 @@ echo ""
 stop_backend() {
     echo -e "${YELLOW}Backend API 종료 중...${NC}"
 
+    # PID 파일로 종료 시도
     if [ -f "$LOG_DIR/backend.pid" ]; then
         BACKEND_PID=$(cat "$LOG_DIR/backend.pid")
         if kill -0 $BACKEND_PID 2>/dev/null; then
-            kill $BACKEND_PID
+            kill -9 $BACKEND_PID 2>/dev/null || true
             echo -e "${GREEN}✓ Backend API 종료 완료 (PID: $BACKEND_PID)${NC}"
-        else
-            echo -e "${YELLOW}⚠️  Backend API가 이미 종료되어 있습니다.${NC}"
         fi
         rm -f "$LOG_DIR/backend.pid"
-    else
-        # PID 파일이 없으면 포트로 찾아서 종료
-        BACKEND_PID=$(lsof -ti:8000)
-        if [ ! -z "$BACKEND_PID" ]; then
-            kill $BACKEND_PID
-            echo -e "${GREEN}✓ Backend API 종료 완료 (포트 8000)${NC}"
-        else
-            echo -e "${YELLOW}⚠️  실행 중인 Backend API를 찾을 수 없습니다.${NC}"
-        fi
     fi
+
+    # 포트로 찾아서 강제 종료
+    BACKEND_PIDS=$(lsof -ti:8000 2>/dev/null)
+    if [ ! -z "$BACKEND_PIDS" ]; then
+        echo "$BACKEND_PIDS" | xargs kill -9 2>/dev/null || true
+        echo -e "${GREEN}✓ Backend API 종료 완료 (포트 8000)${NC}"
+    fi
+
+    # uvicorn 프로세스 강제 종료
+    pkill -9 -f "uvicorn.*src.main:app" 2>/dev/null || true
 }
 
 # Celery Worker 종료
 stop_celery() {
     echo -e "${YELLOW}Celery Worker 종료 중...${NC}"
 
+    # PID 파일로 종료 시도
     if [ -f "$LOG_DIR/celery.pid" ]; then
         CELERY_PID=$(cat "$LOG_DIR/celery.pid")
         if kill -0 $CELERY_PID 2>/dev/null; then
-            kill $CELERY_PID
+            kill -9 $CELERY_PID 2>/dev/null || true
             echo -e "${GREEN}✓ Celery Worker 종료 완료 (PID: $CELERY_PID)${NC}"
-        else
-            echo -e "${YELLOW}⚠️  Celery Worker가 이미 종료되어 있습니다.${NC}"
         fi
         rm -f "$LOG_DIR/celery.pid"
-    else
-        # PID 파일이 없으면 프로세스명으로 찾아서 종료
-        CELERY_PIDS=$(pgrep -f "celery.*worker")
-        if [ ! -z "$CELERY_PIDS" ]; then
-            echo "$CELERY_PIDS" | xargs kill 2>/dev/null
-            echo -e "${GREEN}✓ Celery Worker 종료 완료${NC}"
-        else
-            echo -e "${YELLOW}⚠️  실행 중인 Celery Worker를 찾을 수 없습니다.${NC}"
-        fi
+    fi
+
+    # 프로세스명으로 찾아서 강제 종료
+    pkill -9 -f "celery.*worker" 2>/dev/null || true
+
+    CELERY_PIDS=$(pgrep -f "celery.*worker" 2>/dev/null)
+    if [ -z "$CELERY_PIDS" ]; then
+        echo -e "${GREEN}✓ Celery Worker 종료 완료${NC}"
     fi
 }
 
@@ -71,24 +69,23 @@ stop_celery() {
 stop_worker() {
     echo -e "${YELLOW}Go Rendering Worker 종료 중...${NC}"
 
+    # PID 파일로 종료 시도
     if [ -f "$LOG_DIR/worker.pid" ]; then
         WORKER_PID=$(cat "$LOG_DIR/worker.pid")
         if kill -0 $WORKER_PID 2>/dev/null; then
-            kill $WORKER_PID
+            kill -9 $WORKER_PID 2>/dev/null || true
             echo -e "${GREEN}✓ Go Rendering Worker 종료 완료 (PID: $WORKER_PID)${NC}"
-        else
-            echo -e "${YELLOW}⚠️  Go Rendering Worker가 이미 종료되어 있습니다.${NC}"
         fi
         rm -f "$LOG_DIR/worker.pid"
-    else
-        # PID 파일이 없으면 프로세스명으로 찾아서 종료
-        WORKER_PIDS=$(pgrep -f "go run cmd/worker/main.go")
-        if [ ! -z "$WORKER_PIDS" ]; then
-            echo "$WORKER_PIDS" | xargs kill 2>/dev/null
-            echo -e "${GREEN}✓ Go Rendering Worker 종료 완료${NC}"
-        else
-            echo -e "${YELLOW}⚠️  실행 중인 Go Rendering Worker를 찾을 수 없습니다.${NC}"
-        fi
+    fi
+
+    # 프로세스명으로 찾아서 강제 종료
+    pkill -9 -f "go run cmd/worker/main.go" 2>/dev/null || true
+    pkill -9 -f "cmd/worker/main.go" 2>/dev/null || true
+
+    WORKER_PIDS=$(pgrep -f "cmd/worker/main.go" 2>/dev/null)
+    if [ -z "$WORKER_PIDS" ]; then
+        echo -e "${GREEN}✓ Go Rendering Worker 종료 완료${NC}"
     fi
 }
 
@@ -96,25 +93,26 @@ stop_worker() {
 stop_frontend() {
     echo -e "${YELLOW}Frontend 종료 중...${NC}"
 
+    # PID 파일로 종료 시도
     if [ -f "$LOG_DIR/frontend.pid" ]; then
         FRONTEND_PID=$(cat "$LOG_DIR/frontend.pid")
         if kill -0 $FRONTEND_PID 2>/dev/null; then
-            kill $FRONTEND_PID
+            kill -9 $FRONTEND_PID 2>/dev/null || true
             echo -e "${GREEN}✓ Frontend 종료 완료 (PID: $FRONTEND_PID)${NC}"
-        else
-            echo -e "${YELLOW}⚠️  Frontend가 이미 종료되어 있습니다.${NC}"
         fi
         rm -f "$LOG_DIR/frontend.pid"
-    else
-        # PID 파일이 없으면 포트로 찾아서 종료
-        FRONTEND_PID=$(lsof -ti:3000)
-        if [ ! -z "$FRONTEND_PID" ]; then
-            kill $FRONTEND_PID
-            echo -e "${GREEN}✓ Frontend 종료 완료 (포트 3000)${NC}"
-        else
-            echo -e "${YELLOW}⚠️  실행 중인 Frontend를 찾을 수 없습니다.${NC}"
-        fi
     fi
+
+    # 포트로 찾아서 강제 종료
+    FRONTEND_PIDS=$(lsof -ti:3000 2>/dev/null)
+    if [ ! -z "$FRONTEND_PIDS" ]; then
+        echo "$FRONTEND_PIDS" | xargs kill -9 2>/dev/null || true
+        echo -e "${GREEN}✓ Frontend 종료 완료 (포트 3000)${NC}"
+    fi
+
+    # pnpm dev 프로세스 강제 종료
+    pkill -9 -f "pnpm dev" 2>/dev/null || true
+    pkill -9 -f "next dev" 2>/dev/null || true
 
     # Next.js dev lock 파일 정리
     if [ -f "$PROJECT_ROOT/frontend/.next/dev/lock" ]; then
@@ -129,13 +127,15 @@ stop_redis() {
     if lsof -Pi :6379 -sTCP:LISTEN -t >/dev/null 2>&1 ; then
         if command -v redis-cli &> /dev/null; then
             redis-cli shutdown 2>/dev/null || true
+            sleep 1
             echo -e "${GREEN}✓ Redis 종료 완료${NC}"
-        else
-            REDIS_PID=$(lsof -ti:6379)
-            if [ ! -z "$REDIS_PID" ]; then
-                kill $REDIS_PID
-                echo -e "${GREEN}✓ Redis 종료 완료 (PID: $REDIS_PID)${NC}"
-            fi
+        fi
+
+        # redis-cli로 종료되지 않은 경우 강제 종료
+        REDIS_PIDS=$(lsof -ti:6379 2>/dev/null)
+        if [ ! -z "$REDIS_PIDS" ]; then
+            echo "$REDIS_PIDS" | xargs kill -9 2>/dev/null || true
+            echo -e "${GREEN}✓ Redis 강제 종료 완료${NC}"
         fi
     else
         echo -e "${YELLOW}⚠️  실행 중인 Redis를 찾을 수 없습니다.${NC}"
