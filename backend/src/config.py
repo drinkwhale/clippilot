@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     # Pexels API 설정 (개발 환경용 기본값)
     PEXELS_API_KEY: str = "placeholder-pexels-key"
 
+    # 암호화 설정 (API 키 암호화용)
+    ENCRYPTION_KEY: str = "dev-encryption-key-change-in-production"  # Fernet 키 (base64 인코딩된 32바이트)
+
     # Stripe 설정 (개발 환경용 기본값)
     STRIPE_SECRET_KEY: str = "sk_test_placeholder"
     STRIPE_PUBLISHABLE_KEY: str = "pk_test_placeholder"
@@ -126,6 +129,10 @@ class Settings(BaseSettings):
                 errors.append("STRIPE_SECRET_KEY must use production key (sk_live_*) in production environment")
             if self.STRIPE_PUBLISHABLE_KEY.startswith("pk_test_"):
                 errors.append("STRIPE_PUBLISHABLE_KEY must use production key (pk_live_*) in production environment")
+
+            # 암호화 키 검증
+            if self.ENCRYPTION_KEY == "dev-encryption-key-change-in-production":
+                errors.append("ENCRYPTION_KEY must be set in production environment")
 
         # Development 환경에서도 기본적인 검증
         else:
