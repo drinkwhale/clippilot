@@ -55,16 +55,7 @@ export default function YouTubeSearchPage() {
     minSubscriberCount: 0,
   });
 
-  useEffect(() => {
-    if (_hasHydrated && !isAuthenticated) {
-      router.push("/login");
-    }
-  }, [_hasHydrated, isAuthenticated, router]);
-
-  if (!_hasHydrated || !isAuthenticated) {
-    return null;
-  }
-
+  // Hooks는 조건문 이전에 호출되어야 함
   const { data, isLoading, error } = useYouTubeSearch({
     query: searchQuery,
     maxResults,
@@ -79,7 +70,21 @@ export default function YouTubeSearchPage() {
       minSubscribers:
         filters.minSubscriberCount > 0 ? filters.minSubscriberCount : undefined,
     },
+    enabled: _hasHydrated && isAuthenticated, // 인증 후에만 활성화
   });
+
+  useEffect(() => {
+    if (_hasHydrated && !isAuthenticated) {
+      router.push("/login");
+    }
+  }, [_hasHydrated, isAuthenticated, router]);
+
+  if (!_hasHydrated || !isAuthenticated) {
+    return null;
+  }
+
+  const videos = data?.videos ?? [];
+  const totalResults = data?.totalResults ?? 0;
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -138,19 +143,19 @@ export default function YouTubeSearchPage() {
 
           {isLoading && <VideoSkeletonGrid count={maxResults} />}
 
-          {!isLoading && data && data.videos.length === 0 && (
+          {!isLoading && data && videos.length === 0 && (
             <EmptyState
               message="검색 결과가 없습니다"
               description="다른 키워드로 검색해보세요."
             />
           )}
 
-          {!isLoading && data && data.videos.length > 0 && (
+          {!isLoading && data && videos.length > 0 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                총 {data.totalResults}개의 영상을 찾았습니다.
+                총 {totalResults}개의 영상을 찾았습니다.
               </p>
-              <VideoGrid videos={data.videos} onVideoClick={handleVideoClick} />
+              <VideoGrid videos={videos} onVideoClick={handleVideoClick} />
             </div>
           )}
 
