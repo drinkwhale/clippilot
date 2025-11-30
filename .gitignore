@@ -290,3 +290,6 @@ coverage/
 
 # Project-specific
 img/
+
+# Test scripts (temporary development files)
+test_*.py
