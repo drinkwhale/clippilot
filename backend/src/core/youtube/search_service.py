@@ -69,12 +69,24 @@ class YouTubeSearchService:
                 search_params["regionCode"] = region_code
 
             if published_after:
-                # YouTube API는 ISO 8601 형식에 'Z' suffix 필요
-                search_params["publishedAfter"] = published_after.isoformat() + "Z"
+                # YouTube API는 RFC 3339 형식 필요 (UTC timezone: Z suffix)
+                # timezone-aware datetime의 경우 +00:00를 Z로 변환
+                timestamp = published_after.isoformat()
+                if timestamp.endswith('+00:00'):
+                    timestamp = timestamp[:-6] + 'Z'
+                elif not timestamp.endswith('Z'):
+                    timestamp += 'Z'
+                search_params["publishedAfter"] = timestamp
 
             if published_before:
-                # YouTube API는 ISO 8601 형식에 'Z' suffix 필요
-                search_params["publishedBefore"] = published_before.isoformat() + "Z"
+                # YouTube API는 RFC 3339 형식 필요 (UTC timezone: Z suffix)
+                # timezone-aware datetime의 경우 +00:00를 Z로 변환
+                timestamp = published_before.isoformat()
+                if timestamp.endswith('+00:00'):
+                    timestamp = timestamp[:-6] + 'Z'
+                elif not timestamp.endswith('Z'):
+                    timestamp += 'Z'
+                search_params["publishedBefore"] = timestamp
 
             if video_duration:
                 search_params["videoDuration"] = video_duration
