@@ -69,10 +69,12 @@ class YouTubeSearchService:
                 search_params["regionCode"] = region_code
 
             if published_after:
-                search_params["publishedAfter"] = published_after.isoformat()
+                # YouTube API는 ISO 8601 형식에 'Z' suffix 필요
+                search_params["publishedAfter"] = published_after.isoformat() + "Z"
 
             if published_before:
-                search_params["publishedBefore"] = published_before.isoformat()
+                # YouTube API는 ISO 8601 형식에 'Z' suffix 필요
+                search_params["publishedBefore"] = published_before.isoformat() + "Z"
 
             if video_duration:
                 search_params["videoDuration"] = video_duration

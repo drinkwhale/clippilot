@@ -14,11 +14,15 @@ import {
 /**
  * YouTube 영상 검색 훅
  */
-export function useYouTubeSearch(params: YouTubeSearchParams) {
+export function useYouTubeSearch(
+  params: YouTubeSearchParams & { enabled?: boolean }
+) {
+  const { enabled = true, ...searchParams } = params;
+
   return useQuery<YouTubeSearchResult, Error>({
-    queryKey: ["youtube-search", params],
-    queryFn: () => searchVideos(params),
-    enabled: !!params.query && params.query.length > 0,
+    queryKey: ["youtube-search", searchParams],
+    queryFn: () => searchVideos(searchParams),
+    enabled: enabled && !!searchParams.query && searchParams.query.length > 0,
     staleTime: 5 * 60 * 1000, // 5분 동안 캐시 유지
     gcTime: 15 * 60 * 1000, // 15분 후 가비지 컬렉션
   });
