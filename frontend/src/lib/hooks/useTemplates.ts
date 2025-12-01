@@ -214,7 +214,7 @@ async function deleteTemplate(
  */
 export function useTemplates(includeSystem: boolean = true) {
   const queryClient = useQueryClient()
-  const token = useAuthStore((state) => state.token)
+  const token = useAuthStore((state) => state.accessToken)
 
   // Fetch templates query
   const templatesQuery: UseQueryResult<TemplateListApiResponse, Error> = useQuery({

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import apiClient from "../api/client";
+import { apiClient } from "../api/client";
 
 /**
  * 대시보드 메트릭 타입
