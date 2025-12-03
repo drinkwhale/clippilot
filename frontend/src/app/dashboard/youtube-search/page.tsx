@@ -1,5 +1,5 @@
 /**
- * YouTube 검색 페이지
+ * YouTube 검색 페이지 (재구성된 레이아웃)
  */
 
 "use client";
@@ -7,21 +7,17 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { Navbar } from "@/components/layout/Navbar";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { SearchBar } from "@/components/features/youtube/SearchBar";
-import { CollectionCountSelector } from "@/components/features/youtube/CollectionCountSelector";
+import { HeaderNav } from "@/components/layout/HeaderNav";
 import {
-  SearchFilters,
-  type SearchFiltersState,
-} from "@/components/features/youtube/SearchFilters";
-import { VideoGrid } from "@/components/features/youtube/VideoGrid";
-import { VideoSkeletonGrid } from "@/components/features/youtube/VideoSkeleton";
-import { EmptyState } from "@/components/features/youtube/EmptyState";
+  FilterSidebar,
+  type FilterState,
+} from "@/components/features/youtube/FilterSidebar";
+import { VideoTable } from "@/components/features/youtube/VideoTable";
 import { useYouTubeSearch } from "@/hooks/useYouTubeSearch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import type { YouTubeVideo } from "@/lib/api/youtube";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // 업로드 기간을 ISO 8601 날짜로 변환하는 헬퍼 함수
 function getPublishedAfterDate(period: string): string | undefined {
@@ -45,9 +41,11 @@ function getPublishedAfterDate(period: string): string | undefined {
 export default function YouTubeSearchPage() {
   const router = useRouter();
   const { isAuthenticated, _hasHydrated } = useAuthStore();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [maxResults, setMaxResults] = useState(25);
-  const [filters, setFilters] = useState<SearchFiltersState>({
+
+  // 필터 상태 통합
+  const [filters, setFilters] = useState<FilterState>({
+    query: "",
+    maxResults: 25,
     videoDuration: "any",
     uploadPeriod: "all",
     regionCode: "",
@@ -55,10 +53,13 @@ export default function YouTubeSearchPage() {
     minSubscriberCount: 0,
   });
 
+  // 검색 실행 여부 상태
+  const [shouldSearch, setShouldSearch] = useState(false);
+
   // Hooks는 조건문 이전에 호출되어야 함
   const { data, isLoading, error } = useYouTubeSearch({
-    query: searchQuery,
-    maxResults,
+    query: filters.query,
+    maxResults: filters.maxResults,
     filters: {
       videoType:
         filters.videoDuration === "any"
@@ -70,7 +71,7 @@ export default function YouTubeSearchPage() {
       minSubscribers:
         filters.minSubscriberCount > 0 ? filters.minSubscriberCount : undefined,
     },
-    enabled: _hasHydrated && isAuthenticated, // 인증 후에만 활성화
+    enabled: _hasHydrated && isAuthenticated && shouldSearch && !!filters.query,
   });
 
   useEffect(() => {
@@ -86,87 +87,119 @@ export default function YouTubeSearchPage() {
   const videos = data?.videos ?? [];
   const totalResults = data?.totalResults ?? 0;
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
+  const handleSearch = () => {
+    if (filters.query.trim()) {
+      setShouldSearch(true);
+    }
   };
 
-  const handleVideoClick = (video: YouTubeVideo) => {
-    // TODO: 영상 상세 모달 열기 (Phase 7에서 구현)
-    console.log("Video clicked:", video);
-  };
-
-  const handleResetFilters = () => {
+  const handleReset = () => {
     setFilters({
+      query: "",
+      maxResults: 25,
       videoDuration: "any",
       uploadPeriod: "all",
       regionCode: "",
       minViewCount: 0,
       minSubscriberCount: 0,
     });
+    setShouldSearch(false);
+  };
+
+  const handleVideoClick = (video: YouTubeVideo) => {
+    // TODO: 영상 상세 모달 열기
+    console.log("Video clicked:", video);
+  };
+
+  const handleSaveVideo = (video: YouTubeVideo) => {
+    // TODO: 영상 저장 기능 구현
+    console.log("Save video:", video);
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar />
-      <div className="lg:pl-64">
-        <Navbar />
-        <div className="container py-8 space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold">YouTube 영상 검색</h1>
-            <p className="text-muted-foreground">
-              키워드로 YouTube 영상을 검색하고 템플릿으로 저장하세요.
-            </p>
-          </div>
+      {/* 헤더 네비게이션 */}
+      <HeaderNav />
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <SearchBar onSearch={handleSearch} />
-            <CollectionCountSelector
-              value={maxResults}
-              onChange={setMaxResults}
-            />
-          </div>
+      <div className="flex">
+        {/* 왼쪽 필터 사이드바 */}
+        <FilterSidebar
+          filters={filters}
+          onFiltersChange={setFilters}
+          onSearch={handleSearch}
+          onReset={handleReset}
+        />
 
-          <SearchFilters
-            filters={filters}
-            onChange={setFilters}
-            onReset={handleResetFilters}
-          />
-
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                검색 중 오류가 발생했습니다: {error.message}
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {isLoading && <VideoSkeletonGrid count={maxResults} />}
-
-          {!isLoading && data && videos.length === 0 && (
-            <EmptyState
-              message="검색 결과가 없습니다"
-              description="다른 키워드로 검색해보세요."
-            />
-          )}
-
-          {!isLoading && data && videos.length > 0 && (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                총 {totalResults}개의 영상을 찾았습니다.
-              </p>
-              <VideoGrid videos={videos} onVideoClick={handleVideoClick} />
-            </div>
-          )}
-
-          {!searchQuery && !isLoading && (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <p className="text-lg text-muted-foreground">
-                검색어를 입력하여 YouTube 영상을 검색해보세요.
+        {/* 메인 콘텐츠 영역 */}
+        <main className="flex-1 p-6 overflow-x-auto">
+          <div className="space-y-6">
+            {/* 페이지 헤더 */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h1 className="text-3xl font-bold">YouTube 영상 검색</h1>
+                {shouldSearch && data && (
+                  <p className="text-sm text-muted-foreground">
+                    총 {totalResults.toLocaleString()}개의 영상
+                  </p>
+                )}
+              </div>
+              <p className="text-muted-foreground">
+                키워드로 YouTube 영상을 검색하고 분석하세요.
               </p>
             </div>
-          )}
-        </div>
+
+            {/* 에러 메시지 */}
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  검색 중 오류가 발생했습니다: {error.message}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* 로딩 상태 */}
+            {isLoading && (
+              <div className="space-y-4">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            )}
+
+            {/* 검색 결과 테이블 */}
+            {!isLoading && shouldSearch && data && videos.length > 0 && (
+              <VideoTable
+                videos={videos}
+                onVideoClick={handleVideoClick}
+                onSaveVideo={handleSaveVideo}
+              />
+            )}
+
+            {/* 검색 결과 없음 */}
+            {!isLoading && shouldSearch && data && videos.length === 0 && (
+              <div className="border rounded-lg p-12 text-center">
+                <p className="text-lg text-muted-foreground">
+                  검색 결과가 없습니다.
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  다른 키워드로 검색해보세요.
+                </p>
+              </div>
+            )}
+
+            {/* 초기 안내 메시지 */}
+            {!shouldSearch && !isLoading && (
+              <div className="border rounded-lg p-12 text-center">
+                <p className="text-lg text-muted-foreground">
+                  왼쪽 검색 필터에서 키워드를 입력하고 검색 버튼을 눌러주세요.
+                </p>
+              </div>
+            )}
+          </div>
+        </main>
       </div>
     </div>
   );
