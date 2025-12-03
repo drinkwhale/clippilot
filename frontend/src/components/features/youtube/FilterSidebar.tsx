@@ -96,12 +96,13 @@ export function FilterSidebar({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="10">10개</SelectItem>
                 <SelectItem value="25">25개</SelectItem>
                 <SelectItem value="50">50개</SelectItem>
-                <SelectItem value="100">100개</SelectItem>
               </SelectContent>
             </Select>
+            <p className="text-xs text-muted-foreground">
+              백엔드 제한: 25-50개
+            </p>
           </div>
 
           <Separator />
