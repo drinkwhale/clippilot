@@ -5,6 +5,7 @@
 
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import axios from 'axios'
+import { supabase } from '@/lib/supabase'
 
 // API base URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
@@ -33,9 +34,9 @@ export class APIClient {
 
     // Request interceptor
     this.client.interceptors.request.use(
-      (config) => {
-        // Add auth token if available
-        const token = this.getAuthToken()
+      async (config) => {
+        // Add auth token if available from Supabase session
+        const token = await this.getAuthToken()
         if (token) {
           config.headers.Authorization = `Bearer ${token}`
         }
@@ -72,13 +73,18 @@ export class APIClient {
   }
 
   /**
-   * Get authentication token from storage
+   * Get authentication token from Supabase session
    */
-  private getAuthToken(): string | null {
+  private async getAuthToken(): Promise<string | null> {
     if (typeof window === 'undefined') return null
 
-    // Get token from localStorage or cookie
-    return localStorage.getItem('access_token')
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      return session?.access_token || null
+    } catch (error) {
+      console.error('Failed to get auth token:', error)
+      return null
+    }
   }
 
   /**

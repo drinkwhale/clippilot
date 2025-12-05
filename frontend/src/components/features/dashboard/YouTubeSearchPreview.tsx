@@ -24,13 +24,12 @@ interface SearchHistoryItem {
  */
 export function YouTubeSearchPreview() {
   const { data: searchHistory, isLoading } = useQuery<SearchHistoryItem[]>({
-    queryKey: ["youtube-search-history-preview", isMockApi],
+    queryKey: ["youtube-search-history-preview"],
     queryFn: async () => {
       try {
-        if (isMockApi) {
-          await waitFor(150);
-        }
-        const history = isMockApi ? mockSearchHistory : await getSearchHistory();
+        await waitFor(150);
+        // 항상 mock 데이터 사용 (검색 히스토리 API가 구현되지 않음)
+        const history = mockSearchHistory;
         // 최근 3개만 반환 (문자열 배열을 객체 배열로 변환)
         return history.slice(0, 3).map((keyword, index) => ({
           keyword,
