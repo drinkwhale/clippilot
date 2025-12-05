@@ -50,7 +50,7 @@ async def list_api_keys(
     - 암호화된 키 값은 반환하지 않음 (보안)
     """
     result = await db.execute(
-        select(APIKey).where(APIKey.user_id == current_user["id"])
+        select(APIKey).where(APIKey.user_id == current_user.id)
     )
     api_keys = result.scalars().all()
 
@@ -79,7 +79,7 @@ async def get_api_key(
     """
     result = await db.execute(
         select(APIKey).where(
-            APIKey.user_id == current_user["id"],
+            APIKey.user_id == current_user.id,
             APIKey.service_name == service_name
         )
     )
@@ -117,7 +117,7 @@ async def create_api_key(
     # 기존 키 확인
     result = await db.execute(
         select(APIKey).where(
-            APIKey.user_id == current_user["id"],
+            APIKey.user_id == current_user.id,
             APIKey.service_name == payload.service_name
         )
     )
@@ -144,7 +144,7 @@ async def create_api_key(
     else:
         # 새 키 생성
         new_key = APIKey(
-            user_id=current_user["id"],
+            user_id=current_user.id,
             service_name=payload.service_name,
             api_key_encrypted=encrypted_key
         )
@@ -175,7 +175,7 @@ async def delete_api_key(
     """
     result = await db.execute(
         select(APIKey).where(
-            APIKey.user_id == current_user["id"],
+            APIKey.user_id == current_user.id,
             APIKey.service_name == service_name
         )
     )
@@ -207,7 +207,7 @@ async def decrypt_api_key(
     """
     result = await db.execute(
         select(APIKey).where(
-            APIKey.user_id == current_user["id"],
+            APIKey.user_id == current_user.id,
             APIKey.service_name == service_name
         )
     )

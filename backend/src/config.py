@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     YOUTUBE_API_KEY: str = "placeholder-youtube-api-key"  # YouTube Data API v3 키
     YOUTUBE_CLIENT_ID: str = "placeholder-client-id"
     YOUTUBE_CLIENT_SECRET: str = "placeholder-secret"
-    YOUTUBE_REDIRECT_URI: str = "http://localhost:3000/api/auth/callback/youtube"
+    YOUTUBE_REDIRECT_URI: str = "http://localhost:8000/api/v1/channels/oauth/youtube/callback"
 
     # Pexels API 설정 (개발 환경용 기본값)
     PEXELS_API_KEY: str = "placeholder-pexels-key"
