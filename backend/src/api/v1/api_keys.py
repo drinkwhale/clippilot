@@ -117,7 +117,7 @@ async def create_api_key(
     # 기존 키 확인
     result = await db.execute(
         select(APIKey).where(
-            APIKey.user_id == current_user["id"],
+            APIKey.user_id == current_user.id,
             APIKey.service_name == payload.service_name
         )
     )
