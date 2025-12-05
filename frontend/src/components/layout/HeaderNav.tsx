@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { APIKeysDialog } from "@/components/features/settings/APIKeysDialog";
 
 /**
  * 네비게이션 메뉴 항목
@@ -72,12 +74,11 @@ const navItems: NavItem[] = [
  */
 export function HeaderNav() {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user, clearAuth } = useAuthStore();
+  const { user } = useAuthStore();
+  const { logout } = useAuth();
 
-  const handleLogout = () => {
-    clearAuth();
-    router.push("/login");
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
@@ -111,6 +112,11 @@ export function HeaderNav() {
             );
           })}
         </nav>
+
+        {/* API 키 설정 버튼 */}
+        <div className="mr-3">
+          <APIKeysDialog />
+        </div>
 
         {/* 사용자 프로필 드롭다운 */}
         <DropdownMenu>
