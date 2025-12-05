@@ -36,7 +36,9 @@ export default function OnboardingPage() {
       await completeOnboarding.mutateAsync(true);
       router.push("/dashboard");
     } catch (error) {
-      console.error("Failed to complete onboarding:", error);
+      console.error("온보딩 완료 처리 실패:", error);
+      // 에러가 발생해도 대시보드로 이동 (낙관적 업데이트)
+      router.push("/dashboard");
     }
   };
 
@@ -45,11 +47,9 @@ export default function OnboardingPage() {
       await completeOnboarding.mutateAsync(true);
       router.push("/dashboard");
     } catch (error) {
-      console.error("Failed to skip onboarding:", error);
-      // 인증 오류인 경우 로그인 페이지로 리디렉션
-      if (error instanceof Error && error.message.includes("인증")) {
-        router.push("/login?redirect=/onboarding");
-      }
+      console.error("온보딩 건너뛰기 실패:", error);
+      // 에러가 발생해도 대시보드로 이동 (낙관적 업데이트)
+      router.push("/dashboard");
     }
   };
 
