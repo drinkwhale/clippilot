@@ -98,6 +98,20 @@ export function useAuth() {
           throw new Error('로그인 세션 생성에 실패했습니다');
         }
 
+        // Set auth token first for API calls
+        const accessToken = authData.session.access_token;
+
+        // Fetch actual user data from backend API
+        let onboardingCompleted = false;
+        try {
+          const apiClient = (await import('@/lib/api/client')).apiClient;
+          apiClient.setAuthToken(accessToken);
+          const response = await apiClient.get('/api/v1/users/me/onboarding');
+          onboardingCompleted = response.data.onboarding_completed;
+        } catch (apiError) {
+          console.warn('온보딩 상태 조회 실패, 기본값 사용:', apiError);
+        }
+
         // Convert Supabase user to our User format
         const userData = {
           id: authData.user.id,
@@ -107,12 +121,12 @@ export function useAuth() {
           is_active: true,
           email_verified: authData.user.email_confirmed_at !== null,
           last_login_at: new Date().toISOString(),
-          onboarding_completed: authData.user.user_metadata?.onboarding_completed || false,
+          onboarding_completed: onboardingCompleted,
           created_at: authData.user.created_at,
           updated_at: authData.user.updated_at || authData.user.created_at,
         };
 
-        setAuth(userData, authData.session.access_token);
+        setAuth(userData, accessToken);
 
         // Redirect based on onboarding status
         if (!userData.onboarding_completed) {
@@ -136,7 +150,7 @@ export function useAuth() {
   const logout = useCallback(async () => {
     await supabase.auth.signOut();
     clearAuth();
-    router.push('/login');
+    router.push('/');
   }, [clearAuth, router]);
 
   /**

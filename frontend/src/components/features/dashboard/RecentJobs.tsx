@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { api } from "@/lib/api/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,30 @@ import { ko } from "date-fns/locale";
 import { mockJobs } from "@/lib/mocks/dashboard";
 import type { Job, JobStatus } from "@/lib/types/dashboard";
 import { isMockApi, waitFor } from "@/lib/config";
+
+/**
+ * 클라이언트 전용 시간 표시 컴포넌트 (hydration 에러 방지)
+ */
+function TimeAgo({ date }: { date: string }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <span className="text-xs text-muted-foreground">잠시 전</span>;
+  }
+
+  return (
+    <span className="text-xs text-muted-foreground">
+      {formatDistanceToNow(new Date(date), {
+        addSuffix: true,
+        locale: ko,
+      })}
+    </span>
+  );
+}
 
 /**
  * 작업 상태별 배지 컴포넌트
@@ -147,12 +172,7 @@ export function RecentJobs() {
                 <p className="font-medium truncate mb-1">{job.prompt}</p>
                 <div className="flex items-center gap-2 flex-wrap">
                   <JobStatusBadge status={job.status} />
-                  <span className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(job.created_at), {
-                      addSuffix: true,
-                      locale: ko,
-                    })}
-                  </span>
+                  <TimeAgo date={job.created_at} />
                 </div>
                 {job.status === "failed" && job.error_message && (
                   <p className="text-xs text-destructive mt-1">

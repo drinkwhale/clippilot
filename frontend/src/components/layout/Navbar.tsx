@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
+import { useAuth } from "@/lib/hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,12 +24,11 @@ import {
 } from "lucide-react";
 
 export function Navbar() {
-  const router = useRouter();
-  const { user, clearAuth } = useAuthStore();
+  const { user } = useAuthStore();
+  const { logout } = useAuth();
 
-  const handleLogout = () => {
-    clearAuth();
-    router.push("/login");
+  const handleLogout = async () => {
+    await logout();
   };
 
   // 이메일에서 이니셜 추출 (예: jack@example.com → J)

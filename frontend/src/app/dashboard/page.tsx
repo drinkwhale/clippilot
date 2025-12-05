@@ -38,13 +38,26 @@ export default function DashboardPage() {
   useEffect(() => {
     // Zustand persist 재수화가 완료된 후에만 인증 상태 확인
     if (_hasHydrated && !isAuthenticated) {
-      router.push("/login");
+      // Supabase 쿠키 삭제
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+      router.replace("/login");
     }
   }, [_hasHydrated, isAuthenticated, router]);
 
   // 재수화가 완료되지 않았거나 인증되지 않은 경우 로딩 표시
   if (!_hasHydrated || !isAuthenticated) {
-    return null;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">로딩 중...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
