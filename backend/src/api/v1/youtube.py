@@ -4,7 +4,15 @@ from typing import Optional
 from datetime import datetime
 import logging
 
-from fastapi import APIRouter, Depends, Query, HTTPException, status, Request
+from fastapi import (
+    APIRouter,
+    Depends,
+    Header,
+    HTTPException,
+    Query,
+    Request,
+    status,
+)
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -18,6 +26,7 @@ from src.core.youtube.search_service import YouTubeSearchService
 from src.core.youtube.exceptions import YouTubeAPIError, QuotaExceededError
 from src.core.cache import CacheService
 from src.middleware.auth import get_current_user
+from src.models.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -26,9 +35,18 @@ limiter = Limiter(key_func=get_remote_address)
 
 
 # Dependency: YouTubeSearchService 인스턴스
-def get_youtube_service() -> YouTubeSearchService:
+def get_youtube_service(
+    youtube_api_key: str | None = Header(None, alias="X-YouTube-API-Key")
+) -> YouTubeSearchService:
     """YouTube 검색 서비스 의존성"""
-    return YouTubeSearchService()
+    try:
+        return YouTubeSearchService(api_key=youtube_api_key)
+    except YouTubeAPIError as e:
+        # 사용자 친화적인 메시지로 반환
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
 
 
 # Dependency: CacheService 인스턴스
@@ -65,7 +83,7 @@ async def search_youtube_videos(
     min_subscriber_count: Optional[int] = Query(
         None, ge=0, description="최소 구독자 수"
     ),
-    current_user: dict = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     youtube_service: YouTubeSearchService = Depends(get_youtube_service),
     cache_service: CacheService = Depends(get_cache_service),
 ):
@@ -126,7 +144,10 @@ async def search_youtube_videos(
         cache_service.set(cache_key, response.model_dump(by_alias=True), ttl=900)
 
         logger.info(
-            f"YouTube 검색 성공: query={query}, results={len(videos)}, user_id={current_user['id']}"
+            "YouTube 검색 성공: query=%s, results=%s, user_id=%s",
+            query,
+            len(videos),
+            getattr(current_user, "id", None),
         )
         return response
 

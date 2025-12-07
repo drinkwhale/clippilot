@@ -22,6 +22,7 @@ export interface FilterState {
   regionCode: string;
   minViewCount: number;
   minSubscriberCount: number;
+  minCii: number;
 }
 
 interface FilterSidebarProps {
@@ -29,6 +30,7 @@ interface FilterSidebarProps {
   onFiltersChange: (filters: FilterState) => void;
   onSearch: () => void;
   onReset: () => void;
+  isSearching?: boolean;
 }
 
 /**
@@ -39,6 +41,7 @@ export function FilterSidebar({
   onFiltersChange,
   onSearch,
   onReset,
+  isSearching = false,
 }: FilterSidebarProps) {
   const updateFilter = <K extends keyof FilterState>(
     key: K,
@@ -152,14 +155,14 @@ export function FilterSidebar({
           <div className="space-y-2">
             <Label htmlFor="region-code">국가</Label>
             <Select
-              value={filters.regionCode || ""}
+              value={filters.regionCode || "ALL"}
               onValueChange={(value) => updateFilter("regionCode", value)}
             >
               <SelectTrigger id="region-code">
                 <SelectValue placeholder="전체" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">전체</SelectItem>
+                <SelectItem value="ALL">전체</SelectItem>
                 <SelectItem value="KR">🇰🇷 대한민국</SelectItem>
                 <SelectItem value="US">🇺🇸 미국</SelectItem>
                 <SelectItem value="JP">🇯🇵 일본</SelectItem>
@@ -233,12 +236,38 @@ export function FilterSidebar({
               </SelectContent>
             </Select>
           </div>
+
+          {/* CII 최소 등급 */}
+          <div className="space-y-2">
+            <Label htmlFor="cii-min">CII 필터</Label>
+            <Select
+              value={filters.minCii.toString()}
+              onValueChange={(value) => updateFilter("minCii", Number(value))}
+            >
+              <SelectTrigger id="cii-min">
+                <SelectValue placeholder="전체" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">전체 (Soso 이상)</SelectItem>
+                <SelectItem value="2">Good 이상</SelectItem>
+                <SelectItem value="5">Great 이상</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Soso &lt; 2, Good ≥ 2, Great ≥ 5 기준으로 필터링합니다.
+            </p>
+          </div>
         </div>
 
         {/* 하단 버튼 */}
         <div className="p-4 border-t space-y-2">
-          <Button onClick={onSearch} className="w-full" size="sm">
-            검색
+          <Button
+            onClick={onSearch}
+            className="w-full"
+            size="sm"
+            disabled={isSearching}
+          >
+            {isSearching ? "검색 중..." : "검색"}
           </Button>
           <Button
             onClick={onReset}

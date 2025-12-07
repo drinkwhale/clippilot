@@ -17,9 +17,16 @@ logger = logging.getLogger(__name__)
 class YouTubeSearchService:
     """YouTube 검색 서비스 클래스"""
 
-    def __init__(self):
+    def __init__(self, api_key: Optional[str] = None):
         """YouTube API 클라이언트 초기화"""
-        self.youtube = build("youtube", "v3", developerKey=settings.YOUTUBE_API_KEY)
+        self.api_key = (api_key or settings.YOUTUBE_API_KEY or "").strip()
+
+        if not self.api_key or self.api_key == "placeholder-youtube-api-key":
+            raise YouTubeAPIError(
+                "유효한 YouTube API 키가 설정되지 않았습니다. 설정에서 API 키를 저장한 후 다시 시도해주세요."
+            )
+
+        self.youtube = build("youtube", "v3", developerKey=self.api_key)
 
     async def search_videos(
         self,
@@ -151,9 +158,43 @@ class YouTubeSearchService:
             )
 
             videos = []
+            channel_ids: set[str] = set()
             for item in videos_response.get("items", []):
                 video_data = self._parse_video_item(item)
+                channel_ids.add(video_data["channel_id"])
                 videos.append(video_data)
+
+            # 채널 통계 조회 후 성과 지표 계산
+            if channel_ids:
+                channel_stats = self._fetch_channel_stats(list(channel_ids))
+                for video in videos:
+                    channel_id = video.get("channel_id")
+                    stats = channel_stats.get(channel_id, {})
+                    channel_total_views = stats.get("viewCount", 0)
+                    channel_video_count = max(stats.get("videoCount", 0), 1)
+
+                    video["subscriber_count"] = stats.get("subscriberCount")
+                    video["channel_total_videos"] = stats.get("videoCount")
+                    video["channel_total_views"] = channel_total_views
+
+                    # 성과도 배율: 영상 조회수 / 채널 평균 조회수
+                    channel_avg_views = (
+                        channel_total_views / channel_video_count
+                        if channel_video_count > 0
+                        else 0
+                    )
+                    if channel_avg_views > 0:
+                        video["performance_ratio"] = video["view_count"] / channel_avg_views
+                    else:
+                        video["performance_ratio"] = None
+
+                    # 채널 기여도: 영상 조회수 / 채널 누적 조회수 (비율)
+                    if channel_total_views > 0:
+                        video["channel_contribution"] = (
+                            video["view_count"] / channel_total_views * 100
+                        )
+                    else:
+                        video["channel_contribution"] = None
 
             return videos
 
@@ -163,6 +204,31 @@ class YouTubeSearchService:
         except Exception as e:
             logger.error(f"영상 상세 정보 조회 중 오류 발생: {e}")
             raise YouTubeAPIError(f"영상 정보 처리 중 오류가 발생했습니다: {e}")
+
+    def _fetch_channel_stats(self, channel_ids: List[str]) -> Dict[str, Dict[str, int]]:
+        """채널 통계를 조회하여 맵으로 반환"""
+        try:
+            response = (
+                self.youtube.channels()
+                .list(
+                    part="statistics",
+                    id=",".join(channel_ids),
+                )
+                .execute()
+            )
+
+            stats_map: Dict[str, Dict[str, int]] = {}
+            for item in response.get("items", []):
+                statistics = item.get("statistics", {}) or {}
+                stats_map[item["id"]] = {
+                    "subscriberCount": int(statistics.get("subscriberCount", 0)),
+                    "viewCount": int(statistics.get("viewCount", 0)),
+                    "videoCount": int(statistics.get("videoCount", 0)),
+                }
+            return stats_map
+        except Exception as e:
+            logger.warning(f"채널 통계 조회 중 오류: {e}")
+            return {}
 
     async def _filter_by_subscriber_count(
         self, videos: List[Dict[str, Any]], min_subscribers: int
