@@ -66,15 +66,34 @@ function formatPercent(value?: number): string {
 /**
  * 날짜를 포맷팅하는 함수
  */
+const seoulDateFormatter = new Intl.DateTimeFormat("ko-KR", {
+  timeZone: "Asia/Seoul",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+});
+
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
 
-  return `${year}. ${month}. ${day}.\n오전 ${hours}:${minutes}`;
+  // Fix timezone so server/client renders stay in sync.
+  const parts = seoulDateFormatter.formatToParts(date);
+  const getPart = (type: string) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+
+  const dayPeriod = getPart("dayPeriod");
+  const hour = getPart("hour");
+  const minute = getPart("minute");
+
+  return `${getPart("year")}. ${getPart("month")}. ${getPart(
+    "day"
+  )}.\n${dayPeriod} ${hour}:${minute}`;
 }
 
 /**

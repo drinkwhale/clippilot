@@ -38,9 +38,16 @@ function getPublishedAfterDate(period: string): string | undefined {
   }
 }
 
+const resultCountFormatter = new Intl.NumberFormat("ko-KR");
+
 export default function YouTubeSearchPage() {
+  const [hasMounted, setHasMounted] = useState(false);
   const router = useRouter();
   const { isAuthenticated, _hasHydrated } = useAuthStore();
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   // 필터 상태 통합
   const [filters, setFilters] = useState<FilterState>({
@@ -85,7 +92,7 @@ export default function YouTubeSearchPage() {
     }
   }, [_hasHydrated, isAuthenticated, router]);
 
-  if (!_hasHydrated || !isAuthenticated) {
+  if (!hasMounted || !_hasHydrated || !isAuthenticated) {
     return null;
   }
 
@@ -158,7 +165,7 @@ export default function YouTubeSearchPage() {
                 <h1 className="text-3xl font-bold">YouTube 영상 검색</h1>
                 {shouldSearch && data && (
                   <p className="text-sm text-muted-foreground">
-                    총 {totalResults.toLocaleString()}개의 영상
+                    총 {resultCountFormatter.format(totalResults)}개의 영상
                   </p>
                 )}
               </div>
