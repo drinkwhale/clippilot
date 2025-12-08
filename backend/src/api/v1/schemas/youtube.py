@@ -78,6 +78,11 @@ class YouTubeSearchResult(BaseModel):
     comment_count: int = Field(..., description="댓글 수")
     tags: List[str] = Field(default_factory=list, description="태그 목록")
     category_id: str = Field(..., description="카테고리 ID")
+    subscriber_count: Optional[int] = Field(None, description="채널 구독자 수")
+    channel_total_videos: Optional[int] = Field(None, description="채널 총 영상 수")
+    channel_total_views: Optional[int] = Field(None, description="채널 누적 조회수")
+    performance_ratio: Optional[float] = Field(None, description="성과도 배율 (영상 조회수 / 채널 평균 조회수)")
+    channel_contribution: Optional[float] = Field(None, description="채널 기여도 (영상 조회수 / 채널 누적 조회수 * 100)")
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -97,6 +102,11 @@ class YouTubeSearchResult(BaseModel):
                 "comment_count": 500000,
                 "tags": ["Rick Astley", "Never Gonna Give You Up"],
                 "category_id": "10",
+                "subscriber_count": 3000000,
+                "channel_total_videos": 150,
+                "channel_total_views": 5000000000,
+                "performance_ratio": 1.5,
+                "channel_contribution": 20.0,
             }
         }
     )
@@ -154,6 +164,11 @@ class VideoDetail(BaseModel):
     comment_count: int = Field(..., description="댓글 수")
     tags: List[str] = Field(default_factory=list, description="태그 목록")
     category_id: str = Field(..., description="카테고리 ID")
+    subscriber_count: Optional[int] = Field(None, description="채널 구독자 수")
+    channel_total_videos: Optional[int] = Field(None, description="채널 총 영상 수")
+    channel_total_views: Optional[int] = Field(None, description="채널 누적 조회수")
+    performance_ratio: Optional[float] = Field(None, description="성과도 배율 (영상 조회수 / 채널 평균 조회수)")
+    channel_contribution: Optional[float] = Field(None, description="채널 기여도 (영상 조회수 / 채널 누적 조회수 * 100)")
 
     model_config = ConfigDict(
         populate_by_name=True,
