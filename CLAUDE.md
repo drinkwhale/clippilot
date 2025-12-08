@@ -2,7 +2,7 @@
 
 AI 숏폼 비디오 자동 생성 & YouTube 업로드 SaaS 플랫폼
 
-Auto-generated from all feature plans. Last updated: 2025-11-03
+Auto-generated from all feature plans. Last updated: 2025-12-09
 
 ---
 
@@ -28,17 +28,23 @@ TypeScript/Next.js, Python/FastAPI, Go로 만든 AI 기반 숏폼 비디오 자�
 ## 3. 기술 스택 (Tech Stack)
 
 ### Frontend
-- **언어**: TypeScript 5.x
-- **프레임워크**: Next.js 14 (App Router), React 18
-- **스타일링**: Tailwind CSS, shadcn/ui
-- **상태 관리**: TanStack Query
+- **언어**: TypeScript 5.9.3
+- **프레임워크**: Next.js 16 (App Router), React 19.2
+- **스타일링**: Tailwind CSS 3.4, shadcn/ui
+- **상태 관리**: TanStack Query 5.56, Zustand 5.0
+- **테스트**: Jest 30.2, Playwright 1.56
+- **패키지 매니저**: pnpm 10.16
 - **배포**: Vercel
 
 ### Backend API
 - **언어**: Python 3.11
-- **프레임워크**: FastAPI 0.109
-- **ORM**: SQLAlchemy
-- **작업 큐**: Celery + Redis
+- **프레임워크**: FastAPI 0.120
+- **ORM**: SQLAlchemy 2.0
+- **외부 API**: google-api-python-client 2.185, OpenAI 2.6
+- **작업 큐**: Celery 5.5 + Redis 7.0
+- **Rate Limiting**: slowapi 0.1.9
+- **결제**: Stripe 10.14
+- **로깅**: loguru 0.7
 - **배포**: Render / Fly.io
 
 ### Rendering Worker
@@ -60,10 +66,10 @@ TypeScript/Next.js, Python/FastAPI, Go로 만든 AI 기반 숏폼 비디오 자�
 - **스톡 미디어**: Pexels API
 
 ### 테스트
-- **Frontend**: Jest + React Testing Library + Playwright
-- **Backend**: pytest + pytest-asyncio
+- **Frontend**: Jest 30.2 + React Testing Library 16.3 + Playwright 1.56
+- **Backend**: pytest 8.4 + pytest-asyncio 1.2 + pytest-cov 6.0
 - **Worker**: Go testing package
-- **패키지 매니저**: npm (Frontend), pip (Backend), go mod (Worker)
+- **패키지 매니저**: pnpm 10.16 (Frontend), uv (Backend), go mod (Worker)
 
 ## 4. 핵심 디렉토리 구조 (Core Directory Structure)
 
@@ -79,7 +85,10 @@ clippilot/
 │   │   ├── components/       # 재사용 UI 컴포넌트
 │   │   │   ├── ui/           # shadcn/ui 컴포넌트
 │   │   │   └── features/     # 기능별 컴포넌트
-│   │   │       └── youtube/  # YouTube 검색 관련 컴포넌트
+│   │   │       ├── youtube/  # YouTube 검색 관련 컴포넌트
+│   │   │       │   └── filters/  # 개별 필터 컴포넌트
+│   │   │       ├── dashboard/    # 대시보드 컴포넌트
+│   │   │       └── settings/     # 설정 컴포넌트
 │   │   ├── lib/              # 유틸리티 및 헬퍼
 │   │   │   ├── api/          # API 클라이언트
 │   │   │   │   └── youtube.ts  # YouTube API 클라이언트
@@ -104,6 +113,9 @@ clippilot/
 │   │   │   │   ├── search_service.py  # 검색 서비스
 │   │   │   │   ├── exceptions.py      # 에러 핸들러
 │   │   │   │   └── utils.py          # 유틸리티
+│   │   │   ├── security/    # 보안 및 인증 로직
+│   │   │   ├── billing/     # Stripe 결제 처리
+│   │   │   ├── media/       # 미디어 처리
 │   │   │   └── cache.py     # Redis 캐시 서비스
 │   │   ├── models/          # SQLAlchemy 모델
 │   │   ├── workers/         # Celery 태스크
@@ -198,14 +210,14 @@ clippilot/
 
 **권장: 관리 스크립트 사용**
 ```bash
-# 모든 서버 시작 (Backend, Frontend, Celery, Worker, Redis)
+# 모든 서버 시작 (Backend, Frontend, Redis)
 ./scripts/dev-start.sh
 
 # 서버 상태 확인
 ./scripts/dev-status.sh
 
 # 로그 확인
-./scripts/dev-logs.sh [service]  # service: backend, frontend, celery, worker, redis, all
+./scripts/dev-logs.sh [service]  # service: backend, frontend, redis, all
 
 # 서버 재시작
 ./scripts/dev-restart.sh
@@ -214,45 +226,43 @@ clippilot/
 ./scripts/dev-stop.sh
 ```
 
+**주의사항**:
+- 현재 Celery Worker와 Go Worker는 구현되지 않았습니다 (Phase 5-6에서 구현 예정)
+- 개발 스크립트는 Backend와 Frontend만 관리합니다
+
 **개별 실행 (개발 시 필요한 경우)**
 ```bash
-# Redis 실행
-redis-server
-
 # Backend API 실행
 cd backend
-pip install -r requirements.txt
-uvicorn src.main:app --reload --port 8000
-
-# Celery Worker 실행
-cd backend
-celery -A src.workers.celery_app worker --loglevel=info
-
-# Rendering Worker 실행
-cd worker
-go run cmd/worker/main.go
+uv sync                    # 의존성 설치 (uv 사용)
+uv run uvicorn src.main:app --reload --port 8000
 
 # Frontend 실행
 cd frontend
-npm install
-npm run dev
+pnpm install              # 의존성 설치
+pnpm dev                  # 개발 서버 실행 (http://localhost:3000)
+
+# Redis 실행 (macOS)
+redis-server
+
+# 로그 확인
+./scripts/dev-logs.sh [service]
 ```
 
 ### 테스트 실행
 ```bash
 # Frontend 테스트
 cd frontend
-npm test                 # 단위 테스트
-npm run test:e2e        # E2E 테스트
+pnpm test                # 단위 테스트 (Jest)
+pnpm test:watch          # Watch 모드
+pnpm test:coverage       # 커버리지 포함
+# E2E 테스트는 아직 설정되지 않음
 
 # Backend 테스트
 cd backend
-pytest                   # 전체 테스트
-pytest tests/test_jobs.py  # 특정 테스트
-
-# Worker 테스트
-cd worker
-go test ./...
+uv run pytest            # 전체 테스트
+uv run pytest tests/test_youtube.py  # 특정 테스트
+uv run pytest --cov      # 커버리지 포함
 ```
 
 ### API 문서 확인
@@ -375,22 +385,24 @@ Phase 6: US2 Rendering/Upload (T081-T104) - P0 MVP CORE
 ### Development
 ```bash
 # Frontend
-npm run dev              # 개발 서버 실행 (http://localhost:3000)
-npm test                 # 단위 테스트
-npm run test:e2e         # E2E 테스트
-npm run build            # 프로덕션 빌드
-npm run lint             # ESLint 실행
+pnpm dev                 # 개발 서버 실행 (http://localhost:3000)
+pnpm test                # 단위 테스트
+pnpm test:coverage       # 커버리지 포함 테스트
+pnpm build               # 프로덕션 빌드
+pnpm lint                # ESLint 실행
 
 # Backend
-uvicorn src.main:app --reload --port 8000  # 개발 서버
-pytest                                      # 테스트 실행
-black .                                     # 코드 포맷팅
-flake8 .                                    # 린팅
+uv run uvicorn src.main:app --reload --port 8000  # 개발 서버
+uv run pytest                                      # 테스트 실행
+uv run pytest --cov                                # 커버리지 포함
+# 코드 포맷팅은 프로젝트 설정에 따라 자동 적용
 
-# Worker
-go run cmd/worker/main.go  # 워커 실행
-go test ./...              # 테스트 실행
-gofmt -w .                 # 코드 포맷팅
+# 관리 스크립트
+./scripts/dev-start.sh    # 모든 서버 시작
+./scripts/dev-stop.sh     # 모든 서버 중지
+./scripts/dev-restart.sh  # 서버 재시작
+./scripts/dev-status.sh   # 서버 상태 확인
+./scripts/dev-logs.sh     # 로그 확인
 ```
 
 ### Task Management
@@ -410,20 +422,19 @@ gofmt -w .                 # 코드 포맷팅
 
 ## Recent Changes
 
-### 002-youtube-search (진행 중)
-- 2025-11-19: Phase 4 (US2 - 고급 필터링) 완료 - 영상 타입, 업로드 기간, 국가, 조회수, 구독자 수 필터 구현 ✅
-- 2025-11-18: Phase 3 (US1 - 기본 검색) 완료 - YouTube 검색 기본 기능 구현 ✅
-- 2025-11-17: Phase 2 (Foundational) 완료 - YouTube API 클라이언트, 캐시, Rate Limiting ✅
-- 2025-11-16: Phase 1 (Setup) 완료 - 의존성 설치 및 환경 설정 ✅
-- 2025-11-15: 002-youtube-search 브랜치 생성 및 스펙 문서 작성
+### 002-youtube-search (진행 중 - main 브랜치 머지 완료)
+- 2025-12-09: Phase 4 UI 개선 완료 - Select 드롭다운, 스키마 필드 alias, 날짜 포맷팅 ✅
+- 2025-12-05: Phase 4 (US2 - 고급 필터링) 완료 - 영상 타입, 업로드 기간, 국가, 조회수, 구독자 수 필터 구현 ✅
+- 2025-11-23: Phase 3 (US1 - 기본 검색) 완료 - YouTube 검색 기본 기능 구현 ✅
+- 2025-11-22: Phase 2 (Foundational) 완료 - YouTube API 클라이언트, 캐시, Rate Limiting ✅
+- 2025-11-21: Phase 1 (Setup) 완료 - 의존성 설치 및 환경 설정 ✅
+- **다음 작업**: Phase 5 (US3 - CII 계산) 시작 예정 (T053-T064)
 
 ### 001-clippilot-mvp
-- 2025-11-03: README.md 파일들 업데이트 (루트, frontend, backend, worker, specs)
 - 2025-11-03: Phase 3 (US0 Authentication) 완료 - 인증 시스템 구현 ✅
 - 2025-11-02: Phase 2 (Foundational Infrastructure) 완료 - 공통 인프라 구축 ✅
 - 2025-10-29: Phase 1 (Setup) 완료 - 프로젝트 초기 설정 ✅
-- 2025-10-27: 001-clippilot-mvp 브랜치 생성 및 전체 스펙 문서 완료
-- 2025-10-27: spec.md, plan.md, research.md, data-model.md, tasks.md, api-v1.yaml 생성
+- **상태**: Phase 4-6 대기 중 (YouTube OAuth, Content Generation, Rendering & Upload)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
