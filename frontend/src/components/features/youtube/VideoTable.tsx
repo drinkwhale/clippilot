@@ -46,18 +46,54 @@ function formatSubscriberCount(count: number): string {
   return count.toString();
 }
 
+function formatCount(count?: number): string {
+  if (count === undefined || count === null) return "-";
+  if (count >= 10000) return `${(count / 10000).toFixed(1)}만`;
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}천`;
+  return count.toString();
+}
+
+function formatRatio(value?: number): string {
+  if (value === undefined || value === null) return "-";
+  return `${value.toFixed(1)}x`;
+}
+
+function formatPercent(value?: number): string {
+  if (value === undefined || value === null) return "-";
+  return `${value.toFixed(1)}%`;
+}
+
 /**
  * 날짜를 포맷팅하는 함수
  */
+const seoulDateFormatter = new Intl.DateTimeFormat("ko-KR", {
+  timeZone: "Asia/Seoul",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+});
+
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
 
-  return `${year}. ${month}. ${day}.\n오전 ${hours}:${minutes}`;
+  // Fix timezone so server/client renders stay in sync.
+  const parts = seoulDateFormatter.formatToParts(date);
+  const getPart = (type: string) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+
+  const dayPeriod = getPart("dayPeriod");
+  const hour = getPart("hour");
+  const minute = getPart("minute");
+
+  return `${getPart("year")}. ${getPart("month")}. ${getPart(
+    "day"
+  )}.\n${dayPeriod} ${hour}:${minute}`;
 }
 
 /**
@@ -84,11 +120,11 @@ function calculateEngagementRate(video: YouTubeVideo): number {
 /**
  * CII 점수 계산 및 배지 반환
  */
-function getCIIBadge(engagementRate: number) {
-  if (engagementRate >= 5) {
+function getCIIBadge(ciiScore: number) {
+  if (ciiScore >= 5) {
     return <Badge className="bg-green-600 hover:bg-green-700">Great!!</Badge>;
   }
-  if (engagementRate >= 2) {
+  if (ciiScore >= 2) {
     return <Badge className="bg-green-500 hover:bg-green-600">Good</Badge>;
   }
   return <Badge variant="secondary">Soso</Badge>;
@@ -102,6 +138,10 @@ export function VideoTable({
   onVideoClick,
   onSaveVideo,
 }: VideoTableProps) {
+  const sortedVideos = [...videos].sort(
+    (a, b) => (b.viewCount || 0) - (a.viewCount || 0)
+  );
+
   return (
     <div className="border rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
@@ -113,17 +153,22 @@ export function VideoTable({
               <TableHead className="w-40">채널명</TableHead>
               <TableHead className="min-w-[300px]">제목</TableHead>
               <TableHead className="w-32">업로드</TableHead>
-              <TableHead className="w-24 text-right">조회 수</TableHead>
               <TableHead className="w-24 text-right">구독자 수</TableHead>
+              <TableHead className="w-24 text-right">조회 수</TableHead>
+              <TableHead className="w-28 text-center">성과도 배율</TableHead>
+              <TableHead className="w-28 text-center">채널 기여도</TableHead>
               <TableHead className="w-24 text-center">참여율</TableHead>
+              <TableHead className="w-24 text-right">좋아요 수</TableHead>
+              <TableHead className="w-24 text-right">댓글 수</TableHead>
               <TableHead className="w-20 text-right">길이</TableHead>
               <TableHead className="w-24 text-center">CII</TableHead>
               <TableHead className="w-32 text-center">액션</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {videos.map((video, index) => {
+            {sortedVideos.map((video, index) => {
               const engagementRate = calculateEngagementRate(video);
+              const ciiScore = video.cii ?? engagementRate;
 
               return (
                 <TableRow
@@ -187,14 +232,26 @@ export function VideoTable({
                     {formatDate(video.publishedAt)}
                   </TableCell>
 
+                  {/* 구독자 수 */}
+                  <TableCell className="text-right font-medium">
+                    {video.subscriberCount
+                      ? formatSubscriberCount(video.subscriberCount)
+                      : "-"}
+                  </TableCell>
+
                   {/* 조회수 */}
                   <TableCell className="text-right font-medium">
                     {formatViewCount(video.viewCount || 0)}
                   </TableCell>
 
-                  {/* 구독자 수 */}
-                  <TableCell className="text-right font-medium">
-                    {formatSubscriberCount(0)}
+                  {/* 성과도 배율 */}
+                  <TableCell className="text-center">
+                    {formatRatio(video.performanceRatio)}
+                  </TableCell>
+
+                  {/* 채널 기여도 */}
+                  <TableCell className="text-center">
+                    {formatPercent(video.channelContribution)}
                   </TableCell>
 
                   {/* 참여율 */}
@@ -207,6 +264,29 @@ export function VideoTable({
                     </Badge>
                   </TableCell>
 
+                  {/* 좋아요 수 */}
+                  <TableCell className="text-right font-medium">
+                    {formatCount(video.likeCount)}
+                  </TableCell>
+
+                  {/* 댓글 수 */}
+                  <TableCell className="text-right font-medium">
+                    {video.commentCount !== undefined ? (
+                      <a
+                        href={`https://www.youtube.com/watch?v=${video.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                        title="YouTube에서 댓글 보기"
+                      >
+                        {formatCount(video.commentCount)}
+                      </a>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+
                   {/* 영상 길이 */}
                   <TableCell className="text-right text-sm">
                     {video.duration
@@ -215,8 +295,11 @@ export function VideoTable({
                   </TableCell>
 
                   {/* CII 점수 */}
-                  <TableCell className="text-center">
-                    {getCIIBadge(engagementRate)}
+                  <TableCell className="text-center space-y-1">
+                    <div className="text-sm font-medium">
+                      {ciiScore.toFixed(1)}
+                    </div>
+                    {getCIIBadge(ciiScore)}
                   </TableCell>
 
                   {/* 액션 버튼 */}

@@ -74,12 +74,17 @@ const navItems: NavItem[] = [
  */
 export function HeaderNav() {
   const pathname = usePathname();
-  const { user } = useAuthStore();
+  const { user, _hasHydrated } = useAuthStore();
   const { logout } = useAuth();
 
   const handleLogout = async () => {
     await logout();
   };
+
+  // Avoid hydration mismatch until store is ready
+  if (!_hasHydrated) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

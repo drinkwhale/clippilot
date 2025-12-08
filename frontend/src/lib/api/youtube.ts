@@ -5,6 +5,7 @@
  */
 
 import { apiClient } from './client';
+import type { AxiosRequestHeaders } from 'axios';
 
 // ============================================================================
 // YouTube API 응답 타입
@@ -20,6 +21,8 @@ export interface YouTubeVideo {
   thumbnailUrl: string;
   channelId: string;
   channelTitle: string;
+  subscriberCount?: number;
+  channelTotalVideos?: number;
   publishedAt: string;
   duration: number; // 초 단위
   viewCount: number;
@@ -27,6 +30,9 @@ export interface YouTubeVideo {
   commentCount: number;
   tags?: string[];
   categoryId?: string;
+  performanceRatio?: number; // 성과도 배율 (백엔드 제공 시)
+  channelContribution?: number; // 채널 기여도 (백엔드 제공 시)
+  cii?: number; // Channel Influence Index (백엔드 제공 시)
   isShorts: boolean; // 60초 이하 여부
 }
 
@@ -80,6 +86,77 @@ export interface YouTubeSearchResult {
   totalResults: number;
 }
 
+type RawYouTubeVideo = {
+  video_id?: string;
+  videoId?: string;
+  id?: string;
+  title: string;
+  description: string;
+  thumbnail_url?: string;
+  thumbnailUrl?: string;
+  channel_id?: string;
+  channelId?: string;
+  channel_title?: string;
+  channelTitle?: string;
+  published_at?: string;
+  publishedAt?: string;
+  duration: number;
+  view_count?: number;
+  viewCount?: number;
+  like_count?: number;
+  likeCount?: number;
+  comment_count?: number;
+  commentCount?: number;
+  tags?: string[];
+  category_id?: string;
+  categoryId?: string;
+  subscriber_count?: number;
+  subscriberCount?: number;
+  channel_total_videos?: number;
+  channelTotalVideos?: number;
+  performance_ratio?: number;
+  performanceRatio?: number;
+  channel_contribution?: number;
+  channelContribution?: number;
+  cii?: number;
+};
+
+function mapVideo(raw: RawYouTubeVideo): YouTubeVideo {
+  const durationSeconds = raw.duration ?? 0;
+
+  return {
+    id: raw.id ?? raw.videoId ?? raw.video_id ?? "",
+    title: raw.title,
+    description: raw.description,
+    thumbnailUrl: raw.thumbnailUrl ?? raw.thumbnail_url ?? "",
+    channelId: raw.channelId ?? raw.channel_id ?? "",
+    channelTitle: raw.channelTitle ?? raw.channel_title ?? "",
+    subscriberCount: raw.subscriberCount ?? raw.subscriber_count,
+    channelTotalVideos: raw.channelTotalVideos ?? raw.channel_total_videos,
+    publishedAt: raw.publishedAt ?? raw.published_at ?? "",
+    duration: durationSeconds,
+    viewCount: raw.viewCount ?? raw.view_count ?? 0,
+    likeCount: raw.likeCount ?? raw.like_count ?? 0,
+    commentCount: raw.commentCount ?? raw.comment_count ?? 0,
+    tags: raw.tags ?? [],
+    categoryId: raw.categoryId ?? raw.category_id,
+    performanceRatio:
+      raw.performanceRatio ?? raw.performance_ratio ?? undefined,
+    channelContribution:
+      raw.channelContribution ?? raw.channel_contribution ?? undefined,
+    cii: raw.cii ?? undefined,
+    isShorts: durationSeconds <= 60,
+  };
+}
+
+function buildYouTubeHeaders(apiKey?: string): AxiosRequestHeaders | undefined {
+  return apiKey
+    ? {
+        "X-YouTube-API-Key": apiKey,
+      }
+    : undefined;
+}
+
 /**
  * 자막 트랙 정보
  */
@@ -128,7 +205,8 @@ export interface CIIMetrics {
  * YouTube 영상 검색
  */
 export async function searchVideos(
-  params: YouTubeSearchParams
+  params: YouTubeSearchParams,
+  apiKey?: string
 ): Promise<YouTubeSearchResult> {
   const filters = params.filters || {};
 
@@ -173,16 +251,29 @@ export async function searchVideos(
 
   const response = await apiClient.get('/api/v1/youtube/search', {
     params: apiParams,
+    headers: buildYouTubeHeaders(apiKey),
   });
-  return response.data;
+  const data = response.data as any;
+  const rawVideos: RawYouTubeVideo[] = data.videos ?? data.results ?? [];
+
+  return {
+    videos: rawVideos.map(mapVideo),
+    nextPageToken: data.nextPageToken ?? data.next_page_token,
+    totalResults: data.totalResults ?? data.total_results ?? rawVideos.length,
+  };
 }
 
 /**
  * 영상 상세 정보 조회
  */
-export async function getVideoDetails(videoId: string): Promise<YouTubeVideo> {
-  const response = await apiClient.get(`/api/v1/youtube/videos/${videoId}`);
-  return response.data;
+export async function getVideoDetails(
+  videoId: string,
+  apiKey?: string
+): Promise<YouTubeVideo> {
+  const response = await apiClient.get(`/api/v1/youtube/videos/${videoId}`, {
+    headers: buildYouTubeHeaders(apiKey),
+  });
+  return mapVideo(response.data as RawYouTubeVideo);
 }
 
 /**

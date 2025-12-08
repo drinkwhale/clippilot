@@ -38,9 +38,16 @@ function getPublishedAfterDate(period: string): string | undefined {
   }
 }
 
+const resultCountFormatter = new Intl.NumberFormat("ko-KR");
+
 export default function YouTubeSearchPage() {
+  const [hasMounted, setHasMounted] = useState(false);
   const router = useRouter();
   const { isAuthenticated, _hasHydrated } = useAuthStore();
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   // 필터 상태 통합
   const [filters, setFilters] = useState<FilterState>({
@@ -48,13 +55,18 @@ export default function YouTubeSearchPage() {
     maxResults: 25,
     videoDuration: "any",
     uploadPeriod: "all",
-    regionCode: "",
+    regionCode: "ALL",
     minViewCount: 0,
     minSubscriberCount: 0,
+    minCii: 0,
   });
 
   // 검색 실행 여부 상태
   const [shouldSearch, setShouldSearch] = useState(false);
+  // 검색 시점에 확정된 publishedAfter 값을 보관 (재렌더마다 변하지 않도록)
+  const [publishedAfter, setPublishedAfter] = useState<string | undefined>(
+    undefined
+  );
 
   // Hooks는 조건문 이전에 호출되어야 함
   const { data, isLoading, error } = useYouTubeSearch({
@@ -65,8 +77,8 @@ export default function YouTubeSearchPage() {
         filters.videoDuration === "any"
           ? "all"
           : (filters.videoDuration as "shorts" | "long"),
-      publishedAfter: getPublishedAfterDate(filters.uploadPeriod),
-      regionCode: filters.regionCode || undefined,
+      publishedAfter,
+      regionCode: filters.regionCode === "ALL" ? undefined : filters.regionCode,
       minViewCount: filters.minViewCount > 0 ? filters.minViewCount : undefined,
       minSubscribers:
         filters.minSubscriberCount > 0 ? filters.minSubscriberCount : undefined,
@@ -80,15 +92,15 @@ export default function YouTubeSearchPage() {
     }
   }, [_hasHydrated, isAuthenticated, router]);
 
-  if (!_hasHydrated || !isAuthenticated) {
+  if (!hasMounted || !_hasHydrated || !isAuthenticated) {
     return null;
   }
 
   const videos = data?.videos ?? [];
-  const totalResults = data?.totalResults ?? 0;
 
   const handleSearch = () => {
     if (filters.query.trim()) {
+      setPublishedAfter(getPublishedAfterDate(filters.uploadPeriod));
       setShouldSearch(true);
     }
   };
@@ -99,10 +111,12 @@ export default function YouTubeSearchPage() {
       maxResults: 25,
       videoDuration: "any",
       uploadPeriod: "all",
-      regionCode: "",
+      regionCode: "ALL",
       minViewCount: 0,
       minSubscriberCount: 0,
+      minCii: 0,
     });
+    setPublishedAfter(undefined);
     setShouldSearch(false);
   };
 
@@ -116,6 +130,17 @@ export default function YouTubeSearchPage() {
     console.log("Save video:", video);
   };
 
+  // CII 필터는 백엔드가 지원하지 않으므로 프론트에서 필터링
+  const filteredVideos = (data?.videos ?? []).filter((video) => {
+    const engagementRate =
+      (((video.likeCount ?? 0) + (video.commentCount ?? 0)) /
+        Math.max(video.viewCount ?? 0, 1)) *
+      100;
+    const ciiScore = video.cii ?? engagementRate;
+    return ciiScore >= filters.minCii;
+  });
+  const totalResults = filteredVideos.length;
+
   return (
     <div className="min-h-screen bg-background">
       {/* 헤더 네비게이션 */}
@@ -128,6 +153,7 @@ export default function YouTubeSearchPage() {
           onFiltersChange={setFilters}
           onSearch={handleSearch}
           onReset={handleReset}
+          isSearching={isLoading}
         />
 
         {/* 메인 콘텐츠 영역 */}
@@ -139,7 +165,7 @@ export default function YouTubeSearchPage() {
                 <h1 className="text-3xl font-bold">YouTube 영상 검색</h1>
                 {shouldSearch && data && (
                   <p className="text-sm text-muted-foreground">
-                    총 {totalResults.toLocaleString()}개의 영상
+                    총 {resultCountFormatter.format(totalResults)}개의 영상
                   </p>
                 )}
               </div>
@@ -153,7 +179,9 @@ export default function YouTubeSearchPage() {
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  검색 중 오류가 발생했습니다: {error.message}
+                  {error.message.includes("429")
+                    ? "요청이 너무 많습니다. 잠시 후 다시 시도해주세요."
+                    : `검색 중 오류가 발생했습니다: ${error.message}`}
                 </AlertDescription>
               </Alert>
             )}
@@ -170,16 +198,19 @@ export default function YouTubeSearchPage() {
             )}
 
             {/* 검색 결과 테이블 */}
-            {!isLoading && shouldSearch && data && videos.length > 0 && (
+            {!isLoading && shouldSearch && data && filteredVideos.length > 0 && (
               <VideoTable
-                videos={videos}
+                videos={filteredVideos}
                 onVideoClick={handleVideoClick}
                 onSaveVideo={handleSaveVideo}
               />
             )}
 
             {/* 검색 결과 없음 */}
-            {!isLoading && shouldSearch && data && videos.length === 0 && (
+            {!isLoading &&
+              shouldSearch &&
+              data &&
+              filteredVideos.length === 0 && (
               <div className="border rounded-lg p-12 text-center">
                 <p className="text-lg text-muted-foreground">
                   검색 결과가 없습니다.

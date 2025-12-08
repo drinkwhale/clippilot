@@ -22,6 +22,7 @@ export interface FilterState {
   regionCode: string;
   minViewCount: number;
   minSubscriberCount: number;
+  minCii: number;
 }
 
 interface FilterSidebarProps {
@@ -29,6 +30,7 @@ interface FilterSidebarProps {
   onFiltersChange: (filters: FilterState) => void;
   onSearch: () => void;
   onReset: () => void;
+  isSearching?: boolean;
 }
 
 /**
@@ -39,6 +41,7 @@ export function FilterSidebar({
   onFiltersChange,
   onSearch,
   onReset,
+  isSearching = false,
 }: FilterSidebarProps) {
   const updateFilter = <K extends keyof FilterState>(
     key: K,
@@ -148,64 +151,123 @@ export function FilterSidebar({
             </Select>
           </div>
 
-          {/* 국가 코드 */}
+          {/* 국가 */}
           <div className="space-y-2">
-            <Label htmlFor="region-code">국가 코드</Label>
-            <Input
-              id="region-code"
-              type="text"
-              placeholder="예: KR, US"
-              value={filters.regionCode}
-              onChange={(e) =>
-                updateFilter("regionCode", e.target.value.toUpperCase())
-              }
-              maxLength={2}
-            />
-            <p className="text-xs text-muted-foreground">
-              ISO 3166-1 alpha-2 코드
-            </p>
+            <Label htmlFor="region-code">국가</Label>
+            <Select
+              value={filters.regionCode || "ALL"}
+              onValueChange={(value) => updateFilter("regionCode", value)}
+            >
+              <SelectTrigger id="region-code">
+                <SelectValue placeholder="전체" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">전체</SelectItem>
+                <SelectItem value="KR">🇰🇷 대한민국</SelectItem>
+                <SelectItem value="US">🇺🇸 미국</SelectItem>
+                <SelectItem value="JP">🇯🇵 일본</SelectItem>
+                <SelectItem value="CN">🇨🇳 중국</SelectItem>
+                <SelectItem value="GB">🇬🇧 영국</SelectItem>
+                <SelectItem value="DE">🇩🇪 독일</SelectItem>
+                <SelectItem value="FR">🇫🇷 프랑스</SelectItem>
+                <SelectItem value="ES">🇪🇸 스페인</SelectItem>
+                <SelectItem value="IT">🇮🇹 이탈리아</SelectItem>
+                <SelectItem value="BR">🇧🇷 브라질</SelectItem>
+                <SelectItem value="IN">🇮🇳 인도</SelectItem>
+                <SelectItem value="ID">🇮🇩 인도네시아</SelectItem>
+                <SelectItem value="MX">🇲🇽 멕시코</SelectItem>
+                <SelectItem value="RU">🇷🇺 러시아</SelectItem>
+                <SelectItem value="AU">🇦🇺 호주</SelectItem>
+                <SelectItem value="CA">🇨🇦 캐나다</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <Separator />
 
-          {/* 최소 조회수 */}
+          {/* 조회수 범위 */}
           <div className="space-y-2">
-            <Label htmlFor="min-view-count">최소 조회수</Label>
-            <Input
-              id="min-view-count"
-              type="number"
-              placeholder="0"
-              min="0"
-              value={filters.minViewCount || ""}
-              onChange={(e) =>
-                updateFilter("minViewCount", parseInt(e.target.value) || 0)
+            <Label htmlFor="view-count-range">조회수 범위</Label>
+            <Select
+              value={filters.minViewCount.toString()}
+              onValueChange={(value) =>
+                updateFilter("minViewCount", parseInt(value))
               }
-            />
+            >
+              <SelectTrigger id="view-count-range">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">전체</SelectItem>
+                <SelectItem value="1000">1천 이상</SelectItem>
+                <SelectItem value="10000">1만 이상</SelectItem>
+                <SelectItem value="50000">5만 이상</SelectItem>
+                <SelectItem value="100000">10만 이상</SelectItem>
+                <SelectItem value="500000">50만 이상</SelectItem>
+                <SelectItem value="1000000">100만 이상</SelectItem>
+                <SelectItem value="5000000">500만 이상</SelectItem>
+                <SelectItem value="10000000">1,000만 이상</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* 최소 구독자 수 */}
+          {/* 구독자 수 범위 */}
           <div className="space-y-2">
-            <Label htmlFor="min-subscriber-count">최소 구독자 수</Label>
-            <Input
-              id="min-subscriber-count"
-              type="number"
-              placeholder="0"
-              min="0"
-              value={filters.minSubscriberCount || ""}
-              onChange={(e) =>
-                updateFilter(
-                  "minSubscriberCount",
-                  parseInt(e.target.value) || 0
-                )
+            <Label htmlFor="subscriber-count-range">구독자 수 범위</Label>
+            <Select
+              value={filters.minSubscriberCount.toString()}
+              onValueChange={(value) =>
+                updateFilter("minSubscriberCount", parseInt(value))
               }
-            />
+            >
+              <SelectTrigger id="subscriber-count-range">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">전체</SelectItem>
+                <SelectItem value="1000">1천 이상</SelectItem>
+                <SelectItem value="10000">1만 이상</SelectItem>
+                <SelectItem value="50000">5만 이상</SelectItem>
+                <SelectItem value="100000">10만 이상</SelectItem>
+                <SelectItem value="500000">50만 이상</SelectItem>
+                <SelectItem value="1000000">100만 이상</SelectItem>
+                <SelectItem value="5000000">500만 이상</SelectItem>
+                <SelectItem value="10000000">1,000만 이상</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* CII 최소 등급 */}
+          <div className="space-y-2">
+            <Label htmlFor="cii-min">CII 필터</Label>
+            <Select
+              value={filters.minCii.toString()}
+              onValueChange={(value) => updateFilter("minCii", Number(value))}
+            >
+              <SelectTrigger id="cii-min">
+                <SelectValue placeholder="전체" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">전체 (Soso 이상)</SelectItem>
+                <SelectItem value="2">Good 이상</SelectItem>
+                <SelectItem value="5">Great 이상</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Soso &lt; 2, Good ≥ 2, Great ≥ 5 기준으로 필터링합니다.
+            </p>
           </div>
         </div>
 
         {/* 하단 버튼 */}
         <div className="p-4 border-t space-y-2">
-          <Button onClick={onSearch} className="w-full" size="sm">
-            검색
+          <Button
+            onClick={onSearch}
+            className="w-full"
+            size="sm"
+            disabled={isSearching}
+          >
+            {isSearching ? "검색 중..." : "검색"}
           </Button>
           <Button
             onClick={onReset}
