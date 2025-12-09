@@ -277,13 +277,88 @@ export async function getVideoDetails(
 }
 
 /**
+ * 자막 정보
+ */
+export interface Caption {
+  id: string;
+  language: string;
+  name: string;
+  trackKind: string;
+  isAutoSynced: boolean;
+}
+
+/**
+ * 댓글 정보
+ */
+export interface Comment {
+  commentId: string;
+  author: string;
+  authorChannelId: string;
+  text: string;
+  likeCount: number;
+  publishedAt: string;
+  replyCount: number;
+}
+
+/**
+ * 채널 상세 정보
+ */
+export interface ChannelDetail {
+  channelId: string;
+  title: string;
+  description: string;
+  customUrl?: string;
+  publishedAt: string;
+  thumbnailUrl?: string;
+  subscriberCount: number;
+  videoCount: number;
+  viewCount: number;
+  keywords?: string;
+  country?: string;
+}
+
+/**
  * 영상 자막 목록 조회
  */
-export async function getCaptionTracks(
-  videoId: string
-): Promise<CaptionTrack[]> {
+export async function getVideoCaptions(
+  videoId: string,
+  apiKey?: string
+): Promise<Caption[]> {
   const response = await apiClient.get(
-    `/api/v1/youtube/videos/${videoId}/captions`
+    `/api/v1/youtube/videos/${videoId}/captions`,
+    { headers: buildYouTubeHeaders(apiKey) }
+  );
+  return response.data.captions || [];
+}
+
+/**
+ * 영상 댓글 조회
+ */
+export async function getVideoComments(
+  videoId: string,
+  maxResults: number = 20,
+  apiKey?: string
+): Promise<Comment[]> {
+  const response = await apiClient.get(
+    `/api/v1/youtube/videos/${videoId}/comments`,
+    {
+      params: { max_results: maxResults },
+      headers: buildYouTubeHeaders(apiKey),
+    }
+  );
+  return response.data.comments || [];
+}
+
+/**
+ * 채널 상세 정보 조회
+ */
+export async function getChannelDetails(
+  channelId: string,
+  apiKey?: string
+): Promise<ChannelDetail> {
+  const response = await apiClient.get(
+    `/api/v1/youtube/channels/${channelId}`,
+    { headers: buildYouTubeHeaders(apiKey) }
   );
   return response.data;
 }

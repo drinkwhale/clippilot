@@ -21,6 +21,11 @@ from src.api.v1.schemas.youtube import (
     YouTubeSearchResponse,
     YouTubeSearchResult,
     VideoDetail,
+    CaptionListResponse,
+    Caption,
+    CommentListResponse,
+    Comment,
+    ChannelDetail,
 )
 from src.core.youtube.search_service import YouTubeSearchService
 from src.core.youtube.exceptions import YouTubeAPIError, QuotaExceededError
@@ -236,4 +241,193 @@ async def get_video_details(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="영상 정보 조회 중 오류가 발생했습니다.",
+        )
+
+
+@router.get(
+    "/videos/{video_id}/captions",
+    response_model=CaptionListResponse,
+    response_model_by_alias=True,
+    summary="YouTube 영상 자막 목록 조회",
+    description="특정 YouTube 영상의 자막 트랙 목록을 반환합니다.",
+)
+@limiter.limit("30/minute")
+async def get_video_captions(
+    request: Request,
+    video_id: str,
+    current_user: dict = Depends(get_current_user),
+    youtube_service: YouTubeSearchService = Depends(get_youtube_service),
+    cache_service: CacheService = Depends(get_cache_service),
+):
+    """
+    YouTube 영상 자막 목록 조회 API
+
+    - **video_id**: YouTube 영상 ID (필수)
+
+    Rate Limit: 30 req/min
+    Cache: 1시간 TTL
+    """
+    try:
+        # 캐시 키 생성
+        cache_key = f"youtube:captions:{video_id}"
+
+        # 캐시 확인
+        cached_result = cache_service.get(cache_key)
+        if cached_result:
+            logger.info(f"캐시된 자막 정보 반환: video_id={video_id}")
+            return cached_result
+
+        # YouTube API 조회
+        captions = await youtube_service.get_video_captions(video_id)
+
+        response = CaptionListResponse(
+            video_id=video_id,
+            captions=[Caption(**caption) for caption in captions],
+        )
+
+        # 캐시 저장 (1시간 TTL)
+        cache_service.set(cache_key, response.model_dump(by_alias=True), ttl=3600)
+
+        logger.info(
+            f"YouTube 자막 정보 조회 성공: video_id={video_id}, captions={len(captions)}"
+        )
+        return response
+
+    except YouTubeAPIError as e:
+        logger.error(f"YouTube API 오류: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"자막 정보 조회 중 오류가 발생했습니다: {str(e)}",
+        )
+    except Exception as e:
+        logger.error(f"예상치 못한 오류 발생: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="자막 정보 조회 중 오류가 발생했습니다.",
+        )
+
+
+@router.get(
+    "/videos/{video_id}/comments",
+    response_model=CommentListResponse,
+    response_model_by_alias=True,
+    summary="YouTube 영상 댓글 조회",
+    description="특정 YouTube 영상의 댓글 목록을 반환합니다.",
+)
+@limiter.limit("30/minute")
+async def get_video_comments(
+    request: Request,
+    video_id: str,
+    max_results: int = Query(20, ge=10, le=100, description="최대 결과 수 (10~100)"),
+    current_user: dict = Depends(get_current_user),
+    youtube_service: YouTubeSearchService = Depends(get_youtube_service),
+    cache_service: CacheService = Depends(get_cache_service),
+):
+    """
+    YouTube 영상 댓글 조회 API
+
+    - **video_id**: YouTube 영상 ID (필수)
+    - **max_results**: 최대 결과 수 (10~100, 기본값: 20)
+
+    Rate Limit: 30 req/min
+    Cache: 15분 TTL
+    """
+    try:
+        # 캐시 키 생성
+        cache_key = f"youtube:comments:{video_id}:{max_results}"
+
+        # 캐시 확인
+        cached_result = cache_service.get(cache_key)
+        if cached_result:
+            logger.info(f"캐시된 댓글 정보 반환: video_id={video_id}")
+            return cached_result
+
+        # YouTube API 조회
+        comments = await youtube_service.get_video_comments(video_id, max_results)
+
+        response = CommentListResponse(
+            video_id=video_id,
+            comments=[Comment(**comment) for comment in comments],
+            total_comments=len(comments),
+        )
+
+        # 캐시 저장 (15분 TTL)
+        cache_service.set(cache_key, response.model_dump(by_alias=True), ttl=900)
+
+        logger.info(
+            f"YouTube 댓글 조회 성공: video_id={video_id}, comments={len(comments)}"
+        )
+        return response
+
+    except YouTubeAPIError as e:
+        logger.error(f"YouTube API 오류: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"댓글 정보 조회 중 오류가 발생했습니다: {str(e)}",
+        )
+    except Exception as e:
+        logger.error(f"예상치 못한 오류 발생: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="댓글 정보 조회 중 오류가 발생했습니다.",
+        )
+
+
+@router.get(
+    "/channels/{channel_id}",
+    response_model=ChannelDetail,
+    response_model_by_alias=True,
+    summary="YouTube 채널 상세 정보 조회",
+    description="특정 YouTube 채널의 상세 정보를 반환합니다.",
+)
+@limiter.limit("30/minute")
+async def get_channel_details(
+    request: Request,
+    channel_id: str,
+    current_user: dict = Depends(get_current_user),
+    youtube_service: YouTubeSearchService = Depends(get_youtube_service),
+    cache_service: CacheService = Depends(get_cache_service),
+):
+    """
+    YouTube 채널 상세 정보 조회 API
+
+    - **channel_id**: YouTube 채널 ID (필수)
+
+    Rate Limit: 30 req/min
+    Cache: 1시간 TTL
+    """
+    try:
+        # 캐시 키 생성
+        cache_key = f"youtube:channel:{channel_id}"
+
+        # 캐시 확인
+        cached_result = cache_service.get(cache_key)
+        if cached_result:
+            logger.info(f"캐시된 채널 정보 반환: channel_id={channel_id}")
+            return cached_result
+
+        # YouTube API 조회
+        channel = await youtube_service.get_channel_details(channel_id)
+
+        response = ChannelDetail(**channel)
+
+        # 캐시 저장 (1시간 TTL)
+        cache_service.set(cache_key, response.model_dump(by_alias=True), ttl=3600)
+
+        logger.info(f"YouTube 채널 정보 조회 성공: channel_id={channel_id}")
+        return response
+
+    except YouTubeAPIError as e:
+        logger.error(f"YouTube API 오류: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"채널 정보 조회 중 오류가 발생했습니다: {str(e)}",
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"예상치 못한 오류 발생: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="채널 정보 조회 중 오류가 발생했습니다.",
         )

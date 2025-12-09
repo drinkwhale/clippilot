@@ -286,6 +286,170 @@ class YouTubeSearchService:
             # 오류 발생 시 원본 반환
             return videos
 
+    async def get_video_captions(self, video_id: str) -> List[Dict[str, Any]]:
+        """
+        YouTube 영상의 자막 목록 조회
+
+        Args:
+            video_id: 영상 ID
+
+        Returns:
+            자막 트랙 목록
+
+        Raises:
+            YouTubeAPIError: YouTube API 오류
+        """
+        try:
+            captions_response = (
+                self.youtube.captions()
+                .list(
+                    part="snippet",
+                    videoId=video_id,
+                )
+                .execute()
+            )
+
+            captions = []
+            for item in captions_response.get("items", []):
+                snippet = item.get("snippet", {})
+                captions.append({
+                    "id": item["id"],
+                    "language": snippet.get("language", ""),
+                    "name": snippet.get("name", ""),
+                    "track_kind": snippet.get("trackKind", ""),
+                    "is_auto_synced": snippet.get("isAutoSynced", False),
+                })
+
+            return captions
+
+        except HttpError as e:
+            if e.resp.status == 403:
+                # 자막이 비활성화된 경우
+                logger.warning(f"자막을 사용할 수 없습니다: video_id={video_id}")
+                return []
+            logger.error(f"YouTube API 오류 (자막 조회): {e}")
+            raise YouTubeAPIError(f"자막 정보 조회 중 오류가 발생했습니다: {e}")
+        except Exception as e:
+            logger.error(f"자막 조회 중 오류 발생: {e}")
+            raise YouTubeAPIError(f"자막 정보 처리 중 오류가 발생했습니다: {e}")
+
+    async def get_video_comments(
+        self, video_id: str, max_results: int = 20
+    ) -> List[Dict[str, Any]]:
+        """
+        YouTube 영상의 댓글 조회
+
+        Args:
+            video_id: 영상 ID
+            max_results: 최대 결과 수 (기본값: 20)
+
+        Returns:
+            댓글 목록
+
+        Raises:
+            YouTubeAPIError: YouTube API 오류
+        """
+        try:
+            comments_response = (
+                self.youtube.commentThreads()
+                .list(
+                    part="snippet",
+                    videoId=video_id,
+                    maxResults=min(max_results, 100),
+                    order="relevance",  # 인기순
+                )
+                .execute()
+            )
+
+            comments = []
+            for item in comments_response.get("items", []):
+                top_comment = item.get("snippet", {}).get("topLevelComment", {})
+                snippet = top_comment.get("snippet", {})
+
+                comments.append({
+                    "comment_id": top_comment.get("id", ""),
+                    "author": snippet.get("authorDisplayName", ""),
+                    "author_channel_id": snippet.get("authorChannelId", {}).get("value", ""),
+                    "text": snippet.get("textDisplay", ""),
+                    "like_count": snippet.get("likeCount", 0),
+                    "published_at": snippet.get("publishedAt", ""),
+                    "reply_count": item.get("snippet", {}).get("totalReplyCount", 0),
+                })
+
+            return comments
+
+        except HttpError as e:
+            if e.resp.status == 403:
+                # 댓글이 비활성화된 경우
+                logger.warning(f"댓글을 사용할 수 없습니다: video_id={video_id}")
+                return []
+            logger.error(f"YouTube API 오류 (댓글 조회): {e}")
+            raise YouTubeAPIError(f"댓글 정보 조회 중 오류가 발생했습니다: {e}")
+        except Exception as e:
+            logger.error(f"댓글 조회 중 오류 발생: {e}")
+            raise YouTubeAPIError(f"댓글 정보 처리 중 오류가 발생했습니다: {e}")
+
+    async def get_channel_details(self, channel_id: str) -> Dict[str, Any]:
+        """
+        YouTube 채널 상세 정보 조회
+
+        Args:
+            channel_id: 채널 ID
+
+        Returns:
+            채널 상세 정보
+
+        Raises:
+            YouTubeAPIError: YouTube API 오류
+        """
+        try:
+            channels_response = (
+                self.youtube.channels()
+                .list(
+                    part="snippet,statistics,brandingSettings",
+                    id=channel_id,
+                )
+                .execute()
+            )
+
+            items = channels_response.get("items", [])
+            if not items:
+                raise YouTubeAPIError("채널을 찾을 수 없습니다.")
+
+            item = items[0]
+            snippet = item.get("snippet", {})
+            statistics = item.get("statistics", {})
+            branding = item.get("brandingSettings", {}).get("channel", {})
+
+            # 썸네일 선택
+            thumbnails = snippet.get("thumbnails", {})
+            thumbnail_url = (
+                thumbnails.get("high", {}).get("url")
+                or thumbnails.get("medium", {}).get("url")
+                or thumbnails.get("default", {}).get("url")
+            )
+
+            return {
+                "channel_id": item["id"],
+                "title": snippet.get("title", ""),
+                "description": snippet.get("description", ""),
+                "custom_url": snippet.get("customUrl", ""),
+                "published_at": snippet.get("publishedAt", ""),
+                "thumbnail_url": thumbnail_url,
+                "subscriber_count": int(statistics.get("subscriberCount", 0)),
+                "video_count": int(statistics.get("videoCount", 0)),
+                "view_count": int(statistics.get("viewCount", 0)),
+                "keywords": branding.get("keywords", ""),
+                "country": snippet.get("country", ""),
+            }
+
+        except HttpError as e:
+            logger.error(f"YouTube API 오류 (채널 조회): {e}")
+            raise YouTubeAPIError(f"채널 정보 조회 중 오류가 발생했습니다: {e}")
+        except Exception as e:
+            logger.error(f"채널 조회 중 오류 발생: {e}")
+            raise YouTubeAPIError(f"채널 정보 처리 중 오류가 발생했습니다: {e}")
+
     def _parse_video_item(self, item: Dict[str, Any]) -> Dict[str, Any]:
         """
         YouTube API 응답 → 표준 포맷 변환

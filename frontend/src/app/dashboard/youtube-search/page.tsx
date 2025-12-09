@@ -13,6 +13,7 @@ import {
   type FilterState,
 } from "@/components/features/youtube/FilterSidebar";
 import { VideoTable } from "@/components/features/youtube/VideoTable";
+import { VideoDetailModal } from "@/components/features/youtube/VideoDetailModal";
 import { useYouTubeSearch } from "@/hooks/useYouTubeSearch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -120,9 +121,13 @@ export default function YouTubeSearchPage() {
     setShouldSearch(false);
   };
 
+  // 모달 상태
+  const [selectedVideo, setSelectedVideo] = useState<YouTubeVideo | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleVideoClick = (video: YouTubeVideo) => {
-    // TODO: 영상 상세 모달 열기
-    console.log("Video clicked:", video);
+    setSelectedVideo(video);
+    setIsModalOpen(true);
   };
 
   const handleSaveVideo = (video: YouTubeVideo) => {
@@ -232,6 +237,13 @@ export default function YouTubeSearchPage() {
           </div>
         </main>
       </div>
+
+      {/* 영상 상세 정보 모달 */}
+      <VideoDetailModal
+        video={selectedVideo}
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </div>
   );
 }
