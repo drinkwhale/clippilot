@@ -46,10 +46,6 @@ export default function YouTubeSearchPage() {
   const router = useRouter();
   const { isAuthenticated, _hasHydrated } = useAuthStore();
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
   // 필터 상태 통합
   const [filters, setFilters] = useState<FilterState>({
     query: "",
@@ -68,6 +64,10 @@ export default function YouTubeSearchPage() {
   const [publishedAfter, setPublishedAfter] = useState<string | undefined>(
     undefined
   );
+
+  // 모달 상태
+  const [selectedVideo, setSelectedVideo] = useState<YouTubeVideo | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Hooks는 조건문 이전에 호출되어야 함
   const { data, isLoading, error } = useYouTubeSearch({
@@ -88,16 +88,14 @@ export default function YouTubeSearchPage() {
   });
 
   useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (_hasHydrated && !isAuthenticated) {
       router.push("/login");
     }
   }, [_hasHydrated, isAuthenticated, router]);
-
-  if (!hasMounted || !_hasHydrated || !isAuthenticated) {
-    return null;
-  }
-
-  const videos = data?.videos ?? [];
 
   const handleSearch = () => {
     if (filters.query.trim()) {
@@ -121,10 +119,6 @@ export default function YouTubeSearchPage() {
     setShouldSearch(false);
   };
 
-  // 모달 상태
-  const [selectedVideo, setSelectedVideo] = useState<YouTubeVideo | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const handleVideoClick = (video: YouTubeVideo) => {
     setSelectedVideo(video);
     setIsModalOpen(true);
@@ -134,6 +128,11 @@ export default function YouTubeSearchPage() {
     // TODO: 영상 저장 기능 구현
     console.log("Save video:", video);
   };
+
+  // 조건부 렌더링 전에 return
+  if (!hasMounted || !_hasHydrated || !isAuthenticated) {
+    return null;
+  }
 
   // CII 필터는 백엔드가 지원하지 않으므로 프론트에서 필터링
   const filteredVideos = (data?.videos ?? []).filter((video) => {
