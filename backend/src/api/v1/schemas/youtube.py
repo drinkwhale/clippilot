@@ -282,3 +282,55 @@ class ChannelDetail(BaseModel):
         populate_by_name=True,
         alias_generator=to_camel,
     )
+
+
+class TranscriptSegment(BaseModel):
+    """YouTube 자막 세그먼트 스키마"""
+
+    text: str = Field(..., description="자막 텍스트")
+    start: float = Field(..., description="시작 시간 (초)")
+    duration: float = Field(..., description="지속 시간 (초)")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+class TranscriptResponse(BaseModel):
+    """YouTube 자막 응답 스키마"""
+
+    video_id: str = Field(..., description="YouTube 영상 ID")
+    language: str = Field(..., description="자막 언어")
+    segments: List[TranscriptSegment] = Field(..., description="자막 세그먼트 목록")
+    full_text: str = Field(..., description="전체 자막 텍스트")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+class AvailableTranscript(BaseModel):
+    """사용 가능한 자막 정보 스키마"""
+
+    language: str = Field(..., description="언어 이름")
+    language_code: str = Field(..., description="언어 코드")
+    is_generated: bool = Field(..., description="자동 생성 여부")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+class AvailableTranscriptsResponse(BaseModel):
+    """사용 가능한 자막 목록 응답 스키마"""
+
+    video_id: str = Field(..., description="YouTube 영상 ID")
+    transcripts: List[AvailableTranscript] = Field(..., description="자막 목록")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )

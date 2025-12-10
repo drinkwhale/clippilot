@@ -26,8 +26,13 @@ from src.api.v1.schemas.youtube import (
     CommentListResponse,
     Comment,
     ChannelDetail,
+    TranscriptResponse,
+    TranscriptSegment,
+    AvailableTranscriptsResponse,
+    AvailableTranscript,
 )
 from src.core.youtube.search_service import YouTubeSearchService
+from src.core.youtube.transcript_service import TranscriptService
 from src.core.youtube.exceptions import YouTubeAPIError, QuotaExceededError
 from src.core.cache import CacheService
 from src.middleware.auth import get_current_user
@@ -430,4 +435,145 @@ async def get_channel_details(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="채널 정보 조회 중 오류가 발생했습니다.",
+        )
+
+
+@router.get(
+    "/videos/{video_id}/transcript",
+    response_model=TranscriptResponse,
+    response_model_by_alias=True,
+    summary="YouTube 영상 자막 다운로드",
+    description="특정 YouTube 영상의 자막 텍스트를 반환합니다.",
+)
+@limiter.limit("30/minute")
+async def get_video_transcript(
+    request: Request,
+    video_id: str,
+    languages: Optional[str] = Query(None, description="선호 언어 (쉼표로 구분, 예: ko,en)"),
+    current_user: dict = Depends(get_current_user),
+    cache_service: CacheService = Depends(get_cache_service),
+):
+    """
+    YouTube 영상 자막 다운로드 API
+
+    - **video_id**: YouTube 영상 ID (필수)
+    - **languages**: 선호 언어 목록 (예: ko,en)
+
+    Rate Limit: 30 req/min
+    Cache: 1시간 TTL
+    """
+    try:
+        # 언어 목록 파싱
+        language_list = None
+        if languages:
+            language_list = [lang.strip() for lang in languages.split(",")]
+
+        # 캐시 키 생성
+        cache_key = f"youtube:transcript:{video_id}:{languages or 'default'}"
+
+        # 캐시 확인
+        cached_result = cache_service.get(cache_key)
+        if cached_result:
+            logger.info(f"캐시된 자막 반환: video_id={video_id}")
+            return cached_result
+
+        # 자막 가져오기
+        transcript_segments = await TranscriptService.get_transcript(
+            video_id, language_list
+        )
+        full_text = await TranscriptService.get_transcript_text(
+            video_id, language_list
+        )
+
+        # 실제 사용된 언어 추출 (첫 번째 세그먼트가 있는 경우)
+        detected_language = language_list[0] if language_list else "en"
+
+        response = TranscriptResponse(
+            video_id=video_id,
+            language=detected_language,
+            segments=[TranscriptSegment(**seg) for seg in transcript_segments],
+            full_text=full_text,
+        )
+
+        # 캐시 저장 (1시간 TTL)
+        cache_service.set(cache_key, response.model_dump(by_alias=True), ttl=3600)
+
+        logger.info(
+            f"자막 다운로드 성공: video_id={video_id}, segments={len(transcript_segments)}"
+        )
+        return response
+
+    except YouTubeAPIError as e:
+        logger.error(f"자막 다운로드 오류: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except Exception as e:
+        logger.error(f"예상치 못한 오류 발생: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="자막 다운로드 중 오류가 발생했습니다.",
+        )
+
+
+@router.get(
+    "/videos/{video_id}/transcripts/available",
+    response_model=AvailableTranscriptsResponse,
+    response_model_by_alias=True,
+    summary="사용 가능한 자막 목록 조회",
+    description="특정 YouTube 영상의 사용 가능한 자막 목록을 반환합니다.",
+)
+@limiter.limit("30/minute")
+async def get_available_transcripts(
+    request: Request,
+    video_id: str,
+    current_user: dict = Depends(get_current_user),
+    cache_service: CacheService = Depends(get_cache_service),
+):
+    """
+    사용 가능한 자막 목록 조회 API
+
+    - **video_id**: YouTube 영상 ID (필수)
+
+    Rate Limit: 30 req/min
+    Cache: 1시간 TTL
+    """
+    try:
+        # 캐시 키 생성
+        cache_key = f"youtube:transcripts:available:{video_id}"
+
+        # 캐시 확인
+        cached_result = cache_service.get(cache_key)
+        if cached_result:
+            logger.info(f"캐시된 자막 목록 반환: video_id={video_id}")
+            return cached_result
+
+        # 사용 가능한 자막 목록 조회
+        transcripts = await TranscriptService.get_available_transcripts(video_id)
+
+        response = AvailableTranscriptsResponse(
+            video_id=video_id,
+            transcripts=[AvailableTranscript(**t) for t in transcripts],
+        )
+
+        # 캐시 저장 (1시간 TTL)
+        cache_service.set(cache_key, response.model_dump(by_alias=True), ttl=3600)
+
+        logger.info(
+            f"자막 목록 조회 성공: video_id={video_id}, count={len(transcripts)}"
+        )
+        return response
+
+    except YouTubeAPIError as e:
+        logger.error(f"자막 목록 조회 오류: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except Exception as e:
+        logger.error(f"예상치 못한 오류 발생: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="자막 목록 조회 중 오류가 발생했습니다.",
         )

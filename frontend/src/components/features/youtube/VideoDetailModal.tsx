@@ -19,7 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatViewCount, formatDate } from "@/lib/utils/format";
 import { Play, MessageSquare, FileText, User, Download, Copy } from "lucide-react";
 import type { YouTubeVideo, Comment, Caption, ChannelDetail } from "@/lib/api/youtube";
-import { getVideoComments, getVideoCaptions, getChannelDetails } from "@/lib/api/youtube";
+import { getVideoComments, getVideoCaptions, getChannelDetails, downloadTranscriptAsFile } from "@/lib/api/youtube";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 
@@ -57,6 +57,16 @@ export function VideoDetailModal({ video, open, onOpenChange }: VideoDetailModal
 
   const handleCopyDescription = () => {
     navigator.clipboard.writeText(video.description);
+  };
+
+  const handleDownloadTranscript = async (languageCode?: string) => {
+    try {
+      const languages = languageCode ? [languageCode] : ['ko', 'en'];
+      await downloadTranscriptAsFile(video.id, video.title, languages);
+    } catch (error) {
+      console.error('자막 다운로드 실패:', error);
+      alert('자막을 다운로드할 수 없습니다. 이 영상은 자막이 제공되지 않을 수 있습니다.');
+    }
   };
 
   return (
@@ -219,7 +229,12 @@ export function VideoDetailModal({ video, open, onOpenChange }: VideoDetailModal
                           </p>
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDownloadTranscript(caption.language)}
+                        title="자막 다운로드"
+                      >
                         <Download className="w-4 h-4" />
                       </Button>
                     </div>
