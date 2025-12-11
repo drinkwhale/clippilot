@@ -251,21 +251,22 @@ async def get_video_details(
 
 @router.get(
     "/videos/{video_id}/captions",
-    response_model=CaptionListResponse,
+    response_model=AvailableTranscriptsResponse,
     response_model_by_alias=True,
     summary="YouTube 영상 자막 목록 조회",
-    description="특정 YouTube 영상의 자막 트랙 목록을 반환합니다.",
+    description="특정 YouTube 영상의 사용 가능한 자막 목록을 반환합니다.",
 )
 @limiter.limit("30/minute")
 async def get_video_captions(
     request: Request,
     video_id: str,
     current_user: dict = Depends(get_current_user),
-    youtube_service: YouTubeSearchService = Depends(get_youtube_service),
     cache_service: CacheService = Depends(get_cache_service),
 ):
     """
     YouTube 영상 자막 목록 조회 API
+
+    youtube-transcript-api를 사용하여 공개적으로 접근 가능한 자막 목록을 반환합니다.
 
     - **video_id**: YouTube 영상 ID (필수)
 
@@ -282,27 +283,28 @@ async def get_video_captions(
             logger.info(f"캐시된 자막 정보 반환: video_id={video_id}")
             return cached_result
 
-        # YouTube API 조회
-        captions = await youtube_service.get_video_captions(video_id)
+        # youtube-transcript-api로 자막 목록 조회
+        transcripts = await TranscriptService.get_available_transcripts(video_id)
 
-        response = CaptionListResponse(
+        response = AvailableTranscriptsResponse(
             video_id=video_id,
-            captions=[Caption(**caption) for caption in captions],
+            transcripts=[AvailableTranscript(**t) for t in transcripts],
         )
 
         # 캐시 저장 (1시간 TTL)
         cache_service.set(cache_key, response.model_dump(by_alias=True), ttl=3600)
 
         logger.info(
-            f"YouTube 자막 정보 조회 성공: video_id={video_id}, captions={len(captions)}"
+            f"자막 목록 조회 성공: video_id={video_id}, count={len(transcripts)}"
         )
         return response
 
     except YouTubeAPIError as e:
-        logger.error(f"YouTube API 오류: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"자막 정보 조회 중 오류가 발생했습니다: {str(e)}",
+        logger.error(f"자막 목록 조회 오류: {e}")
+        # 빈 목록 반환 (자막이 없는 경우)
+        return AvailableTranscriptsResponse(
+            video_id=video_id,
+            transcripts=[],
         )
     except Exception as e:
         logger.error(f"예상치 못한 오류 발생: {e}", exc_info=True)

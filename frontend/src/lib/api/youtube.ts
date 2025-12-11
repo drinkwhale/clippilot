@@ -280,11 +280,9 @@ export async function getVideoDetails(
  * 자막 정보
  */
 export interface Caption {
-  id: string;
   language: string;
-  name: string;
-  trackKind: string;
-  isAutoSynced: boolean;
+  languageCode: string;
+  isGenerated: boolean;
 }
 
 /**
@@ -328,7 +326,7 @@ export async function getVideoCaptions(
     `/api/v1/youtube/videos/${videoId}/captions`,
     { headers: buildYouTubeHeaders(apiKey) }
   );
-  return response.data.captions || [];
+  return response.data.transcripts || [];
 }
 
 /**

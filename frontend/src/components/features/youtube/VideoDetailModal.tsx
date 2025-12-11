@@ -213,26 +213,26 @@ export function VideoDetailModal({ video, open, onOpenChange }: VideoDetailModal
                 </div>
               ) : captions && captions.length > 0 ? (
                 <div className="space-y-2">
-                  {captions.map((caption) => (
+                  {captions.map((caption, index) => (
                     <div
-                      key={caption.id}
+                      key={`${caption.languageCode}-${index}`}
                       className="flex items-center justify-between p-3 border rounded-lg"
                     >
                       <div className="flex items-center gap-3">
-                        <Badge variant={caption.isAutoSynced ? "secondary" : "default"}>
-                          {caption.language.toUpperCase()}
+                        <Badge variant={caption.isGenerated ? "secondary" : "default"}>
+                          {caption.languageCode.toUpperCase()}
                         </Badge>
                         <div>
-                          <p className="text-sm font-medium">{caption.name}</p>
+                          <p className="text-sm font-medium">{caption.language}</p>
                           <p className="text-xs text-muted-foreground">
-                            {caption.isAutoSynced ? "자동 생성" : "수동 작성"}
+                            {caption.isGenerated ? "자동 생성" : "수동 작성"}
                           </p>
                         </div>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDownloadTranscript(caption.language)}
+                        onClick={() => handleDownloadTranscript(caption.languageCode)}
                         title="자막 다운로드"
                       >
                         <Download className="w-4 h-4" />
