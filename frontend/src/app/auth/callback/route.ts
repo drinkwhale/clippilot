@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 
   // Code가 있으면 토큰 교환 수행
   if (code) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 

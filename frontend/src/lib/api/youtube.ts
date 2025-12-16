@@ -149,7 +149,7 @@ function mapVideo(raw: RawYouTubeVideo): YouTubeVideo {
   };
 }
 
-function buildYouTubeHeaders(apiKey?: string): AxiosRequestHeaders | undefined {
+function buildYouTubeHeaders(apiKey?: string): Record<string, string> | undefined {
   return apiKey
     ? {
         "X-YouTube-API-Key": apiKey,
