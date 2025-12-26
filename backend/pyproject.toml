@@ -31,6 +31,7 @@ dependencies = [
     "slowapi>=0.1.9",
     "loguru>=0.7.3",
     "youtube-transcript-api>=1.2.3",
+    "yt-dlp>=2025.12.8",
 ]
 
 [tool.black]
