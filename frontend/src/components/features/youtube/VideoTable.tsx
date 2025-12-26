@@ -18,6 +18,7 @@ interface VideoTableProps {
   videos: YouTubeVideo[];
   onVideoClick?: (video: YouTubeVideo) => void;
   onSaveVideo?: (video: YouTubeVideo) => void;
+  onTranscribe?: (video: YouTubeVideo) => void;
 }
 
 /**
@@ -137,6 +138,7 @@ export function VideoTable({
   videos,
   onVideoClick,
   onSaveVideo,
+  onTranscribe,
 }: VideoTableProps) {
   const sortedVideos = [...videos].sort(
     (a, b) => (b.viewCount || 0) - (a.viewCount || 0)
@@ -162,7 +164,7 @@ export function VideoTable({
               <TableHead className="w-24 text-right">댓글 수</TableHead>
               <TableHead className="w-20 text-right">길이</TableHead>
               <TableHead className="w-24 text-center">CII</TableHead>
-              <TableHead className="w-32 text-center">액션</TableHead>
+              <TableHead className="w-32 text-center">자막수집</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -308,17 +310,17 @@ export function VideoTable({
                     {getCIIBadge(ciiScore)}
                   </TableCell>
 
-                  {/* 액션 버튼 */}
+                  {/* 자막수집 버튼 */}
                   <TableCell className="text-center">
                     <Button
                       size="sm"
-                      variant="default"
+                      variant="outline"
                       onClick={(e) => {
                         e.stopPropagation();
-                        onSaveVideo?.(video);
+                        onTranscribe?.(video);
                       }}
                     >
-                      저장하기
+                      자막수집
                     </Button>
                   </TableCell>
                 </TableRow>

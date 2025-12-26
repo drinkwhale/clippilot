@@ -484,3 +484,22 @@ export async function saveSearchHistory(keyword: string): Promise<void> {
 export async function deleteSearchHistory(keyword: string): Promise<void> {
   await apiClient.delete(`/api/v1/youtube/search-history/${keyword}`);
 }
+
+/**
+ * YouTube 영상 음성 자막 수집 (OpenAI Whisper API)
+ */
+export async function transcribeVideoAudio(
+  videoId: string,
+  language: string = 'ko',
+  apiKey?: string
+): Promise<TranscriptResponse> {
+  const response = await apiClient.post(
+    `/api/v1/youtube/videos/${videoId}/transcribe`,
+    null,
+    {
+      params: { language },
+      headers: buildYouTubeHeaders(apiKey),
+    }
+  );
+  return response.data;
+}

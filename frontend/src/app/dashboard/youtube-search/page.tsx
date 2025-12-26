@@ -14,6 +14,7 @@ import {
 } from "@/components/features/youtube/FilterSidebar";
 import { VideoTable } from "@/components/features/youtube/VideoTable";
 import { VideoDetailModal } from "@/components/features/youtube/VideoDetailModal";
+import { TranscriptModal } from "@/components/features/youtube/TranscriptModal";
 import { useYouTubeSearch } from "@/hooks/useYouTubeSearch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -68,6 +69,10 @@ export default function YouTubeSearchPage() {
   // 모달 상태
   const [selectedVideo, setSelectedVideo] = useState<YouTubeVideo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 자막 수집 모달 상태
+  const [transcriptVideo, setTranscriptVideo] = useState<YouTubeVideo | null>(null);
+  const [isTranscriptModalOpen, setIsTranscriptModalOpen] = useState(false);
 
   // Hooks는 조건문 이전에 호출되어야 함
   const { data, isLoading, error } = useYouTubeSearch({
@@ -127,6 +132,11 @@ export default function YouTubeSearchPage() {
   const handleSaveVideo = (video: YouTubeVideo) => {
     // TODO: 영상 저장 기능 구현
     console.log("Save video:", video);
+  };
+
+  const handleTranscribe = (video: YouTubeVideo) => {
+    setTranscriptVideo(video);
+    setIsTranscriptModalOpen(true);
   };
 
   // 조건부 렌더링 전에 return
@@ -207,6 +217,7 @@ export default function YouTubeSearchPage() {
                 videos={filteredVideos}
                 onVideoClick={handleVideoClick}
                 onSaveVideo={handleSaveVideo}
+                onTranscribe={handleTranscribe}
               />
             )}
 
@@ -242,6 +253,13 @@ export default function YouTubeSearchPage() {
         video={selectedVideo}
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
+      />
+
+      {/* 자막 수집 모달 */}
+      <TranscriptModal
+        video={transcriptVideo}
+        open={isTranscriptModalOpen}
+        onOpenChange={setIsTranscriptModalOpen}
       />
     </div>
   );
