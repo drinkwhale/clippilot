@@ -99,4 +99,28 @@
     color: inherit;
     text-decoration: none;
   }
+
+  /* 스크롤바 스타일 - 웹킷 브라우저 (Chrome, Safari, Edge) */
+  .scrollbar-visible::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+  }
+
+  .scrollbar-visible::-webkit-scrollbar-track {
+    @apply bg-muted rounded-lg;
+  }
+
+  .scrollbar-visible::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-lg;
+  }
+
+  .scrollbar-visible::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+
+  /* 스크롤바 스타일 - Firefox */
+  .scrollbar-visible {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) hsl(var(--muted));
+  }
 }

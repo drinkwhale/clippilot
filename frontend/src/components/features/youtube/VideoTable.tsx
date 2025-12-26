@@ -144,7 +144,7 @@ export function VideoTable({
 
   return (
     <div className="border rounded-lg overflow-hidden">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto scrollbar-visible">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -174,7 +174,13 @@ export function VideoTable({
                 <TableRow
                   key={video.id}
                   className="hover:bg-muted/50 cursor-pointer transition-colors"
-                  onClick={() => onVideoClick?.(video)}
+                  onClick={() => {
+                    console.log("Row clicked:", video.title);
+                    console.log("onVideoClick exists:", !!onVideoClick);
+                    if (onVideoClick) {
+                      onVideoClick(video);
+                    }
+                  }}
                 >
                   {/* 번호 */}
                   <TableCell className="text-center font-medium">

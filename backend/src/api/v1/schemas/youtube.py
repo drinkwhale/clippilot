@@ -204,3 +204,133 @@ class VideoDetail(BaseModel):
             }
         }
     )
+
+
+class Caption(BaseModel):
+    """YouTube 자막 정보 스키마"""
+
+    id: str = Field(..., description="자막 트랙 ID")
+    language: str = Field(..., description="언어 코드 (ko, en 등)")
+    name: str = Field(..., description="자막 이름")
+    track_kind: str = Field(..., description="트랙 종류 (standard, ASR 등)")
+    is_auto_synced: bool = Field(..., description="자동 생성 여부")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+class CaptionListResponse(BaseModel):
+    """YouTube 자막 목록 응답 스키마"""
+
+    video_id: str = Field(..., description="YouTube 영상 ID")
+    captions: List[Caption] = Field(..., description="자막 트랙 목록")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+class Comment(BaseModel):
+    """YouTube 댓글 정보 스키마"""
+
+    comment_id: str = Field(..., description="댓글 ID")
+    author: str = Field(..., description="작성자 이름")
+    author_channel_id: str = Field(..., description="작성자 채널 ID")
+    text: str = Field(..., description="댓글 내용")
+    like_count: int = Field(..., description="좋아요 수")
+    published_at: str = Field(..., description="작성 날짜 (ISO 8601)")
+    reply_count: int = Field(..., description="답글 수")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+class CommentListResponse(BaseModel):
+    """YouTube 댓글 목록 응답 스키마"""
+
+    video_id: str = Field(..., description="YouTube 영상 ID")
+    comments: List[Comment] = Field(..., description="댓글 목록")
+    total_comments: int = Field(..., description="총 댓글 수")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+class ChannelDetail(BaseModel):
+    """YouTube 채널 상세 정보 스키마"""
+
+    channel_id: str = Field(..., description="채널 ID")
+    title: str = Field(..., description="채널 이름")
+    description: str = Field(..., description="채널 설명")
+    custom_url: Optional[str] = Field(None, description="커스텀 URL")
+    published_at: str = Field(..., description="채널 생성 날짜 (ISO 8601)")
+    thumbnail_url: Optional[str] = Field(None, description="프로필 이미지 URL")
+    subscriber_count: int = Field(..., description="구독자 수")
+    video_count: int = Field(..., description="총 영상 수")
+    view_count: int = Field(..., description="누적 조회수")
+    keywords: Optional[str] = Field(None, description="채널 키워드")
+    country: Optional[str] = Field(None, description="국가")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+class TranscriptSegment(BaseModel):
+    """YouTube 자막 세그먼트 스키마"""
+
+    text: str = Field(..., description="자막 텍스트")
+    start: float = Field(..., description="시작 시간 (초)")
+    duration: float = Field(..., description="지속 시간 (초)")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+class TranscriptResponse(BaseModel):
+    """YouTube 자막 응답 스키마"""
+
+    video_id: str = Field(..., description="YouTube 영상 ID")
+    language: str = Field(..., description="자막 언어")
+    segments: List[TranscriptSegment] = Field(..., description="자막 세그먼트 목록")
+    full_text: str = Field(..., description="전체 자막 텍스트")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+class AvailableTranscript(BaseModel):
+    """사용 가능한 자막 정보 스키마"""
+
+    language: str = Field(..., description="언어 이름")
+    language_code: str = Field(..., description="언어 코드")
+    is_generated: bool = Field(..., description="자동 생성 여부")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
+class AvailableTranscriptsResponse(BaseModel):
+    """사용 가능한 자막 목록 응답 스키마"""
+
+    video_id: str = Field(..., description="YouTube 영상 ID")
+    transcripts: List[AvailableTranscript] = Field(..., description="자막 목록")
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )

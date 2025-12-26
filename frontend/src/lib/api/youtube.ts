@@ -277,28 +277,180 @@ export async function getVideoDetails(
 }
 
 /**
+ * 자막 정보
+ */
+export interface Caption {
+  language: string;
+  languageCode: string;
+  isGenerated: boolean;
+}
+
+/**
+ * 댓글 정보
+ */
+export interface Comment {
+  commentId: string;
+  author: string;
+  authorChannelId: string;
+  text: string;
+  likeCount: number;
+  publishedAt: string;
+  replyCount: number;
+}
+
+/**
+ * 채널 상세 정보
+ */
+export interface ChannelDetail {
+  channelId: string;
+  title: string;
+  description: string;
+  customUrl?: string;
+  publishedAt: string;
+  thumbnailUrl?: string;
+  subscriberCount: number;
+  videoCount: number;
+  viewCount: number;
+  keywords?: string;
+  country?: string;
+}
+
+/**
  * 영상 자막 목록 조회
  */
-export async function getCaptionTracks(
-  videoId: string
-): Promise<CaptionTrack[]> {
+export async function getVideoCaptions(
+  videoId: string,
+  apiKey?: string
+): Promise<Caption[]> {
   const response = await apiClient.get(
-    `/api/v1/youtube/videos/${videoId}/captions`
+    `/api/v1/youtube/videos/${videoId}/captions`,
+    { headers: buildYouTubeHeaders(apiKey) }
+  );
+  return response.data.transcripts || [];
+}
+
+/**
+ * 영상 댓글 조회
+ */
+export async function getVideoComments(
+  videoId: string,
+  maxResults: number = 20,
+  apiKey?: string
+): Promise<Comment[]> {
+  const response = await apiClient.get(
+    `/api/v1/youtube/videos/${videoId}/comments`,
+    {
+      params: { max_results: maxResults },
+      headers: buildYouTubeHeaders(apiKey),
+    }
+  );
+  return response.data.comments || [];
+}
+
+/**
+ * 채널 상세 정보 조회
+ */
+export async function getChannelDetails(
+  channelId: string,
+  apiKey?: string
+): Promise<ChannelDetail> {
+  const response = await apiClient.get(
+    `/api/v1/youtube/channels/${channelId}`,
+    { headers: buildYouTubeHeaders(apiKey) }
   );
   return response.data;
 }
 
 /**
- * 특정 언어 자막 다운로드
+ * 자막 세그먼트 정보
  */
-export async function downloadCaption(
+export interface TranscriptSegment {
+  text: string;
+  start: number;
+  duration: number;
+}
+
+/**
+ * 자막 응답 정보
+ */
+export interface TranscriptResponse {
+  videoId: string;
+  language: string;
+  segments: TranscriptSegment[];
+  fullText: string;
+}
+
+/**
+ * 사용 가능한 자막 정보
+ */
+export interface AvailableTranscript {
+  language: string;
+  languageCode: string;
+  isGenerated: boolean;
+}
+
+/**
+ * YouTube 영상 자막 다운로드
+ */
+export async function getVideoTranscript(
   videoId: string,
-  language: string
-): Promise<CaptionData> {
+  languages?: string[],
+  apiKey?: string
+): Promise<TranscriptResponse> {
+  const params: Record<string, string> = {};
+  if (languages && languages.length > 0) {
+    params.languages = languages.join(',');
+  }
+
   const response = await apiClient.get(
-    `/api/v1/youtube/videos/${videoId}/captions/${language}`
+    `/api/v1/youtube/videos/${videoId}/transcript`,
+    {
+      params,
+      headers: buildYouTubeHeaders(apiKey),
+    }
   );
   return response.data;
+}
+
+/**
+ * 사용 가능한 자막 목록 조회
+ */
+export async function getAvailableTranscripts(
+  videoId: string,
+  apiKey?: string
+): Promise<AvailableTranscript[]> {
+  const response = await apiClient.get(
+    `/api/v1/youtube/videos/${videoId}/transcripts/available`,
+    { headers: buildYouTubeHeaders(apiKey) }
+  );
+  return response.data.transcripts || [];
+}
+
+/**
+ * 자막 텍스트 파일로 다운로드
+ */
+export async function downloadTranscriptAsFile(
+  videoId: string,
+  videoTitle: string,
+  languages?: string[]
+): Promise<void> {
+  try {
+    const transcript = await getVideoTranscript(videoId, languages);
+
+    // 텍스트 파일 생성
+    const blob = new Blob([transcript.fullText], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${videoTitle.replace(/[^a-z0-9]/gi, '_')}_transcript_${transcript.language}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('자막 다운로드 실패:', error);
+    throw error;
+  }
 }
 
 /**

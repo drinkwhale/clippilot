@@ -30,6 +30,7 @@ dependencies = [
     "stripe>=10.14.0",
     "slowapi>=0.1.9",
     "loguru>=0.7.3",
+    "youtube-transcript-api>=1.2.3",
 ]
 
 [tool.black]
