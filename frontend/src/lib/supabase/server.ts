@@ -10,8 +10,8 @@ import type { Database } from '@/types/database';
  * Create Supabase client for server-side usage
  * Uses cookies from Next.js headers for session management
  */
-export const createClient = () => {
-  const cookieStore = cookies();
+export const createClient = async () => {
+  const cookieStore = await cookies();
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
